@@ -8,6 +8,8 @@ import { UserModule } from './app/user/user.module';
 import app_config from './config/app.config';
 import database_config from './config/database.config';
 
+import { ProductModule } from 'app/product/product.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,7 +24,5 @@ import database_config from './config/database.config';
     }),
     UserModule,
   ],
-  controllers: [],
-  providers: [],
-})
+
 export class AppModule {}
