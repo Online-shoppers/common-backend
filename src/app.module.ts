@@ -3,12 +3,12 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { ProductModule } from 'app/product/product.module';
+
 import { UserModule } from './app/user/user.module';
 // ========== configs ==========
 import app_config from './config/app.config';
 import database_config from './config/database.config';
-
-import { ProductModule } from 'app/product/product.module';
 
 @Module({
   imports: [
@@ -24,5 +24,5 @@ import { ProductModule } from 'app/product/product.module';
     }),
     UserModule,
   ],
-
+})
 export class AppModule {}
