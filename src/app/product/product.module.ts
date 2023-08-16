@@ -6,8 +6,6 @@ import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { ProductRepo } from './repo/product.repo';
 
-// Импорт DTO
-
 @Module({
   imports: [
     MikroOrmModule.forFeature({
