@@ -1,7 +1,7 @@
 import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
 
-import { BeerSchema } from 'shared/enums/beerShema.enum';
-import { BeerType } from 'shared/enums/beerType.enum';
+import { BeerSchema } from '../../shared/enums/beerShema.enum';
+import { BeerType } from '../../shared/enums/beerType.enum';
 
 @Entity()
 export abstract class ProductEntity {
@@ -14,10 +14,10 @@ export abstract class ProductEntity {
   @Property({ name: 'description' })
   description!: string;
 
-  @Enum({ name: 'status', array: false, items: () => BeerSchema })
+  @Enum({ name: 'schema', array: false, items: () => BeerSchema })
   schema!: BeerSchema;
 
-  @Enum({ name: 'status', array: false, items: () => BeerType })
+  @Enum({ name: 'type', array: false, items: () => BeerType })
   type!: BeerType;
 
   @Property({ name: 'weight' })
