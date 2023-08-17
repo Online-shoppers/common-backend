@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, validate } from 'class-validator';
+import { IsEnum, IsString, validate } from 'class-validator';
+
+import { OrderStatuses } from 'shared/enums/order-statuses.enum';
 
 export class EditOrderForm {
-  // @IsEmail(undefined, { message: ErrorCodes.FieldShouldBeEmail })
-  // email!: string;
-
   @ApiProperty()
-  @IsString()
-  status: string;
+  @IsEnum(OrderStatuses)
+  status: OrderStatuses;
 
   @ApiProperty()
   @IsString()
