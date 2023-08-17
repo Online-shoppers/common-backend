@@ -1,4 +1,6 @@
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
+
+import { BeerType } from 'app/beer/enums/beerType.enum';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { BeerEntity } from '../entities/beer.entity';
@@ -11,35 +13,32 @@ export class BeerDTO extends ProductDTO {
   country: string;
 
   @IsNumber()
+  volume!: number;
+
+  @IsNumber()
   ibu: number;
 
   @IsNumber()
   price: number;
 
-  @IsBoolean()
-  availability: boolean;
-
   @IsNumber()
   quantity: number;
 
-  @IsBoolean()
-  archived: boolean;
+  @IsEnum(BeerType)
+  type: BeerType;
 
   static fromEntity(entity?: BeerEntity) {
     if (!entity) {
       return;
     }
     const it = new BeerDTO();
-    it.id = entity.id;
-    it.name = entity.name;
     it.abv = entity.abv;
-    it.description = entity.description;
     it.country = entity.country;
+    it.volume = entity.volume;
     it.ibu = entity.ibu;
     it.price = entity.price;
-    it.availability = entity.availability;
     it.quantity = entity.quantity;
-    it.archived = entity.archived;
+    it.type = entity.type;
     return it;
   }
 
