@@ -1,24 +1,25 @@
-import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
 
-import { BeerSchema } from '../../shared/enums/beerShema.enum';
-import { BeerType } from '../../shared/enums/beerType.enum';
+import { ProductCategory } from '../enums/productCategory.enum';
+import { ProductType } from '../enums/productType.enum';
+import { UUIDEntity } from './uuid.entity';
 
-@Entity()
-export abstract class ProductEntity {
-  @PrimaryKey()
-  id!: number;
-
+@Entity({
+  discriminatorColumn: 'discr',
+  discriminatorValue: 'Product',
+})
+export class ProductEntity extends UUIDEntity {
   @Property({ name: 'name' })
   name!: string;
 
   @Property({ name: 'description' })
   description!: string;
 
-  @Enum({ name: 'schema', array: false, items: () => BeerSchema })
-  schema!: BeerSchema;
+  @Enum({ name: 'category', array: false, items: () => ProductCategory })
+  category!: ProductCategory;
 
-  @Enum({ name: 'type', array: false, items: () => BeerType })
-  type!: BeerType;
+  @Enum({ name: 'type', array: false, items: () => ProductType })
+  type!: ProductType;
 
   @Property({ name: 'weight' })
   weight!: number;

@@ -5,16 +5,7 @@ import { BeerEntity } from '../entities/beer.entity';
 
 export class BeerDTO extends ProductDTO {
   @IsNumber()
-  id: number;
-
-  @IsString()
-  name: string;
-
-  @IsNumber()
   abv: number;
-
-  @IsString()
-  description: string;
 
   @IsString()
   country: string;

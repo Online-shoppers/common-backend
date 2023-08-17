@@ -8,10 +8,10 @@ export class BeerService {
   async getAllBeers() {
     return await this.beer_user.getList();
   }
-  async getBeerInfo(id: number) {
+  async getBeerInfo(id: string) {
     return await this.beer_user.getById(id);
   }
-  async archiveUser(beerId: number) {
+  async archiveUser(beerId: string) {
     return await this.beer_user.archiveUser(beerId);
   }
 }
