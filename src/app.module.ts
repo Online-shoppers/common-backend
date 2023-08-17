@@ -23,6 +23,7 @@ import database_config from './config/database.config';
       inject: [ConfigService],
     }),
     BeerModule,
+    UserModule,
   ],
 })
 export class AppModule {}

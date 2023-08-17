@@ -12,10 +12,10 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
   async getById(id: string) {
     return await this.findOne({ id });
   }
-  async archiveUser(beerId: string) {
-    const user = await this.findOne({ id: beerId });
-    user.archived = true;
-    await this.getEntityManager().persistAndFlush(user);
-    return BeerDTO.fromEntity(user);
+  async archiveBeer(beerId: string) {
+    const beer = await this.findOne({ id: beerId });
+    beer.archived = true;
+    await this.getEntityManager().persistAndFlush(beer);
+    return BeerDTO.fromEntity(beer);
   }
 }

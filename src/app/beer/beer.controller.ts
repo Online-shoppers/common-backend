@@ -8,7 +8,7 @@ import { BeerDTO } from './dto/beer.dto';
 export class BeerController {
   constructor(private readonly beerService: BeerService) {}
 
-  @ApiOperation({ summary: 'Get all users list' })
+  @ApiOperation({ summary: 'Get all beers list' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'HttpStatus:200:OK',
@@ -29,6 +29,6 @@ export class BeerController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.beerService.archiveUser(id);
+    return this.beerService.archiveBeer(id);
   }
 }
