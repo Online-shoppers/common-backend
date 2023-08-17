@@ -1,30 +1,18 @@
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsString } from 'class-validator';
 
-import { BeerSchema } from 'shared/enums/beerShema.enum';
-import { BeerType } from 'shared/enums/beerType.enum';
+import { ProductCategory } from '../../shared/enums/productCategory.enum';
+import { UUIDDto } from './uuid.dto';
 
-export abstract class ProductDTO {
-  @IsNumber()
-  id: number;
-
+export class ProductDTO extends UUIDDto {
   @IsString()
   name: string;
 
   @IsString()
   description: string;
 
-  @IsEnum(BeerSchema)
-  schema: BeerSchema;
-
-  @IsEnum(BeerType)
-  type: BeerType;
-
-  @IsNumber()
-  weight: number;
-
-  @IsNumber()
-  volume: number;
+  @IsEnum(ProductCategory)
+  category: ProductCategory;
 
   @IsBoolean()
   @Transform(({ value }) => value === 'false')

@@ -2,7 +2,7 @@ import { Controller, Delete, Get, HttpStatus, Param } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { BeerService } from './beer.service';
-import { BeerDTO } from './dto/Beer.dto';
+import { BeerDTO } from './dto/beer.dto';
 
 @Controller('beer')
 export class BeerController {
@@ -22,13 +22,13 @@ export class BeerController {
   }
 
   @Get(':beerId')
-  async getBeerById(@Param('id') id: number) {
+  async getBeerById(@Param('id') id: string) {
     const entity = await this.beerService.getBeerInfo(id);
     return BeerDTO.fromEntity(entity);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  async remove(@Param('id') id: string) {
     return this.beerService.archiveUser(id);
   }
 }
