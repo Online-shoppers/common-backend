@@ -11,7 +11,7 @@ import { BeerRepo } from '../repo/beer.repo';
 })
 export class BeerEntity extends ProductEntity {
   @Property({ name: 'abv' })
-  abv!: number; // Содержание алкоголя по объему
+  abv!: number; // Alcohol content by volume
 
   @Property({ name: 'country' })
   country!: string;
@@ -20,7 +20,7 @@ export class BeerEntity extends ProductEntity {
   volume!: number;
 
   @Property({ name: 'ibu' })
-  ibu!: number; // Горечь пива (International Bitterness Units)
+  ibu!: number; // International Bitterness Units
 
   @Property({ name: 'price' })
   price!: number;
