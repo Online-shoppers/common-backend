@@ -4,6 +4,7 @@ import { ProductCategory } from '../enums/productCategory.enum';
 import { UUIDEntity } from './uuid.entity';
 
 @Entity({
+  tableName: 'products',
   discriminatorColumn: 'discr',
   discriminatorValue: 'Product',
 })

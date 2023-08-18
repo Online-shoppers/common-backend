@@ -26,6 +26,7 @@ import database_config from './config/database.config';
     BeerModule,
     UserModule,
     OrderModule,
+
   ],
 })
 export class AppModule {}
