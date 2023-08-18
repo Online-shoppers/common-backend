@@ -14,6 +14,9 @@ export class ProductEntity extends UUIDEntity {
   @Property({ name: 'description' })
   description!: string;
 
+  @Property({ name: 'quantity' })
+  quantity!: number;
+
   @Enum({ name: 'category', array: false, items: () => ProductCategory })
   category!: ProductCategory;
 
