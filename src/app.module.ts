@@ -3,12 +3,15 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { AuthModule } from './app/auth/auth.module';
+import { RefreshTokenModule } from './app/refresh-token/refresh-token.module';
+import { SecurityModule } from './app/security/security.module';
+import { UserRoles } from './app/user-roles/enums/user-roles.enum';
+import { UserRolesModule } from './app/user-roles/user-roles.module';
 import { UserModule } from './app/user/user.module';
 // ========== configs ==========
 import app_config from './config/app.config';
 import database_config from './config/database.config';
-
-import { ProductModule } from 'app/product/product.module';
 
 @Module({
   imports: [
@@ -23,6 +26,13 @@ import { ProductModule } from 'app/product/product.module';
       inject: [ConfigService],
     }),
     UserModule,
+    SecurityModule,
+    UserRolesModule,
+    AuthModule,
+    SecurityModule,
+    RefreshTokenModule,
   ],
-
+  controllers: [],
+  providers: [],
+})
 export class AppModule {}
