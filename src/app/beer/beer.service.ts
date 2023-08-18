@@ -17,15 +17,16 @@ export class BeerService {
     const beerEntityData: Partial<BeerEntity> = {
       id: beerData.id,
       name: beerData.name,
+      price: beerData.price,
       description: beerData.description,
+      image_url: beerData.image_url,
+      quantity: beerData.quantity,
       category: beerData.category,
       archived: beerData.archived,
       abv: beerData.abv,
       country: beerData.country,
       volume: beerData.volume,
       ibu: beerData.ibu,
-      price: beerData.price,
-      quantity: beerData.quantity,
       type: beerData.type,
     };
 

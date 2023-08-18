@@ -25,9 +25,6 @@ export class BeerEntity extends ProductEntity {
   @Property({ name: 'price' })
   price!: number;
 
-  @Property({ name: 'quantity' })
-  quantity!: number;
-
   @Enum({ name: 'type', array: false, items: () => BeerType })
   type!: BeerType;
 }

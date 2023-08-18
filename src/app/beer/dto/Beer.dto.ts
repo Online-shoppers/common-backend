@@ -21,9 +21,6 @@ export class BeerDTO extends ProductDTO {
   @IsNumber()
   price: number;
 
-  @IsNumber()
-  quantity: number;
-
   @IsEnum(BeerType)
   type: BeerType;
 
@@ -37,7 +34,6 @@ export class BeerDTO extends ProductDTO {
     it.volume = entity.volume;
     it.ibu = entity.ibu;
     it.price = entity.price;
-    it.quantity = entity.quantity;
     it.type = entity.type;
     return it;
   }
