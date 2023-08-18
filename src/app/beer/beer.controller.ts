@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -41,7 +42,7 @@ export class BeerController {
     const entity = await this.beerService.createBeer(beerData);
     return BeerDTO.fromEntity(entity);
   }
-  @Patch(':id')
+  @Put(':id')
   async updateBeer(
     @Param('id') id: string,
     @Body() updateData: Partial<BeerDTO>,

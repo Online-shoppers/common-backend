@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsString } from 'class-validator';
 
 import { BeerType } from 'app/beer/enums/beerType.enum';
 
@@ -18,8 +18,8 @@ export class BeerDTO extends ProductDTO {
   @IsNumber()
   ibu: number;
 
-  @IsEnum(BeerType)
-  type: BeerType;
+  @IsArray({ context: BeerType })
+  type: BeerType[];
 
   static fromEntity(entity?: BeerEntity) {
     if (!entity) {
