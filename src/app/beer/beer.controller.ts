@@ -1,4 +1,15 @@
-import { Controller, Delete, Get, HttpStatus, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { BeerService } from './beer.service';
@@ -25,6 +36,24 @@ export class BeerController {
   async getBeerById(@Param('id') id: string) {
     const entity = await this.beerService.getBeerInfo(id);
     return BeerDTO.fromEntity(entity);
+  }
+  @Post()
+  async createBeer(@Body() beerData: Partial<BeerDTO>) {
+    const entity = await this.beerService.createBeer(beerData);
+    return BeerDTO.fromEntity(entity);
+  }
+  @Put(':id')
+  async updateBeer(
+    @Param('id') id: string,
+    @Body() updateData: Partial<BeerDTO>,
+  ) {
+    const updatedBeer = await this.beerService.updateBeer(id, updateData);
+
+    if (!updatedBeer) {
+      throw new NotFoundException(`Beer with id ${id} not found`);
+    }
+
+    return BeerDTO.fromEntity(updatedBeer);
   }
 
   @Delete(':id')
