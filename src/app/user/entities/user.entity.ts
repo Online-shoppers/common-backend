@@ -1,6 +1,17 @@
-import { Entity, Property } from '@mikro-orm/core';
+import {
+  ArrayCollection,
+  Collection,
+  Entity,
+  Enum,
+  ManyToOne,
+  OneToMany,
+  Property,
+} from '@mikro-orm/core';
 
 import { UUIDEntity } from '../../../shared/entities/uuid.entity';
+import { RefreshTokenEntity } from '../../refresh-token/entity/refresh-token.entity';
+import { UserRoleEntity } from '../../user-roles/entities/user-role.entity';
+import { UserRoles } from '../../user-roles/enums/user-roles.enum';
 import { UserRepo } from '../repos/user.repo';
 
 @Entity({ tableName: 'user', customRepository: () => UserRepo })
@@ -13,9 +24,26 @@ export class UserEntity extends UUIDEntity {
   lastName!: string;
   @Property({ name: 'password' })
   password!: string;
-  @Property({ name: 'archived' })
-  archived!: boolean;
+  @Property({ name: 'archived', default: false })
+  archived: boolean;
 
+  @Property({ name: 'role_id' })
+  roleId!: string;
+  @Enum({ name: 'role_type', array: false, items: () => UserRoles })
+  roleType!: UserRoles;
+
+  @ManyToOne({
+    entity: () => UserRoleEntity,
+    inversedBy: e => e.users,
+    joinColumns: ['role_id', 'role_type'],
+    referencedColumnNames: ['id', 'type'],
+    nullable: true,
+    lazy: true,
+  })
+  role?: UserRoleEntity;
+
+  @OneToMany(() => RefreshTokenEntity, e => e.user)
+  refreshTokens?: RefreshTokenEntity[];
   //TODO
   // Add relations
 }

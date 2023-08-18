@@ -1,9 +1,20 @@
-import { Controller, Delete, Get, HttpStatus, Param } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { NewUserForm } from './dtos/new-user.form';
 import { UserDto } from './dtos/user.dto';
 import { UserService } from './user.service';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -12,7 +23,7 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'HttpStatus:200:OK',
-    type: UserDto,
+    type: [UserDto],
     isArray: true,
   })
   @Get()
@@ -21,27 +32,47 @@ export class UserController {
     return UserDto.fromEntities(entities);
   }
 
+  @ApiOperation({ summary: 'Get user info' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'HttpStatus:200:OK',
+    type: UserDto,
+  })
   @Get(':userId')
   async getUserById(@Param('userId') userId: string) {
     const entity = await this.userService.getUserInfo(userId);
     return UserDto.fromEntity(entity);
   }
-
+  @ApiOperation({ summary: 'Make user archived' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'HttpStatus:200:OK',
+    type: UserDto,
+  })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.userService.archiveUser(id);
   }
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.userService.create(createUserDto);
-  // }
-  //
-
-  //
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.userService.update(+id, updateUserDto);
-  // }
-  //
+  @ApiOperation({ summary: 'Get user info' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'HttpStatus:200:OK',
+    type: UserDto,
+  })
+  @Post()
+  async addUsers(@Body() body: NewUserForm[]) {
+    const [form] = body;
+    console.log(form);
+    const dto = NewUserForm.from(form);
+    const errors = await NewUserForm.validate(dto);
+    if (errors) {
+      throw new BadRequestException({
+        message: 'errors.invalid-form.user-new',
+        errors,
+      });
+    }
+    const entity = await this.userService.addNewUser(dto);
+    return UserDto.fromEntity(entity);
+  }
 }
