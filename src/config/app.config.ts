@@ -1,6 +1,7 @@
 export default () => ({
   app: {
     port: parseInt(process.env.PORT, 10) || 3000,
-    jwt_secret: process.env.JWT_SECRET,
+    AT_SECRET: process.env.AT_SECRET,
+    RT_SECRET: process.env.RT_SECRET,
   },
 });
