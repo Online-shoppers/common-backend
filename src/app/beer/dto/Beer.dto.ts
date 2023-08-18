@@ -18,9 +18,6 @@ export class BeerDTO extends ProductDTO {
   @IsNumber()
   ibu: number;
 
-  @IsNumber()
-  price: number;
-
   @IsEnum(BeerType)
   type: BeerType;
 
