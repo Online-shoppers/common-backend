@@ -23,5 +23,5 @@ export class BeerEntity extends ProductEntity {
   ibu!: number; // International Bitterness Units
 
   @Enum({ name: 'type', array: false, items: () => BeerType })
-  type!: BeerType;
+  type!: BeerType; // type of categories
 }
