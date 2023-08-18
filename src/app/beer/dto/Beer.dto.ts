@@ -13,7 +13,7 @@ export class BeerDTO extends ProductDTO {
   country: string;
 
   @IsNumber()
-  volume!: number;
+  volume: number;
 
   @IsNumber()
   ibu: number;
