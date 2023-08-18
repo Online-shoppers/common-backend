@@ -1,4 +1,6 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, OneToOne, Property } from '@mikro-orm/core';
+
+import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 
 import { ProductCategory } from '../enums/productCategory.enum';
 import { UUIDEntity } from './uuid.entity';
@@ -19,4 +21,9 @@ export class ProductEntity extends UUIDEntity {
 
   @Property({ name: 'archived', default: false })
   archived!: boolean;
+
+  @OneToOne(() => CartProductEntity, {
+    mappedBy: cartProduct => cartProduct.product,
+  })
+  cartProduct: CartProductEntity;
 }

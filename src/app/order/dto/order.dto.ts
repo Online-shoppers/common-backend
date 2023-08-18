@@ -40,11 +40,16 @@ export class OrderDTO extends UUIDDto {
     it.updated = entity.updated.valueOf();
     it.status = entity.status;
     it.country = entity.country;
+    it.city = entity.city;
+    it.zipCode = entity.zipCode;
+    it.address = entity.address;
+    it.phone = entity.phone;
+
     return it;
   }
 
   static fromEntities(entities?: OrderEntity[]) {
-    if (!entities?.map) {
+    if (!Array.isArray(entities)) {
       return;
     }
     return entities.map(entity => this.fromEntity(entity));

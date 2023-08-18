@@ -1,5 +1,5 @@
 import { wrap } from '@mikro-orm/core';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { EditOrderForm } from './dto/edit-order.form';
 import { NewOrderForm } from './dto/new-order.form';
