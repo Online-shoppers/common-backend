@@ -12,10 +12,30 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
   async getById(id: string) {
     return await this.findOne({ id });
   }
-  async archiveUser(beerId: string) {
-    const user = await this.findOne({ id: beerId });
-    user.archived = true;
-    await this.getEntityManager().persistAndFlush(user);
-    return BeerDTO.fromEntity(user);
+  async createBeer(beerData: Partial<BeerEntity>): Promise<BeerEntity> {
+    const beer = this.em.create(BeerEntity, beerData);
+    await this.getEntityManager().persistAndFlush(beer);
+    return beer;
+  }
+  async updateBeer(
+    id: string,
+    updateData: Partial<BeerEntity>,
+  ): Promise<BeerEntity | null> {
+    const beer = await this.findOne({ id });
+
+    if (!beer) {
+      return null;
+    }
+
+    Object.assign(beer, updateData);
+
+    await this.getEntityManager().persistAndFlush(beer);
+    return beer;
+  }
+  async archiveBeer(beerId: string) {
+    const beer = await this.findOne({ id: beerId });
+    beer.archived = true;
+    await this.getEntityManager().persistAndFlush(beer);
+    return BeerDTO.fromEntity(beer);
   }
 }

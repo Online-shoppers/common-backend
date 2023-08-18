@@ -1,4 +1,4 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, EnumType, Property } from '@mikro-orm/core';
 
 import { BeerType } from 'app/beer/enums/beerType.enum';
 
@@ -11,7 +11,7 @@ import { BeerRepo } from '../repo/beer.repo';
 })
 export class BeerEntity extends ProductEntity {
   @Property({ name: 'abv' })
-  abv!: number; // Содержание алкоголя по объему
+  abv!: number; // Alcohol content by volume
 
   @Property({ name: 'country' })
   country!: string;
@@ -20,11 +20,14 @@ export class BeerEntity extends ProductEntity {
   volume!: number;
 
   @Property({ name: 'ibu' })
-  ibu!: number; // Горечь пива (International Bitterness Units)
 
-  @Property({ name: 'price' })
-  price!: number;
+  ibu!: number; // International Bitterness Units
 
-  @Enum({ name: 'type', array: false, items: () => BeerType })
-  type!: BeerType;
+  @Enum({
+    type: EnumType,
+    name: 'type',
+    array: true,
+    items: () => BeerType,
+  })
+  type!: BeerType[];
 }

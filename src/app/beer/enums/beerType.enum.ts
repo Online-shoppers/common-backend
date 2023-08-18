@@ -1,5 +1,5 @@
 export enum BeerType {
-  TYPE_X = '123',
-  TYPE_Y = '123',
-  TYPE_Z = '123',
+  TYPE_X = 'ale',
+  TYPE_Y = 'lager',
+  TYPE_Z = 'and some',
 }
