@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { BeerModule } from 'app/beer/beer.module';
+import { SnacksModule } from 'app/snacks/snacks.module';
 
 import { OrderModule } from './app/order/order.module';
 import { UserModule } from './app/user/user.module';
@@ -24,6 +25,7 @@ import database_config from './config/database.config';
       inject: [ConfigService],
     }),
     BeerModule,
+    SnacksModule,
     UserModule,
     OrderModule,
   ],

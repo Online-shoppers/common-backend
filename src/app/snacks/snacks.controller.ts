@@ -1,43 +1,34 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Controller, Delete, Get, HttpStatus, Param } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-import { CreateSnackDto } from './dto/create-snack.dto';
-import { UpdateSnackDto } from './dto/update-snack.dto';
+import { SnacksDTO } from './dto/snack.dto';
 import { SnacksService } from './snacks.service';
 
 @Controller('snacks')
 export class SnacksController {
   constructor(private readonly snacksService: SnacksService) {}
 
-  @Post()
-  create(@Body() createSnackDto: CreateSnackDto) {
-    return this.snacksService.create(createSnackDto);
-  }
-
+  @ApiOperation({ summary: 'Get all users list' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'HttpStatus:200:OK',
+    type: SnacksDTO,
+    isArray: true,
+  })
   @Get()
-  findAll() {
-    return this.snacksService.findAll();
+  async getAllSnacks(): Promise<SnacksDTO[]> {
+    const entities = await this.snacksService.getAllSnacks();
+    return entities.map(entity => SnacksDTO.fromEntity(entity));
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.snacksService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSnackDto: UpdateSnackDto) {
-    return this.snacksService.update(+id, updateSnackDto);
+  @Get(':snackId')
+  async getSnackById(@Param('id') id: string) {
+    const entity = await this.snacksService.getSnackInfo(id);
+    return SnacksDTO.fromEntity(entity);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.snacksService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return this.snacksService.archiveSnack(id);
   }
 }
