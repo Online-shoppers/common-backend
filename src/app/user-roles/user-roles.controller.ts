@@ -5,11 +5,11 @@ import { NewUserRoleForm } from './dto/new-user-role.form';
 import { UserRoleDto } from './dto/user-role.dto';
 import { UserRolesService } from './user-roles.service';
 
+@ApiTags('User Roles')
 @Controller('user-roles')
 export class UserRolesController {
   constructor(private readonly userRolesService: UserRolesService) {}
 
-  @ApiTags('User Roles')
   @Post()
   public async addRoles(@Body() body: UserRoleDto[]) {
     console.log(body);
