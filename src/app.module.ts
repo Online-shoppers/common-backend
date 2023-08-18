@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { BeerModule } from 'app/beer/beer.module';
 
+import { OrderModule } from './app/order/order.module';
 import { UserModule } from './app/user/user.module';
 // ========== configs ==========
 import app_config from './config/app.config';
@@ -24,6 +25,8 @@ import database_config from './config/database.config';
     }),
     BeerModule,
     UserModule,
+    OrderModule,
+
   ],
 })
 export class AppModule {}
