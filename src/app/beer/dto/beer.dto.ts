@@ -25,6 +25,14 @@ export class BeerDTO extends ProductDTO {
       return;
     }
     const it = new BeerDTO();
+    it.id = entity.id;
+    it.name = entity.name;
+    it.price = entity.price;
+    it.description = entity.description;
+    it.image_url = entity.image_url;
+    it.quantity = entity.quantity;
+    it.category = entity.category;
+    it.archived = entity.archived;
     it.abv = entity.abv;
     it.country = entity.country;
     it.volume = entity.volume;
