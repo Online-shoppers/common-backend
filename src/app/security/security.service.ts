@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -14,11 +14,15 @@ export class SecurityService {
   constructor(
     private readonly repo_user: UserRepo,
     private readonly repo_refresh_token: RefreshTokenRepo,
-    private jwtService: JwtService,
-    private config: ConfigService,
+    private readonly jwtService: JwtService,
+    private readonly config: ConfigService,
   ) {}
   hashData(data) {
     return bcrypt.hash(data, 10);
+  }
+
+  comparePassword(inputPassword, hashedPassword) {
+    return bcrypt.compare(inputPassword, hashedPassword);
   }
 
   async generateTokens(entity: UserEntity): Promise<Tokens> {
@@ -27,19 +31,61 @@ export class SecurityService {
     const user = await this.repo_user.findOne({ id: entity.id });
 
     const at = await this.jwtService.signAsync(payload, {
-      secret: this.config.get<string>('AT_SECRET'),
-      expiresIn: '15m',
+      secret: this.config.get<string>('app.AT_SECRET'),
+      expiresIn: this.config.get<number>('app.AT_SECONDS_EXP'),
     });
     const rt = await this.jwtService.signAsync(payload, {
-      secret: this.config.get<string>('RT_SECRET'),
-      expiresIn: '7d',
+      secret: this.config.get<string>('app.RT_SECRET'),
+      expiresIn: this.config.get<number>('app.RT_SECONDS_EXP'),
     });
-
-    const rToken = await this.repo_refresh_token.addRefreshToken(user, rt);
+    await this.repo_refresh_token.addRefreshToken(user, rt);
 
     return {
       access_token: at,
       refresh_token: rt,
+      accessTimeExp: this.config.get<number>('AT_TIME_EXP'),
+      refreshTimeExp: this.config.get<number>('RT_TIME_EXP'),
     };
+  }
+
+  async refreshTokens(accessToken: string, refreshToken: string) {
+    const validTokens =
+      this.validateAccessToken(accessToken) &&
+      (await this.validateRefreshToken(refreshToken));
+    if (!validTokens) {
+      throw new NotAcceptableException('Invalid tokens');
+    }
+
+    const accessPayload = this.jwtService.decode(accessToken) as UserSessionDto;
+
+    const user = await this.repo_user.findOne({ id: accessPayload.id });
+    return await this.generateTokens(user);
+  }
+
+  async validateRefreshToken(token: string) {
+    const secret = this.config.get<string>('RT_SECRET');
+    try {
+      const tokenEntity = await this.repo_refresh_token.findOne({ token });
+      console.log(tokenEntity);
+      if (!tokenEntity) {
+        return false;
+      }
+      await this.repo_refresh_token.nativeDelete({ token });
+      const payload = this.jwtService.verify(token, { secret });
+      return new Date().getTime() < payload.exp * 1000;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+  validateAccessToken(token: string) {
+    const secret = this.config.get<string>('AT_SECRET');
+    try {
+      const payload = this.jwtService.verify(token, { secret });
+      return new Date().getTime() < payload.exp * 1000;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
   }
 }
