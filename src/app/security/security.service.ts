@@ -17,6 +17,10 @@ export class SecurityService {
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
   ) {}
+
+  public async getUserById(userId: string) {
+    return await this.repo_user.getById(userId);
+  }
   hashData(data) {
     return bcrypt.hash(data, 10);
   }

@@ -10,7 +10,6 @@ import { UserRoleEntity } from '../user-roles/entities/user-role.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserRepo } from '../user/repos/user.repo';
 import { AtStrategyService } from './at-strategy.service';
-import { RtStrategyService } from './rt-strategy.service';
 import { SecurityService } from './security.service';
 
 @Module({
@@ -20,7 +19,7 @@ import { SecurityService } from './security.service';
       entities: [UserEntity, RefreshTokenEntity, UserRoleEntity],
     }),
   ],
-  providers: [AtStrategyService, RtStrategyService, SecurityService, UserRepo],
+  providers: [AtStrategyService, SecurityService, UserRepo],
   exports: [SecurityService],
 })
 export class SecurityModule {}
