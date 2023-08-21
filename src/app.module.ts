@@ -3,7 +3,6 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { BeerModule } from 'app/beer/beer.module';
 import { SnacksModule } from 'app/snacks/snacks.module';
 
 import { OrderModule } from './app/order/order.module';
@@ -24,7 +23,6 @@ import database_config from './config/database.config';
       useFactory: (config: ConfigService) => config.get('database'),
       inject: [ConfigService],
     }),
-    BeerModule,
     SnacksModule,
     UserModule,
     OrderModule,
