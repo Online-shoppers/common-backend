@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsArray, IsNumber } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { SnacksEntity } from '../entities/snack.entity';
@@ -6,17 +6,17 @@ import { SnackType } from '../enums/snackType.enum';
 
 export class SnacksDTO extends ProductDTO {
   @IsNumber()
-  wieght: number;
+  weight: number;
 
-  @IsEnum(SnackType)
-  type: SnackType;
+  @IsArray({ context: SnackType })
+  type: SnackType[];
 
   static fromEntity(entity?: SnacksEntity) {
     if (!entity) {
       return;
     }
     const it = new SnacksDTO();
-    it.wieght = entity.wieght;
+    it.weight = entity.weight;
     it.type = entity.type;
     return it;
   }
