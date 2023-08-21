@@ -23,7 +23,7 @@ export class SnacksService {
       quantity: snacksData.quantity,
       category: snacksData.category,
       archived: snacksData.archived,
-      wieght: snacksData.wieght,
+      weight: snacksData.weight,
       type: snacksData.type,
     };
 
