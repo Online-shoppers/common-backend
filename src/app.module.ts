@@ -3,6 +3,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { AccessoriesModule } from 'app/accessories/accessories.module';
 import { BeerModule } from 'app/beer/beer.module';
 import { SnacksModule } from 'app/snacks/snacks.module';
 
@@ -26,6 +27,7 @@ import database_config from './config/database.config';
     }),
     SnacksModule,
     BeerModule,
+    AccessoriesModule,
     UserModule,
     OrderModule,
   ],
