@@ -2,11 +2,11 @@ import { Entity, Enum, Property } from '@mikro-orm/core';
 
 import { ProductEntity } from '../../../shared/entities/product.entity';
 import { SnackType } from '../enums/snackType.enum';
-import { SnackRepo } from '../repo/snack.repo';
+import { SnacksRepo } from '../repo/snack.repo';
 
 @Entity({
   discriminatorValue: 'snacks',
-  customRepository: () => SnackRepo,
+  customRepository: () => SnacksRepo,
 })
 export class SnacksEntity extends ProductEntity {
   @Property({ name: 'wieght' })

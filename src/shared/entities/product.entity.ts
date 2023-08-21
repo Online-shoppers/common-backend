@@ -5,8 +5,8 @@ import { UUIDEntity } from './uuid.entity';
 
 @Entity({
   tableName: 'products',
-  discriminatorColumn: 'discr',
-  discriminatorValue: 'Product',
+  discriminatorColumn: 'descr',
+  discriminatorValue: 'product',
 })
 export class ProductEntity extends UUIDEntity {
   @Property({ name: 'name' })
