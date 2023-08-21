@@ -9,7 +9,7 @@ import { SnacksRepo } from '../repo/snack.repo';
   customRepository: () => SnacksRepo,
 })
 export class SnacksEntity extends ProductEntity {
-  @Property({ name: 'wieght' })
+  @Property({ name: 'weight' })
   weight!: number;
 
   @Enum({
