@@ -4,7 +4,6 @@ import { Module } from '@nestjs/common';
 import { RefreshTokenEntity } from '../refresh-token/entity/refresh-token.entity';
 import { SecurityModule } from '../security/security.module';
 import { UserRoleEntity } from '../user-roles/entities/user-role.entity';
-import { UserEntity } from '../user/entities/user.entity';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';

@@ -3,12 +3,15 @@ import { Injectable } from '@nestjs/common';
 
 import { CartProductRepo } from 'app/cart-product/repo/cart-product.repo';
 
+import { ProductRepo } from 'shared/repo/product.repo';
+
 import { CartRepo } from './repo/cart.repo';
 
 @Injectable()
 export class CartService {
   constructor(
     private readonly cartRepo: CartRepo,
+    private readonly productsRepo: ProductRepo,
     private readonly cartProductsRepo: CartProductRepo,
   ) {}
 
@@ -23,7 +26,8 @@ export class CartService {
   async addProductToCart(userId: string, productId: string) {
     const [cart, product] = await Promise.all([
       this.getUsersCart(userId),
-      this.cartProductsRepo.findOne({ id: productId }),
+      // this.cartProductsRepo.findOne({ id: productId }),
+      this.productsRepo.findOne({ id: productId }),
     ]);
 
     const em = this.cartRepo.getEntityManager();

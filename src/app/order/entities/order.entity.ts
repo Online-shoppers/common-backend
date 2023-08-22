@@ -1,4 +1,6 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+
+import { UserEntity } from 'app/user/entities/user.entity';
 
 import { UUIDEntity } from 'shared/entities/uuid.entity';
 import { OrderStatuses } from 'shared/enums/order-statuses.enum';
@@ -24,4 +26,13 @@ export class OrderEntity extends UUIDEntity {
 
   @Property()
   phone!: string;
+
+  @ManyToOne(() => UserEntity)
+  buyer: UserEntity;
+
+  // @OneToMany({
+  //   entity: () => OrderProductEntity,
+  //   mappedBy: product => product.order,
+  // })
+  // products: OrderProductEntity[];
 }
