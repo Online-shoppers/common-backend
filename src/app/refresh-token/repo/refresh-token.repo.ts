@@ -18,19 +18,4 @@ export class RefreshTokenRepo extends EntityRepository<RefreshTokenEntity> {
     await this.getEntityManager().persistAndFlush(newToken);
     return newToken;
   }
-
-  async updateRefreshToken(entity: UserEntity, token: string) {
-    const existingToken = await this.findOne({
-      token: token,
-      user: entity,
-    });
-
-    if (existingToken) {
-      existingToken.updated = new Date(); // Обновляем дату обновления токена, если это необходимо
-      await this.getEntityManager().persistAndFlush(existingToken);
-      return existingToken;
-    }
-
-    throw new Error('Refresh token not found');
-  }
 }

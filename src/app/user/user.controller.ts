@@ -22,8 +22,7 @@ export class UserController {
   @ApiOperation({ summary: 'Get all users list' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'HttpStatus:200:OK',
-    type: [UserDto],
+    type: UserDto,
     isArray: true,
   })
   @Get()
@@ -63,7 +62,6 @@ export class UserController {
   @Post()
   async addUsers(@Body() body: NewUserForm[]) {
     const [form] = body;
-    console.log(form);
     const dto = NewUserForm.from(form);
     const errors = await NewUserForm.validate(dto);
     if (errors) {

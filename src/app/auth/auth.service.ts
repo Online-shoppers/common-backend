@@ -1,13 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 
 import { RefreshTokenRepo } from '../refresh-token/repo/refresh-token.repo';
 import { SecurityService } from '../security/security.service';
 import { Tokens } from '../security/type/token.type';
-import { UserRoleDto } from '../user-roles/dto/user-role.dto';
-import { UserRoles } from '../user-roles/enums/user-roles.enum';
 import { UserRolesRepo } from '../user-roles/repos/user-role.repo';
-import { UserRepo } from '../user/repos/user.repo';
 import { UserService } from '../user/user.service';
+import { UserSignInForm } from './dto/user-sign-in.form';
 import { UserSignUpForm } from './dto/user-sign-up.form';
 
 @Injectable()
@@ -26,6 +24,20 @@ export class AuthService {
     const tokens = await this.securityService.generateTokens(entity);
 
     return tokens;
-    //method generates 2 tokens (refresh, access)
+  }
+
+  async signIn(dto: UserSignInForm): Promise<Tokens> {
+    const user = await this.userService.getUser(dto.email);
+
+    if (!user) throw new ForbiddenException('User is not found');
+
+    const passwordMatches = await this.securityService.comparePassword(
+      dto.password,
+      user.password,
+    );
+    if (!passwordMatches)
+      throw new ForbiddenException('Password is not correct');
+
+    return await this.securityService.generateTokens(user);
   }
 }

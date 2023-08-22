@@ -12,6 +12,10 @@ export class UserService {
     private readonly repo_user: UserRepo,
     private readonly repo_user_roles: UserRolesRepo,
   ) {}
+
+  async getUser(email: string) {
+    return await this.repo_user.findOne({ email: email });
+  }
   async getUsers() {
     return await this.repo_user.getList();
   }
@@ -25,7 +29,6 @@ export class UserService {
 
   async addNewUser(dto: NewUserForm) {
     const e_role = await this.repo_user_roles.getDefaultRole(UserRoles.Client);
-    console.log(e_role);
     const dto_role = UserRoleDto.fromEntity(e_role);
     return await this.repo_user.addUser(dto, dto_role);
   }

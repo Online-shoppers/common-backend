@@ -38,7 +38,7 @@ export class UserRepo extends EntityRepository<UserEntity> {
       roleType: dto_role.type,
     });
 
-    await this.persistAndFlush(newUser);
+    await this.getEntityManager().persistAndFlush(newUser);
     return newUser;
   }
 

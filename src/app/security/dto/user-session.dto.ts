@@ -22,6 +22,8 @@ export class UserSessionDto {
   @IsArray({ context: UserPermissions })
   permissions: UserPermissions[];
 
+  @IsNumber()
+  exp?: number;
   public static from(dto: UserSessionDto): UserSessionDto {
     return {
       id: dto.id,

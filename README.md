@@ -31,3 +31,10 @@ $ yarn run test:e2e
 # test coverage
 $ yarn run test:cov
 ```
+
+## Seeding
+
+```bash
+# seed the database with roles
+$ yarn mikro-orm seeder:run --class UserRolesSeeder
+```
