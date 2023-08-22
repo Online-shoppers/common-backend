@@ -1,24 +1,30 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { BeerEntity } from '../entities/beer.entity';
 import { BeerType } from '../enums/beerType.enum';
 
 export class BeerDTO extends ProductDTO {
+  @ApiProperty()
   @IsNumber()
   abv: number;
 
+  @ApiProperty()
   @IsString()
   country: string;
 
+  @ApiProperty()
   @IsNumber()
   volume: number;
 
+  @ApiProperty()
   @IsNumber()
   ibu: number;
 
-  @IsArray({ context: BeerType })
-  type: BeerType[];
+  @ApiProperty()
+  @IsEnum(BeerType)
+  type: BeerType;
 
   static fromEntity(entity?: BeerEntity) {
     if (!entity) {

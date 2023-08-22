@@ -15,8 +15,7 @@ export class SnacksEntity extends ProductEntity {
   @Enum({
     type: EnumType,
     name: 'type',
-    array: true,
     items: () => SnackType,
   })
-  type!: SnackType[];
+  type!: SnackType;
 }

@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 
 import { ProductCategory } from '../../shared/enums/productCategory.enum';
 import { UUIDDto } from './uuid.dto';
@@ -20,8 +20,8 @@ export class ProductDTO extends UUIDDto {
   @IsNumber()
   quantity: number;
 
-  @IsArray({ context: ProductCategory })
-  category: ProductCategory[];
+  @IsEnum(ProductCategory)
+  category: ProductCategory;
 
   @IsBoolean()
   @Transform(({ value }) => value === 'false')

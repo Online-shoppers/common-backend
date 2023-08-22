@@ -10,11 +10,12 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
 
+@ApiTags('Beer')
 @Controller('beer')
 export class BeerController {
   constructor(private readonly beerService: BeerService) {}

@@ -1,15 +1,18 @@
-import { IsArray, IsNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNumber } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { SnacksEntity } from '../entities/snack.entity';
 import { SnackType } from '../enums/snackType.enum';
 
 export class SnacksDTO extends ProductDTO {
+  @ApiProperty()
   @IsNumber()
   weight: number;
 
-  @IsArray({ context: SnackType })
-  type: SnackType[];
+  @ApiProperty()
+  @IsEnum(SnackType)
+  type: SnackType;
 
   static fromEntity(entity?: SnacksEntity) {
     if (!entity) {

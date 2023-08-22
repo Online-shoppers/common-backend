@@ -24,8 +24,7 @@ export class BeerEntity extends ProductEntity {
   @Enum({
     type: EnumType,
     name: 'type',
-    array: true,
     items: () => BeerType,
   })
-  type!: BeerType[];
+  type!: BeerType;
 }

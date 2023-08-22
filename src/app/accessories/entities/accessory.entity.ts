@@ -15,8 +15,7 @@ export class AccessoryEntity extends ProductEntity {
   @Enum({
     type: EnumType,
     name: 'type',
-    array: true,
     items: () => AccessoryType,
   })
-  type!: AccessoryType[];
+  type!: AccessoryType;
 }

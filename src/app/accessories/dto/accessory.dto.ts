@@ -1,15 +1,18 @@
-import { IsArray, IsNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNumber } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { AccessoryEntity } from '../entities/accessory.entity';
 import { AccessoryType } from '../enums/accessoryType.enum';
 
 export class AccessoryDTO extends ProductDTO {
+  @ApiProperty()
   @IsNumber()
   weight: number;
 
-  @IsArray({ context: AccessoryType })
-  type: AccessoryType[];
+  @ApiProperty()
+  @IsEnum(AccessoryType)
+  type: AccessoryType;
 
   static fromEntity(entity?: AccessoryEntity) {
     if (!entity) {

@@ -9,11 +9,12 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AccessoriesService } from './accessories.service';
 import { AccessoryDTO } from './dto/accessory.dto';
 
+@ApiTags('Accessory')
 @Controller('accessory')
 export class AccessoriesController {
   constructor(private readonly accessoriesService: AccessoriesService) {}
