@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -27,8 +28,10 @@ export class BeerController {
     isArray: true,
   })
   @Get()
-  async getAllBeers(): Promise<BeerDTO[]> {
-    const entities = await this.beerService.getAllBeers();
+  async getAllBeers(
+    @Query('sortOption') sortOption?: string,
+  ): Promise<BeerDTO[]> {
+    const entities = await this.beerService.getAllBeers(sortOption);
     return entities.map(entity => BeerDTO.fromEntity(entity));
   }
 
@@ -39,6 +42,7 @@ export class BeerController {
   }
   @Post()
   async createBeer(@Body() beerData: Partial<BeerDTO>) {
+    console.log(beerData);
     const entity = await this.beerService.createBeer(beerData);
     return BeerDTO.fromEntity(entity);
   }
