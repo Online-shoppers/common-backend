@@ -7,8 +7,14 @@ import { BeerRepo } from './repo/beer.repo';
 @Injectable()
 export class BeerService {
   constructor(private readonly repo_beer: BeerRepo) {}
-  async getAllBeers() {
-    return await this.repo_beer.getList();
+  async getAllBeers(sortOption?: string) {
+    const sortMethods = {
+      'price-asc': this.repo_beer.getAllProductsSortedByPriceAsc,
+      'price-desc': this.repo_beer.getAllProductsSortedByPriceDesc,
+    };
+
+    const sortMethod = sortMethods[sortOption] || this.repo_beer.getList();
+    return await sortMethod.call(this.repo_beer);
   }
   async getBeerInfo(id: string) {
     return await this.repo_beer.getById(id);
@@ -22,6 +28,8 @@ export class BeerService {
       image_url: beerData.image_url,
       quantity: beerData.quantity,
       category: beerData.category,
+      category_description: beerData.category_description,
+      category_image: beerData.category_image,
       archived: beerData.archived,
       abv: beerData.abv,
       country: beerData.country,

@@ -9,14 +9,25 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
   async getList() {
     return await this.findAll();
   }
+
   async getById(id: string) {
     return await this.findOne({ id });
   }
+
+  async getAllProductsSortedByPriceAsc() {
+    return this.em.find(BeerEntity, {}, { orderBy: { price: 'ASC' } });
+  }
+
+  async getAllProductsSortedByPriceDesc() {
+    return this.em.find(BeerEntity, {}, { orderBy: { price: 'DESC' } });
+  }
+
   async createBeer(beerData: Partial<BeerEntity>): Promise<BeerEntity> {
     const beer = this.em.create(BeerEntity, beerData);
     await this.getEntityManager().persistAndFlush(beer);
     return beer;
   }
+
   async updateBeer(
     id: string,
     updateData: Partial<BeerEntity>,
@@ -32,6 +43,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
     await this.getEntityManager().persistAndFlush(beer);
     return beer;
   }
+
   async archiveBeer(beerId: string) {
     const beer = await this.findOne({ id: beerId });
     beer.archived = true;

@@ -23,6 +23,8 @@ export class SnacksDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.category_description = entity.category_description;
+    it.category_image = entity.category_image;
     it.archived = entity.archived;
     it.weight = entity.weight;
     it.type = entity.type;
