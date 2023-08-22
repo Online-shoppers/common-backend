@@ -28,8 +28,6 @@ export class BeerService {
       image_url: beerData.image_url,
       quantity: beerData.quantity,
       category: beerData.category,
-      category_description: beerData.category_description,
-      category_image: beerData.category_image,
       archived: beerData.archived,
       abv: beerData.abv,
       country: beerData.country,
