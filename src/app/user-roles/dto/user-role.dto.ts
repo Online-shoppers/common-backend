@@ -1,13 +1,7 @@
-import {
-  IsArray,
-  IsBoolean,
-  IsEnum,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsBoolean, IsEnum, IsString } from 'class-validator';
 
 import { UUIDDto } from '../../../shared/dtos/uuid.dto';
-import { UserDto } from '../../user/dtos/user.dto';
 import { UserRoleEntity } from '../entities/user-role.entity';
 import { UserPermissions } from '../enums/user-permissions.enum';
 import { UserRoles } from '../enums/user-roles.enum';
@@ -16,17 +10,20 @@ export class UserRoleDto extends UUIDDto {
   @IsEnum(UserRoles)
   type: UserRoles;
 
+  @ApiProperty()
   @IsString()
   name: string;
 
+  @ApiProperty()
   @IsArray({ context: UserPermissions })
   permissions: UserPermissions[];
 
+  @ApiProperty()
   @IsBoolean()
   isDefault: boolean;
 
-  @ValidateNested({ context: UserDto })
-  users?: UserDto[];
+  // @ValidateNested({ context: UserDto })
+  // users?: UserDto[];
 
   public static fromEntity(entity: UserRoleEntity) {
     const it = new UserRoleDto();
@@ -38,7 +35,7 @@ export class UserRoleDto extends UUIDDto {
     it.permissions = entity.permissions;
     it.isDefault = entity.isDefault;
 
-    it.users = UserDto.fromEntities(entity.users);
+    // it.users = UserDto.fromEntities(entity.users);
     return it;
   }
 
