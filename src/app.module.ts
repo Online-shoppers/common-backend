@@ -3,7 +3,9 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { AccessoriesModule } from 'app/accessories/accessories.module';
 import { BeerModule } from 'app/beer/beer.module';
+import { SnacksModule } from 'app/snacks/snacks.module';
 
 import { AuthModule } from './app/auth/auth.module';
 import { CartProductModule } from './app/cart-product/cart-product.module';
@@ -29,16 +31,17 @@ import database_config from './config/database.config';
       useFactory: (config: ConfigService) => config.get('database'),
       inject: [ConfigService],
     }),
+    SnacksModule,
     BeerModule,
+    AccessoriesModule,
     UserModule,
-    OrderModule,
     CartProductModule,
     CartModule,
     SecurityModule,
     UserRolesModule,
     AuthModule,
-    SecurityModule,
     RefreshTokenModule,
+    OrderModule,
   ],
   controllers: [],
   providers: [],

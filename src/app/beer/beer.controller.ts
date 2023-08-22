@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, HttpStatus, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BeerService } from './beer.service';
@@ -9,7 +19,7 @@ import { BeerDTO } from './dto/beer.dto';
 export class BeerController {
   constructor(private readonly beerService: BeerService) {}
 
-  @ApiOperation({ summary: 'Get all users list' })
+  @ApiOperation({ summary: 'Get all beers list' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'HttpStatus:200:OK',
@@ -27,9 +37,27 @@ export class BeerController {
     const entity = await this.beerService.getBeerInfo(id);
     return BeerDTO.fromEntity(entity);
   }
+  @Post()
+  async createBeer(@Body() beerData: Partial<BeerDTO>) {
+    const entity = await this.beerService.createBeer(beerData);
+    return BeerDTO.fromEntity(entity);
+  }
+  @Put(':id')
+  async updateBeer(
+    @Param('id') id: string,
+    @Body() updateData: Partial<BeerDTO>,
+  ) {
+    const updatedBeer = await this.beerService.updateBeer(id, updateData);
+
+    if (!updatedBeer) {
+      throw new NotFoundException(`Beer with id ${id} not found`);
+    }
+
+    return BeerDTO.fromEntity(updatedBeer);
+  }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.beerService.archiveUser(id);
+    return this.beerService.archiveBeer(id);
   }
 }

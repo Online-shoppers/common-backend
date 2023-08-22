@@ -11,8 +11,8 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { difference, includes, isEmpty } from 'lodash';
 
-import { UserSessionDto } from '../../security/dto/user-session.dto';
 import { UserPermissions } from '../../user-roles/enums/user-permissions.enum';
+import { UserSessionDto } from '../dto/user-session.dto';
 
 export const RestrictRequest = (...scopes: UserPermissions[]) =>
   SetMetadata('user_permissions', scopes);
@@ -27,7 +27,7 @@ export const CurrentUser = createParamDecorator(
 
 @Injectable()
 export class JwtPermissionsGuard
-  extends AuthGuard('jwt-strategy')
+  extends AuthGuard('jwt')
   implements CanActivate
 {
   protected readonly logger = new Logger('User Permissions Guard');
@@ -64,7 +64,7 @@ export class JwtPermissionsGuard
     if (includes(user.permissions, UserPermissions.All)) {
       return user;
     }
-
+    console.log(this.permissions, user);
     if (difference(this.permissions, user.permissions).length) {
       this.logger.error('permission');
       throw new UnauthorizedException(
