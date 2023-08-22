@@ -14,6 +14,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
+import { NewBeerForm } from './dto/new-beer.form';
 
 @ApiTags('Beer')
 @Controller('beer')
@@ -41,7 +42,7 @@ export class BeerController {
     return BeerDTO.fromEntity(entity);
   }
   @Post()
-  async createBeer(@Body() beerData: Partial<BeerDTO>) {
+  async createBeer(@Body() beerData: NewBeerForm) {
     console.log(beerData);
     const entity = await this.beerService.createBeer(beerData);
     return BeerDTO.fromEntity(entity);

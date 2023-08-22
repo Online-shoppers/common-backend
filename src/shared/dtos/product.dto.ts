@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 
-import { ProductCategory } from '../../shared/enums/productCategory.enum';
+import { ProductCategory } from '../enums/productCategory.enum';
 import { UUIDDto } from './uuid.dto';
 
 export class ProductDTO extends UUIDDto {

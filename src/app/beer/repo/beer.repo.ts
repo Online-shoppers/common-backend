@@ -1,8 +1,12 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+
 import { BeerDTO } from '../dto/beer.dto';
+import { NewBeerForm } from '../dto/new-beer.form';
 import { BeerEntity } from '../entities/beer.entity';
+import { BeerType } from '../enums/beerType.enum';
 
 @Injectable()
 export class BeerRepo extends EntityRepository<BeerEntity> {
@@ -22,8 +26,23 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
     return this.em.find(BeerEntity, {}, { orderBy: { price: 'DESC' } });
   }
 
-  async createBeer(beerData: Partial<BeerEntity>): Promise<BeerEntity> {
-    const beer = this.em.create(BeerEntity, beerData);
+  async createBeer(beerData: NewBeerForm): Promise<BeerEntity> {
+    // const beer = this.em.create(BeerEntity, beerData);
+    const beer = this.create({
+      name: beerData.name,
+      price: beerData.price,
+      description: beerData.description,
+      image_url: beerData.image_url,
+      quantity: beerData.quantity,
+      abv: beerData.abv,
+      ibu: beerData.ibu,
+      volume: beerData.volume,
+      type: BeerType.TYPE_X,
+      // type: beerData.type,
+      country: beerData.country,
+      category: ProductCategory.CATEGORY_BEER,
+    });
+    console.log(beer);
     await this.getEntityManager().persistAndFlush(beer);
     return beer;
   }

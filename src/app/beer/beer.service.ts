@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { BeerDTO } from './dto/beer.dto';
+import { NewBeerForm } from './dto/new-beer.form';
 import { BeerEntity } from './entities/beer.entity';
 import { BeerRepo } from './repo/beer.repo';
 
@@ -19,24 +20,8 @@ export class BeerService {
   async getBeerInfo(id: string) {
     return await this.repo_beer.getById(id);
   }
-  async createBeer(beerData: Partial<BeerDTO>): Promise<BeerEntity> {
-    const beerEntityData: Partial<BeerEntity> = {
-      id: beerData.id,
-      name: beerData.name,
-      price: beerData.price,
-      description: beerData.description,
-      image_url: beerData.image_url,
-      quantity: beerData.quantity,
-      category: beerData.category,
-      archived: beerData.archived,
-      abv: beerData.abv,
-      country: beerData.country,
-      volume: beerData.volume,
-      ibu: beerData.ibu,
-      type: beerData.type,
-    };
-
-    return this.repo_beer.createBeer(beerEntityData);
+  async createBeer(beerData: NewBeerForm): Promise<BeerEntity> {
+    return this.repo_beer.createBeer(beerData);
   }
   async updateBeer(
     id: string,

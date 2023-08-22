@@ -23,7 +23,6 @@ export class AccessoriesService {
       description: accessoryData.description,
       image_url: accessoryData.image_url,
       quantity: accessoryData.quantity,
-      category: accessoryData.category,
       archived: accessoryData.archived,
       weight: accessoryData.weight,
       type: accessoryData.type,

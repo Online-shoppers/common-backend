@@ -12,10 +12,6 @@ export class SnacksEntity extends ProductEntity {
   @Property({ name: 'weight' })
   weight!: number;
 
-  @Enum({
-    type: EnumType,
-    name: 'type',
-    items: () => SnackType,
-  })
+  @Enum(() => SnackType)
   type!: SnackType;
 }

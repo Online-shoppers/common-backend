@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsArray, IsEnum, IsNumber } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { AccessoryEntity } from '../entities/accessory.entity';
