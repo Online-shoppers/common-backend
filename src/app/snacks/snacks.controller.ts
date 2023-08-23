@@ -10,15 +10,22 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+
 import { isEnum } from 'class-validator';
 
 import { ProductTypes } from 'shared/enums/productTypes.enum';
 
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+
+
 import { SnacksDTO } from './dto/snack.dto';
 import { SnacksService } from './snacks.service';
 
-@ApiTags('Snacks')
+
+@ApiTags('Snack')
+
 @Controller('snacks')
 export class SnacksController {
   constructor(private readonly snacksService: SnacksService) {}
@@ -26,7 +33,6 @@ export class SnacksController {
   @ApiOperation({ summary: 'Get all snacks list' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'HttpStatus:200:OK',
     type: SnacksDTO,
     isArray: true,
   })
@@ -37,10 +43,14 @@ export class SnacksController {
   }
 
   @Get(':snacksId')
+  @ApiResponse({ type: SnacksDTO })
   async getSnacksById(@Param('id') id: string) {
     const entity = await this.snacksService.getSnacksInfo(id);
     return SnacksDTO.fromEntity(entity);
   }
+
+  @ApiBody({ type: SnacksDTO })
+  @ApiResponse({ type: SnacksDTO })
   @Post()
   async createSnacks(@Body() snacksData: Partial<SnacksDTO>) {
     const validTypes = [
@@ -57,6 +67,9 @@ export class SnacksController {
     const entity = await this.snacksService.createSnacks(snacksData);
     return SnacksDTO.fromEntity(entity);
   }
+
+  @ApiBody({ type: SnacksDTO })
+  @ApiResponse({ type: SnacksDTO })
   @Put(':id')
   async updatedSnacks(
     @Param('id') id: string,
@@ -71,6 +84,7 @@ export class SnacksController {
     return SnacksDTO.fromEntity(updatedSnacks);
   }
 
+  @ApiResponse({ type: SnacksDTO })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.snacksService.archiveSnacks(id);

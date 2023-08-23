@@ -11,10 +11,15 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+
 import { isEnum } from 'class-validator';
 
 import { ProductTypes } from 'shared/enums/productTypes.enum';
+
+
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
@@ -27,7 +32,6 @@ export class BeerController {
   @ApiOperation({ summary: 'Get all beers list' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'HttpStatus:200:OK',
     type: BeerDTO,
     isArray: true,
   })
@@ -39,12 +43,16 @@ export class BeerController {
     return entities.map(entity => BeerDTO.fromEntity(entity));
   }
 
+  @ApiResponse({ type: BeerDTO })
   @Get(':beerId')
   async getBeerById(@Param('id') id: string) {
     const entity = await this.beerService.getBeerInfo(id);
     return BeerDTO.fromEntity(entity);
   }
 
+
+  @ApiResponse({ type: BeerDTO })
+  @ApiBody({ type: BeerDTO })
   @Post()
   async createBeer(@Body() beerData: Partial<BeerDTO>) {
     const validTypes = [
@@ -62,6 +70,10 @@ export class BeerController {
     return BeerDTO.fromEntity(entity);
   }
 
+
+  @ApiResponse({ type: BeerDTO })
+  @ApiBody({ type: BeerDTO })
+
   @Put(':id')
   async updateBeer(
     @Param('id') id: string,
@@ -76,6 +88,7 @@ export class BeerController {
     return BeerDTO.fromEntity(updatedBeer);
   }
 
+  @ApiResponse({ type: BeerDTO })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.beerService.archiveBeer(id);

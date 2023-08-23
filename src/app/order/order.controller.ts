@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -22,16 +22,13 @@ export class OrderController {
   @ApiBody({ type: NewOrderForm })
   @Post()
   create(@Body() orderForm: NewOrderForm) {
-    return this.orderService.create(orderForm);
+    return this.orderService.createOrder(orderForm);
   }
 
   @ApiResponse({ type: OrderDTO, isArray: true })
   @Get()
   async findAll() {
-    return this.orderService.findAll().then(data => {
-      console.log(data);
-      return data;
-    });
+    return this.orderService.findAll();
   }
 
   @ApiResponse({ type: OrderDTO })
@@ -41,7 +38,7 @@ export class OrderController {
   }
 
   @ApiResponse({ type: OrderDTO })
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() orderForm: EditOrderForm) {
     return this.orderService.update(id, orderForm);
   }

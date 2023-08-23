@@ -1,9 +1,11 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 
-import { RefreshTokenRepo } from '../refresh-token/repo/refresh-token.repo';
 import { SecurityService } from '../security/security.service';
 import { Tokens } from '../security/type/token.type';
-import { UserRolesRepo } from '../user-roles/repos/user-role.repo';
 import { UserService } from '../user/user.service';
 import { UserSignInForm } from './dto/user-sign-in.form';
 import { UserSignUpForm } from './dto/user-sign-up.form';
@@ -12,11 +14,14 @@ import { UserSignUpForm } from './dto/user-sign-up.form';
 export class AuthService {
   constructor(
     private readonly securityService: SecurityService,
-    private readonly repo_user_roles: UserRolesRepo,
-    private readonly repo_refresh_token: RefreshTokenRepo,
     private readonly userService: UserService,
   ) {}
   async signUp(dto: UserSignUpForm): Promise<Tokens> {
+    const existing = await this.userService.getUserByEmail(dto.email);
+    if (existing) {
+      throw new BadRequestException('User already exists');
+    }
+
     dto.password = await this.securityService.hashData(dto.password);
 
     const entity = await this.userService.addNewUser(dto);
@@ -27,7 +32,7 @@ export class AuthService {
   }
 
   async signIn(dto: UserSignInForm): Promise<Tokens> {
-    const user = await this.userService.getUser(dto.email);
+    const user = await this.userService.getUserByEmail(dto.email);
 
     if (!user) throw new ForbiddenException('User is not found');
 

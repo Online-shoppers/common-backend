@@ -13,9 +13,14 @@ export class UserService {
     private readonly repo_user_roles: UserRolesRepo,
   ) {}
 
-  async getUser(email: string) {
+  async getUserByEmail(email: string) {
     return await this.repo_user.findOne({ email: email });
   }
+
+  async getUserById(userId: string) {
+    return await this.repo_user.findOne({ id: userId });
+  }
+
   async getUsers() {
     return await this.repo_user.getList();
   }
