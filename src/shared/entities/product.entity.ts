@@ -1,4 +1,6 @@
-import { Entity, Enum, EnumType, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
+
+import { ProductTypes } from 'shared/enums/productTypes.enum';
 
 import { ProductCategory } from '../enums/productCategory.enum';
 import { UUIDEntity } from './uuid.entity';
@@ -26,6 +28,9 @@ export class ProductEntity extends UUIDEntity {
 
   @Enum(() => ProductCategory)
   category!: ProductCategory;
+
+  @Enum(() => ProductTypes)
+  type!: ProductTypes;
 
   @Property({ name: 'archived', default: false })
   archived!: boolean;

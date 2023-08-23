@@ -1,7 +1,6 @@
 import { Entity, Enum, EnumType, Property } from '@mikro-orm/core';
 
 import { ProductEntity } from '../../../shared/entities/product.entity';
-import { BeerType } from '../enums/beerType.enum';
 import { BeerRepo } from '../repo/beer.repo';
 
 @Entity({
@@ -20,7 +19,4 @@ export class BeerEntity extends ProductEntity {
 
   @Property({ name: 'ibu' })
   ibu!: number; // International Bitterness Units
-
-  @Enum(() => BeerType)
-  type!: BeerType;
 }

@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { BeerEntity } from '../entities/beer.entity';
-import { BeerType } from '../enums/beerType.enum';
 
 export class BeerDTO extends ProductDTO {
   @ApiProperty()
@@ -22,10 +21,6 @@ export class BeerDTO extends ProductDTO {
   @IsNumber()
   ibu: number;
 
-  @ApiProperty()
-  @IsEnum(BeerType)
-  type: BeerType;
-
   static fromEntity(entity?: BeerEntity) {
     if (!entity) {
       return;
@@ -38,13 +33,13 @@ export class BeerDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.type = entity.type;
     it.archived = entity.archived;
     it.abv = entity.abv;
     it.country = entity.country;
     it.volume = entity.volume;
     it.ibu = entity.ibu;
     it.price = entity.price;
-    it.type = entity.type;
     return it;
   }
 

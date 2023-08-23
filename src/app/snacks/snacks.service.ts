@@ -22,9 +22,9 @@ export class SnacksService {
       image_url: snacksData.image_url,
       quantity: snacksData.quantity,
       category: snacksData.category,
+      type: snacksData.type,
       archived: snacksData.archived,
       weight: snacksData.weight,
-      type: snacksData.type,
     };
 
     return this.repo_snacks.createSnacks(snacksEntityData);

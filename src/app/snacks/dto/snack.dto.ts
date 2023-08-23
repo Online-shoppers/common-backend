@@ -3,16 +3,11 @@ import { IsEnum, IsNumber } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { SnacksEntity } from '../entities/snack.entity';
-import { SnackType } from '../enums/snackType.enum';
 
 export class SnacksDTO extends ProductDTO {
   @ApiProperty()
   @IsNumber()
   weight: number;
-
-  @ApiProperty()
-  @IsEnum(SnackType)
-  type: SnackType;
 
   static fromEntity(entity?: SnacksEntity) {
     if (!entity) {
@@ -26,9 +21,9 @@ export class SnacksDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.type = entity.type;
     it.archived = entity.archived;
     it.weight = entity.weight;
-    it.type = entity.type;
     return it;
   }
 
