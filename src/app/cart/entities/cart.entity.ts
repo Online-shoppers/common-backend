@@ -21,13 +21,12 @@ export class CartEntity extends UUIDEntity {
   @Property({ persist: false })
   async total() {
     await this.products.init();
-    console.log(this.products.getItems()[0].product, 'product');
 
     return this.products
       .getItems()
       .reduce(
         (acc, cartProduct) =>
-          acc + cartProduct.quantity * cartProduct.product.price,
+          acc + cartProduct.quantity * cartProduct.unitPrice(),
         0,
       );
   }

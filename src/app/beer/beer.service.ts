@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+
 import { BeerDTO } from './dto/beer.dto';
 import { BeerEntity } from './entities/beer.entity';
 import { BeerRepo } from './repo/beer.repo';
@@ -27,7 +29,7 @@ export class BeerService {
       description: beerData.description,
       image_url: beerData.image_url,
       quantity: beerData.quantity,
-      category: beerData.category,
+      category: ProductCategory.CATEGORY_BEER,
       archived: beerData.archived,
       abv: beerData.abv,
       country: beerData.country,

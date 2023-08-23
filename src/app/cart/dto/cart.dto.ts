@@ -22,7 +22,9 @@ export class CartDto extends UUIDDto {
     it.created = entity.created.valueOf();
     it.updated = entity.updated.valueOf();
     it.total = await entity.total();
-    it.products = CartProductDto.fromEntities(entity.products);
+
+    await entity.products.init();
+    it.products = await CartProductDto.fromCollection(entity.products);
 
     return it;
   }

@@ -7,21 +7,9 @@ import {
   HttpStatus,
   Param,
   Post,
-  UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import {
-  JwtPermissionsGuard,
-  RestrictRequest,
-} from '../security/guards/jwt-permission.guard';
-import { UserPermissions } from '../user-roles/enums/user-permissions.enum';
 import { NewUserForm } from './dtos/new-user.form';
 import { UserDto } from './dtos/user.dto';
 import { UserService } from './user.service';
@@ -37,9 +25,9 @@ export class UserController {
     type: UserDto,
     isArray: true,
   })
-  @ApiBearerAuth()
-  @UseGuards(JwtPermissionsGuard)
-  @RestrictRequest(UserPermissions.GetUsers)
+  // @ApiBearerAuth()
+  // @UseGuards(JwtPermissionsGuard)
+  // @RestrictRequest(UserPermissions.GetUsers)
   @Get()
   async getUsers() {
     const entities = await this.userService.getUsers();

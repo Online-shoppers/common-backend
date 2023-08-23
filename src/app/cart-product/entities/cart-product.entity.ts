@@ -22,6 +22,11 @@ export class CartProductEntity extends UUIDEntity {
   @Property()
   quantity!: number;
 
+  @Property({ persist: false })
+  unitPrice() {
+    return this.product.price;
+  }
+
   @ManyToOne(() => CartEntity, { onDelete: 'cascade' })
   cart!: CartEntity;
 
