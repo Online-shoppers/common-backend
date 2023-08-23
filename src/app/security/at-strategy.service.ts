@@ -23,7 +23,7 @@ export class AtStrategyService extends Strategy {
         secretOrKey: configService.get('app.AT_SECRET'),
       },
       async (req: Request, payload: UserSessionDto, next: VerifiedCallback) =>
-        await this.verify(req, payload, next),
+        this.verify(req, payload, next),
     );
     passport.use(this);
   }
@@ -36,14 +36,12 @@ export class AtStrategyService extends Strategy {
     done(null, payload);
 
     const user = await this.securityService.getUserById(payload.id);
-    console.log(user, 'user');
-
-    // if (!user) {
-    //   return done(
-    //     new HttpException('User does not exists', HttpStatusCode.Unauthorized),
-    //     false,
-    //   );
-    // }
+    if (!user) {
+      return done(
+        new HttpException('User does not exists', HttpStatusCode.Unauthorized),
+        false,
+      );
+    }
 
     //     if (!user) {
     //   return done({ message: 'user doesnt exist' }, false);

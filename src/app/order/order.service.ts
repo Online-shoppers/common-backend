@@ -25,6 +25,7 @@ export class OrderService {
       address: orderForm.address,
       phone: orderForm.phone,
       buyer: userEntity,
+      orderProducts: [],
     });
     const em = this.orderRepo.getEntityManager();
 

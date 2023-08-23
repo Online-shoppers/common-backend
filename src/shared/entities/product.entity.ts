@@ -1,4 +1,4 @@
-import { Entity, Enum, EnumType, OneToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, OneToOne, Property } from '@mikro-orm/core';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 

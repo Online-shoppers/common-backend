@@ -1,5 +1,6 @@
+import { Collection } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsString } from 'class-validator';
 
 import { UUIDDto } from 'shared/dtos/uuid.dto';
 import { ProductCategory } from 'shared/enums/productCategory.enum';
@@ -23,9 +24,14 @@ export class CartProductDto extends UUIDDto {
   @ApiProperty()
   quantity!: number;
 
+  @IsNumber()
+  @ApiProperty()
+  unitPrice!: number;
+
   @IsString()
   @ApiProperty()
   productId!: string;
+
   static fromEntity(entity?: CartProductEntity) {
     if (!entity) {
       return;
@@ -38,6 +44,7 @@ export class CartProductDto extends UUIDDto {
     it.description = entity.description;
     it.category = entity.category;
     it.quantity = entity.quantity;
+    it.unitPrice = entity.unitPrice();
     it.productId = entity.product.id;
 
     return it;
@@ -45,9 +52,17 @@ export class CartProductDto extends UUIDDto {
 
   static fromEntities(entities?: CartProductEntity[]) {
     if (!Array.isArray(entities)) {
-      return;
+      return [];
     }
 
-    return entities.map(entity => this.fromEntity(entity));
+    return entities.map(entity => CartProductDto.fromEntity(entity));
+  }
+
+  static async fromCollection(collection?: Collection<CartProductEntity>) {
+    await collection.init();
+
+    return collection
+      .getItems(false)
+      .map(entity => CartProductDto.fromEntity(entity));
   }
 }

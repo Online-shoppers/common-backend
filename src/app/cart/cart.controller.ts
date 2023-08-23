@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { CartService } from './cart.service';
@@ -13,21 +22,35 @@ export class CartController {
     return this.cartService.getUsersCart(userId);
   }
 
-  @Get('/products/:id')
-  findCartProducts(@Param('id') cartId: string) {
-    return this.cartService.getCartProducts(cartId);
+  @Get('/:userId/products')
+  findCartProducts(@Param('userId') cartId: string) {
+    return this.cartService.getUserCartProducts(cartId);
   }
 
   @Post(':userId/:productId')
   addProductToCart(
     @Param('userId') userId: string,
     @Query('productId') productId: string,
+    @Query('quantity', ParseIntPipe) quantity: number,
   ) {
-    return this.cartService.addProductToCart(userId, productId);
+    return this.cartService.addProductToCart(userId, productId, quantity);
   }
 
-  @Delete(':id')
-  clearCart(@Param('id') id: string) {
-    return this.cartService.clearCart(id);
+  @Put(':userId/:cartProductId')
+  updateProductInCart(
+    @Param('userId') userId: string,
+    @Query('cartProductId') cartProductId: string,
+    @Query('quantity', ParseIntPipe) quantity: number,
+  ) {
+    return this.cartService.updateProductInCart(
+      userId,
+      cartProductId,
+      quantity,
+    );
+  }
+
+  @Delete(':userId')
+  clearCart(@Param('userId') userId: string) {
+    return this.cartService.clearCart(userId);
   }
 }

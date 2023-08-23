@@ -20,7 +20,6 @@ export const RestrictRequest = (...scopes: UserPermissions[]) =>
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    console.log('req', request.user);
     return request.user as UserSessionDto;
   },
 );
@@ -69,7 +68,6 @@ export class JwtPermissionsGuard
     if (includes(user.permissions, UserPermissions.All)) {
       return user as TUser;
     }
-    console.log(this.permissions, user);
     if (difference(this.permissions, user.permissions).length) {
       this.logger.error('permission');
       throw new UnauthorizedException(
