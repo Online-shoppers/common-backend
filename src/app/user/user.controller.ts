@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import {
   JwtPermissionsGuard,
@@ -20,6 +20,7 @@ import { NewUserForm } from './dtos/new-user.form';
 import { UserDto } from './dtos/user.dto';
 import { UserService } from './user.service';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -27,8 +28,7 @@ export class UserController {
   @ApiOperation({ summary: 'Get all users list' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'HttpStatus:200:OK',
-    type: [UserDto],
+    type: UserDto,
     isArray: true,
   })
   @UseGuards(JwtPermissionsGuard)
@@ -70,7 +70,6 @@ export class UserController {
   @Post()
   async addUsers(@Body() body: NewUserForm[]) {
     const [form] = body;
-    console.log(form);
     const dto = NewUserForm.from(form);
     const errors = await NewUserForm.validate(dto);
     if (errors) {
