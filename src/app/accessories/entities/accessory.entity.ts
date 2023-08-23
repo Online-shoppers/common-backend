@@ -12,6 +12,5 @@ export class AccessoryEntity extends ProductEntity {
   @Property({ name: 'weight' })
   weight!: number;
 
-  @Enum(() => AccessoryType)
   type!: AccessoryType;
 }

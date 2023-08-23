@@ -28,11 +28,15 @@ export class ProductEntity extends UUIDEntity {
   @Property({ name: 'quantity' })
   quantity!: number;
 
-  @Enum(() => ProductCategory)
-  category!: ProductCategory;
-
   @Property()
   type!: string;
+
+  @Enum({
+    type: EnumType,
+    name: 'category',
+    items: () => ProductCategory,
+  })
+  category!: ProductCategory;
 
   @Property({ name: 'archived', default: false })
   archived!: boolean;

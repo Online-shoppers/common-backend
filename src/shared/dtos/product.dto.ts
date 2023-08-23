@@ -26,6 +26,7 @@ export class ProductDTO extends UUIDDto {
   @IsNumber()
   quantity: number;
 
+
   @ApiProperty()
   @IsEnum(ProductCategory)
   category: ProductCategory;
