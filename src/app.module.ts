@@ -10,6 +10,7 @@ import { SnacksModule } from 'app/snacks/snacks.module';
 import { AuthModule } from './app/auth/auth.module';
 import { CartProductModule } from './app/cart-product/cart-product.module';
 import { CartModule } from './app/cart/cart.module';
+import { OrderProductModule } from './app/order-item/order-product.module';
 import { OrderModule } from './app/order/order.module';
 import { RefreshTokenModule } from './app/refresh-token/refresh-token.module';
 import { SecurityModule } from './app/security/security.module';
@@ -42,6 +43,7 @@ import database_config from './config/database.config';
     AuthModule,
     RefreshTokenModule,
     OrderModule,
+    OrderProductModule,
   ],
   controllers: [],
   providers: [],
