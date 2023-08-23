@@ -1,18 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsNumber } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { AccessoryEntity } from '../entities/accessory.entity';
-import { AccessoryType } from '../enums/accessoryType.enum';
 
 export class AccessoryDTO extends ProductDTO {
   @ApiProperty()
   @IsNumber()
   weight: number;
-
-  @ApiProperty()
-  @IsEnum(AccessoryType)
-  type: AccessoryType;
 
   static fromEntity(entity?: AccessoryEntity) {
     if (!entity) {
@@ -26,9 +21,9 @@ export class AccessoryDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.type = entity.type;
     it.archived = entity.archived;
     it.weight = entity.weight;
-    it.type = entity.type;
     return it;
   }
 

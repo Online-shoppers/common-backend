@@ -38,3 +38,23 @@ $ yarn run test:cov
 # seed the database with roles
 $ yarn mikro-orm seeder:run --class UserRolesSeeder
 ```
+
+##Env example
+PORT=3000
+AT_SECRET=at_secret_key
+RT_SECRET=rt_secret_key
+AT_SECONDS_EXP=1800
+RT_SECONDS_EXP=604800
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=postgres
+
+PGADMIN_DEFAULT_EMAIL=admin@gmaul.com
+PGADMIN_DEFAULT_PASSWORD=postgres
+PGADMIN_LISTEN_PORT=8080
+
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=postgres
+DATABASE_DATABASE=postgres_test

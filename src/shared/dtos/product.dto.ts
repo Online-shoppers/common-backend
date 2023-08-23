@@ -3,8 +3,9 @@ import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 
 import { ProductEntity } from 'shared/entities/product.entity';
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+import { ProductTypes } from 'shared/enums/productTypes.enum';
 
-import { ProductCategory } from '../../shared/enums/productCategory.enum';
 import { UUIDDto } from './uuid.dto';
 
 export class ProductDTO extends UUIDDto {
@@ -31,6 +32,10 @@ export class ProductDTO extends UUIDDto {
   @ApiProperty()
   @IsEnum(ProductCategory)
   category: ProductCategory;
+
+  @ApiProperty()
+  @IsEnum(ProductTypes)
+  type: ProductTypes;
 
   @ApiProperty()
   @IsBoolean()

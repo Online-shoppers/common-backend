@@ -1,7 +1,6 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
 
 import { ProductEntity } from '../../../shared/entities/product.entity';
-import { SnackType } from '../enums/snackType.enum';
 import { SnacksRepo } from '../repo/snack.repo';
 
 @Entity({
@@ -11,7 +10,4 @@ import { SnacksRepo } from '../repo/snack.repo';
 export class SnacksEntity extends ProductEntity {
   @Property({ name: 'weight' })
   weight!: number;
-
-  @Enum(() => SnackType)
-  type!: SnackType;
 }

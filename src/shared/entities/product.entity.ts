@@ -2,13 +2,17 @@ import { Entity, Enum, OneToOne, Property } from '@mikro-orm/core';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 
+import { ProductTypes } from 'shared/enums/productTypes.enum';
+
 import { ProductCategory } from '../enums/productCategory.enum';
+import { ProductRepo } from '../repo/product.repo';
 import { UUIDEntity } from './uuid.entity';
 
 @Entity({
   tableName: 'products',
   discriminatorColumn: 'descr',
   discriminatorValue: 'product',
+  customRepository: () => ProductRepo,
 })
 export class ProductEntity extends UUIDEntity {
   @Property({ name: 'name' })
@@ -29,8 +33,8 @@ export class ProductEntity extends UUIDEntity {
   @Enum(() => ProductCategory)
   category!: ProductCategory;
 
-  @Property()
-  type!: string;
+  @Enum(() => ProductTypes)
+  type!: ProductTypes;
 
   @Property({ name: 'archived', default: false })
   archived!: boolean;

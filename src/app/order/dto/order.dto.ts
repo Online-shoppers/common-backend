@@ -30,6 +30,9 @@ export class OrderDTO extends UUIDDto {
   @IsString()
   phone: string;
 
+  @ApiProperty()
+  @IsString()
+  buyerId: string;
   static fromEntity(entity?: OrderEntity) {
     if (!entity) {
       return;
@@ -44,7 +47,7 @@ export class OrderDTO extends UUIDDto {
     it.zipCode = entity.zipCode;
     it.address = entity.address;
     it.phone = entity.phone;
-
+    it.buyerId = entity.buyer.id;
     return it;
   }
 

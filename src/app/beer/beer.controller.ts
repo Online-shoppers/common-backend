@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -11,6 +12,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { isEnum } from 'class-validator';
+
+import { ProductTypes } from 'shared/enums/productTypes.enum';
 
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
@@ -45,7 +49,17 @@ export class BeerController {
   @ApiBody({ type: BeerDTO })
   @Post()
   async createBeer(@Body() beerData: Partial<BeerDTO>) {
-    console.log(beerData);
+    const validTypes = [
+      ProductTypes.LAGER,
+      ProductTypes.ALE,
+      ProductTypes.WHEAT_BEER,
+    ];
+    if (
+      !isEnum(beerData.type, ProductTypes) ||
+      !validTypes.includes(beerData.type)
+    ) {
+      throw new BadRequestException(`Invalid beer type: ${beerData.type}`);
+    }
     const entity = await this.beerService.createBeer(beerData);
     return BeerDTO.fromEntity(entity);
   }

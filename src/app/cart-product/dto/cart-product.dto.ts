@@ -28,6 +28,10 @@ export class CartProductDto extends UUIDDto {
   @ApiProperty()
   unitPrice!: number;
 
+  @IsString()
+  @ApiProperty()
+  productId!: string;
+
   static fromEntity(entity?: CartProductEntity) {
     if (!entity) {
       return;
@@ -41,6 +45,7 @@ export class CartProductDto extends UUIDDto {
     it.category = entity.category;
     it.quantity = entity.quantity;
     it.unitPrice = entity.unitPrice();
+    it.productId = entity.product.id;
 
     return it;
   }

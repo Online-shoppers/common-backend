@@ -22,7 +22,7 @@ export class OrderController {
   @ApiBody({ type: NewOrderForm })
   @Post()
   create(@Body() orderForm: NewOrderForm) {
-    return this.orderService.create(orderForm);
+    return this.orderService.createOrder(orderForm);
   }
 
   @ApiResponse({ type: OrderDTO, isArray: true })
