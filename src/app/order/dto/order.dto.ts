@@ -30,6 +30,9 @@ export class OrderDTO extends UUIDDto {
   @IsString()
   phone: string;
 
+  @ApiProperty()
+  @IsString()
+  buyerId: string;
   static fromEntity(entity?: OrderEntity) {
     if (!entity) {
       return;
@@ -40,11 +43,16 @@ export class OrderDTO extends UUIDDto {
     it.updated = entity.updated.valueOf();
     it.status = entity.status;
     it.country = entity.country;
+    it.city = entity.city;
+    it.zipCode = entity.zipCode;
+    it.address = entity.address;
+    it.phone = entity.phone;
+    it.buyerId = entity.buyer.id;
     return it;
   }
 
   static fromEntities(entities?: OrderEntity[]) {
-    if (!entities?.map) {
+    if (!Array.isArray(entities)) {
       return;
     }
     return entities.map(entity => this.fromEntity(entity));

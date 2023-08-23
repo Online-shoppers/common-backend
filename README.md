@@ -32,6 +32,14 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
+
+## Seeding
+
+```bash
+# seed the database with roles
+$ yarn mikro-orm seeder:run --class UserRolesSeeder
+```
+
 ##Env example
 PORT=3000
 AT_SECRET=at_secret_key
@@ -51,3 +59,4 @@ DATABASE_PORT=5432
 DATABASE_USER=postgres
 DATABASE_PASSWORD=postgres
 DATABASE_DATABASE=postgres_test
+

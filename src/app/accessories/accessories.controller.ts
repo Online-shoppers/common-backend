@@ -9,7 +9,8 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 
 import { AccessoriesService } from './accessories.service';
 import { AccessoryDTO } from './dto/accessory.dto';
@@ -22,7 +23,6 @@ export class AccessoriesController {
   @ApiOperation({ summary: 'Get all accessories list' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'HttpStatus:200:OK',
     type: AccessoryDTO,
     isArray: true,
   })
@@ -32,16 +32,23 @@ export class AccessoriesController {
     return entities.map(entity => AccessoryDTO.fromEntity(entity));
   }
 
+  @ApiResponse({ type: AccessoryDTO })
   @Get(':accessoryId')
   async getAccessoryById(@Param('id') id: string) {
     const entity = await this.accessoriesService.getAccessoryInfo(id);
     return AccessoryDTO.fromEntity(entity);
   }
+
+  @ApiBody({ type: AccessoryDTO })
+  @ApiResponse({ type: AccessoryDTO })
   @Post()
   async createAccessory(@Body() accessoryData: Partial<AccessoryDTO>) {
     const entity = await this.accessoriesService.createAccessory(accessoryData);
     return AccessoryDTO.fromEntity(entity);
   }
+
+  @ApiBody({ type: AccessoryDTO })
+  @ApiResponse({ type: AccessoryDTO })
   @Put(':id')
   async updateAccessory(
     @Param('id') id: string,
@@ -59,6 +66,7 @@ export class AccessoriesController {
     return AccessoryDTO.fromEntity(updatedAccessory);
   }
 
+  @ApiResponse({ type: AccessoryDTO })
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.accessoriesService.archiveAccessory(id);

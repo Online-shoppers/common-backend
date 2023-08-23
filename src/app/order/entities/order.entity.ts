@@ -1,8 +1,12 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+
+import { UserEntity } from 'app/user/entities/user.entity';
 
 import { UUIDEntity } from 'shared/entities/uuid.entity';
 import { OrderStatuses } from 'shared/enums/order-statuses.enum';
 
+import { CartProductEntity } from '../../cart-product/entities/cart-product.entity';
+import { OrderProductEntity } from '../../order-item/entity/order-product.entity';
 import { OrderRepo } from '../repo/order.repo';
 
 @Entity({ tableName: 'order', customRepository: () => OrderRepo })
@@ -24,4 +28,19 @@ export class OrderEntity extends UUIDEntity {
 
   @Property()
   phone!: string;
+
+  @ManyToOne(() => UserEntity)
+  buyer: UserEntity;
+
+  @OneToMany({
+    entity: () => OrderProductEntity,
+    mappedBy: product => product.order,
+  })
+  orderProducts: OrderProductEntity[];
+
+  // @OneToMany({
+  //   entity: () => OrderProductEntity,
+  //   mappedBy: product => product.order,
+  // })
+  // products: OrderProductEntity[];
 }

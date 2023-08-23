@@ -1,16 +1,18 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 import { NewUserRoleForm } from './dto/new-user-role.form';
 import { UserRoleDto } from './dto/user-role.dto';
 import { UserRolesService } from './user-roles.service';
 
+@ApiTags('User roles')
 @Controller('user-roles')
 export class UserRolesController {
   constructor(private readonly userRolesService: UserRolesService) {}
 
+  @ApiBody({ type: UserRoleDto, isArray: true })
   @Post()
   public async addRoles(@Body() body: UserRoleDto[]) {
-    console.log(body);
     const [form] = body;
     if (!form) {
       throw new BadRequestException({});

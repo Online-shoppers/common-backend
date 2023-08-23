@@ -1,19 +1,26 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, validate } from 'class-validator';
 
 import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
 
 export class UserSignUpForm {
+  @ApiProperty()
   @IsEmail(undefined, { message: ErrorCodes.FieldShouldBeEmail })
   email!: string;
 
+  @ApiProperty()
   @IsString({ message: ErrorCodes.FieldShouldBeString })
   password!: string;
 
+  @ApiProperty()
   @IsString({ message: ErrorCodes.FieldShouldBeString })
   passwordConfirm!: string;
 
+  @ApiProperty()
   @IsString({ message: ErrorCodes.FieldShouldBeString })
   firstName!: string;
+
+  @ApiProperty()
   @IsString({ message: ErrorCodes.FieldShouldBeString })
   lastName!: string;
 

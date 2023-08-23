@@ -1,4 +1,4 @@
-import { Entity, Enum, EnumType, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
 
 import { ProductEntity } from '../../../shared/entities/product.entity';
 import { AccessoryType } from '../enums/accessoryType.enum';
@@ -12,10 +12,5 @@ export class AccessoryEntity extends ProductEntity {
   @Property({ name: 'weight' })
   weight!: number;
 
-  @Enum({
-    type: EnumType,
-    name: 'type',
-    items: () => AccessoryType,
-  })
   type!: AccessoryType;
 }

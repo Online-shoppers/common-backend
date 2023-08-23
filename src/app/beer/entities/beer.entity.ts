@@ -21,10 +21,6 @@ export class BeerEntity extends ProductEntity {
   @Property({ name: 'ibu' })
   ibu!: number; // International Bitterness Units
 
-  @Enum({
-    type: EnumType,
-    name: 'type',
-    items: () => BeerType,
-  })
+
   type!: BeerType;
 }

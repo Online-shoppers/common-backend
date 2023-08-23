@@ -29,6 +29,9 @@ export class NewOrderForm {
   @IsString({ message: ErrorCodes.FieldShouldBeString })
   phone: string;
 
+  @ApiProperty()
+  @IsString()
+  buyerId: string;
   static from(form: NewOrderForm) {
     const it = new NewOrderForm();
     it.status = form.status;
@@ -37,6 +40,7 @@ export class NewOrderForm {
     it.zipCode = form.zipCode;
     it.address = form.address;
     it.phone = form.phone;
+    it.buyerId = form.buyerId;
     return it;
   }
 

@@ -1,6 +1,5 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
-import { AST } from 'eslint';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { TokensDto } from '../security/dto/tokens.dto';
@@ -10,8 +9,7 @@ import { AuthService } from './auth.service';
 import { UserSignInForm } from './dto/user-sign-in.form';
 import { UserSignUpForm } from './dto/user-sign-up.form';
 
-import Token = AST.Token;
-
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -19,7 +17,8 @@ export class AuthController {
     private readonly securityService: SecurityService,
   ) {}
 
-  @ApiOperation({ summary: 'Sign up for user' })
+  @ApiBody({ type: UserSignUpForm })
+  @ApiResponse({ type: TokensDto })
   @Post('/sign-up')
   async signUp(@Body() body: UserSignUpForm): Promise<Tokens> {
     const dto = UserSignUpForm.from(body);
@@ -33,6 +32,8 @@ export class AuthController {
     return await this.authService.signUp(dto);
   }
 
+  @ApiBody({ type: UserSignInForm })
+  @ApiResponse({ type: TokensDto })
   @ApiOperation({ summary: 'Sign in for user' })
   @Post('/sign-in')
   async signIn(@Body() body: UserSignInForm): Promise<Tokens> {
@@ -40,6 +41,8 @@ export class AuthController {
     return await this.authService.signIn(dto);
   }
 
+  @ApiBody({ type: TokensDto })
+  @ApiResponse({ type: TokensDto })
   @ApiOperation({ summary: 'Refresh tokens' })
   @Post('/refresh')
   async refreshTokens(@Body() body: TokensDto): Promise<Tokens> {

@@ -1,10 +1,12 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
+import { UserRepo } from 'app/user/repos/user.repo';
+import { UserService } from 'app/user/user.service';
+
 import { RefreshTokenEntity } from '../refresh-token/entity/refresh-token.entity';
 import { SecurityModule } from '../security/security.module';
 import { UserRoleEntity } from '../user-roles/entities/user-role.entity';
-import { UserEntity } from '../user/entities/user.entity';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -18,6 +20,6 @@ import { AuthService } from './auth.service';
     UserModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, UserService, UserRepo],
 })
 export class AuthModule {}
