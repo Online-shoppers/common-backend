@@ -8,7 +8,7 @@ import { UserRoles } from 'app/user-roles/enums/user-roles.enum';
 export class UserRolesSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     const defaultRole = em.create(UserRoleEntity, {
-      name: 'client',
+      name: UserRoles.Client,
       type: UserRoles.Client,
       permissions: [UserPermissions.GetUsers],
       isDefault: true,

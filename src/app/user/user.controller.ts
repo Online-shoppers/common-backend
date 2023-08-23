@@ -9,10 +9,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
-import { AtStrategyService } from 'app/security/at-strategy.service';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import {
   JwtPermissionsGuard,
@@ -34,6 +37,7 @@ export class UserController {
     type: UserDto,
     isArray: true,
   })
+  @ApiBearerAuth()
   @UseGuards(JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.GetUsers)
   @Get()
