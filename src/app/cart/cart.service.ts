@@ -26,8 +26,8 @@ export class CartService {
   async addProductToCart(userId: string, productId: string) {
     const [cart, product] = await Promise.all([
       this.getUsersCart(userId),
-      this.cartProductsRepo.findOne({ id: productId }),
-      // this.productsRepo.findOne({ id: productId }),
+      // this.cartProductsRepo.findOne({ id: productId }),
+      this.productsRepo.findOne({ id: productId }),
     ]);
 
     const em = this.cartRepo.getEntityManager();

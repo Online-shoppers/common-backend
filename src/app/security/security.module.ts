@@ -14,12 +14,13 @@ import { SecurityService } from './security.service';
 
 @Module({
   imports: [
-    JwtModule.register({}),
+    JwtModule,
     MikroOrmModule.forFeature({
       entities: [UserEntity, RefreshTokenEntity, UserRoleEntity],
     }),
+    PassportModule.register({ defaultStrategy: AtStrategyService.name }),
   ],
-  providers: [AtStrategyService, SecurityService, UserRepo],
+  providers: [SecurityService, AtStrategyService, UserRepo],
   exports: [SecurityService],
 })
 export class SecurityModule {}

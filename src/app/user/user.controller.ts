@@ -9,7 +9,10 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { AtStrategyService } from 'app/security/at-strategy.service';
 
 import {
   JwtPermissionsGuard,
@@ -42,7 +45,6 @@ export class UserController {
   @ApiOperation({ summary: 'Get user info' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'HttpStatus:200:OK',
     type: UserDto,
   })
   @Get(':userId')
@@ -53,7 +55,6 @@ export class UserController {
   @ApiOperation({ summary: 'Make user archived' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'HttpStatus:200:OK',
     type: UserDto,
   })
   @Delete(':id')
@@ -64,9 +65,9 @@ export class UserController {
   @ApiOperation({ summary: 'Get user info' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'HttpStatus:200:OK',
     type: UserDto,
   })
+  @ApiBody({ type: UserDto, isArray: true })
   @Post()
   async addUsers(@Body() body: NewUserForm[]) {
     const [form] = body;
