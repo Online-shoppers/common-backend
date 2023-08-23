@@ -1,3 +1,4 @@
+import { Collection } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsString } from 'class-validator';
 
@@ -39,11 +40,9 @@ export class CartProductDto extends UUIDDto {
     return it;
   }
 
-  static fromEntities(entities?: CartProductEntity[]) {
-    if (!Array.isArray(entities)) {
-      return;
-    }
-
-    return entities.map(entity => this.fromEntity(entity));
+  static fromEntities(entities?: Collection<CartProductEntity>) {
+    return entities
+      .getItems(false)
+      .map(entity => CartProductDto.fromEntity(entity));
   }
 }

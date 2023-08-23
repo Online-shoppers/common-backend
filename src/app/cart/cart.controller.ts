@@ -22,12 +22,14 @@ export class CartController {
   addProductToCart(
     @Param('userId') userId: string,
     @Query('productId') productId: string,
+    // @Query('quantity') quantity: number,
   ) {
+    // console.log(quantity, typeof quantity);
     return this.cartService.addProductToCart(userId, productId);
   }
 
-  @Delete(':id')
-  clearCart(@Param('id') id: string) {
-    return this.cartService.clearCart(id);
+  @Delete(':userId')
+  clearCart(@Param('userId') userId: string) {
+    return this.cartService.clearCart(userId);
   }
 }

@@ -1,4 +1,10 @@
-import { Entity, OneToMany, OneToOne, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  OneToMany,
+  OneToOne,
+  Property,
+} from '@mikro-orm/core';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 import { UserEntity } from 'app/user/entities/user.entity';
@@ -13,17 +19,22 @@ export class CartEntity extends UUIDEntity {
   user!: UserEntity;
 
   @Property({ persist: false })
-  get total() {
-    return this.products.reduce(
-      (acc, cartProduct) =>
-        acc + cartProduct.quantity * cartProduct.product.price,
-      0,
-    );
+  async total() {
+    await this.products.init();
+    console.log(this.products.getItems()[0].product, 'product');
+
+    return this.products
+      .getItems()
+      .reduce(
+        (acc, cartProduct) =>
+          acc + cartProduct.quantity * cartProduct.product.price,
+        0,
+      );
   }
 
   @OneToMany({
     entity: () => CartProductEntity,
     mappedBy: product => product.cart,
   })
-  products: CartProductEntity[];
+  products = new Collection<CartProductEntity>(this);
 }
