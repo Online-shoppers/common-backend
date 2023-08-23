@@ -32,7 +32,6 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
-
 ## Seeding
 
 ```bash
@@ -59,4 +58,3 @@ DATABASE_PORT=5432
 DATABASE_USER=postgres
 DATABASE_PASSWORD=postgres
 DATABASE_DATABASE=postgres_test
-

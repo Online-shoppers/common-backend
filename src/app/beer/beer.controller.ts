@@ -11,15 +11,10 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-
-
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { isEnum } from 'class-validator';
 
 import { ProductTypes } from 'shared/enums/productTypes.enum';
-
-
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
 
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
@@ -50,7 +45,6 @@ export class BeerController {
     return BeerDTO.fromEntity(entity);
   }
 
-
   @ApiResponse({ type: BeerDTO })
   @ApiBody({ type: BeerDTO })
   @Post()
@@ -70,10 +64,8 @@ export class BeerController {
     return BeerDTO.fromEntity(entity);
   }
 
-
   @ApiResponse({ type: BeerDTO })
   @ApiBody({ type: BeerDTO })
-
   @Put(':id')
   async updateBeer(
     @Param('id') id: string,
