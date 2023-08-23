@@ -24,9 +24,9 @@ export class AccessoriesService {
       image_url: accessoryData.image_url,
       quantity: accessoryData.quantity,
       category: accessoryData.category,
+      type: accessoryData.type,
       archived: accessoryData.archived,
       weight: accessoryData.weight,
-      type: accessoryData.type,
     };
 
     return this.repo_accessory.createAccessory(accessoryEntityData);

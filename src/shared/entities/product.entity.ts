@@ -1,6 +1,10 @@
+
+import { ProductTypes } from 'shared/enums/productTypes.enum';
+
 import { Entity, Enum, EnumType, OneToOne, Property } from '@mikro-orm/core';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
+
 
 import { ProductCategory } from '../enums/productCategory.enum';
 import { ProductRepo } from '../repo/product.repo';
@@ -28,15 +32,12 @@ export class ProductEntity extends UUIDEntity {
   @Property({ name: 'quantity' })
   quantity!: number;
 
-  @Property()
-  type!: string;
+  @Enum(() => ProductCategory)
 
-  @Enum({
-    type: EnumType,
-    name: 'category',
-    items: () => ProductCategory,
-  })
   category!: ProductCategory;
+
+  @Enum(() => ProductTypes)
+  type!: ProductTypes;
 
   @Property({ name: 'archived', default: false })
   archived!: boolean;

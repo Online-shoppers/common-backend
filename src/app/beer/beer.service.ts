@@ -14,8 +14,12 @@ export class BeerService {
     };
 
     const sortMethod = sortMethods[sortOption] || this.repo_beer.getList();
-    return await sortMethod.call(this.repo_beer);
+
+    return await (typeof sortMethod === 'function'
+      ? sortMethod.call(this.repo_beer)
+      : sortMethod);
   }
+
   async getBeerInfo(id: string) {
     return await this.repo_beer.getById(id);
   }
@@ -28,14 +32,13 @@ export class BeerService {
       image_url: beerData.image_url,
       quantity: beerData.quantity,
       category: beerData.category,
+      type: beerData.type,
       archived: beerData.archived,
       abv: beerData.abv,
       country: beerData.country,
       volume: beerData.volume,
       ibu: beerData.ibu,
-      type: beerData.type,
     };
-
     return this.repo_beer.createBeer(beerEntityData);
   }
   async updateBeer(
