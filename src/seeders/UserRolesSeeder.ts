@@ -10,7 +10,7 @@ export class UserRolesSeeder extends Seeder {
     const defaultRole = em.create(UserRoleEntity, {
       name: 'client',
       type: UserRoles.Client,
-      permissions: [UserPermissions.All],
+      permissions: [UserPermissions.GetUsers],
       isDefault: true,
     });
 

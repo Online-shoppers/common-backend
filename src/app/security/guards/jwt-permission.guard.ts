@@ -47,9 +47,14 @@ export class JwtPermissionsGuard
     return super.canActivate(context);
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  handleRequest(err: Error, user: UserSessionDto): UserSessionDto {
+  // TODO: Fix types and logic (param user is boolean)
+  handleRequest<TUser = UserSessionDto>(
+    err: Error,
+    user: UserSessionDto,
+    // info: any,
+    // context: ExecutionContext,
+    // status?: any,
+  ): TUser {
     if (err || !user) {
       this.logger.error('User is not authorized to perform request');
       throw (
@@ -58,11 +63,11 @@ export class JwtPermissionsGuard
     }
 
     if (isEmpty(this.permissions)) {
-      return user;
+      return user as TUser;
     }
 
     if (includes(user.permissions, UserPermissions.All)) {
-      return user;
+      return user as TUser;
     }
     console.log(this.permissions, user);
     if (difference(this.permissions, user.permissions).length) {
@@ -72,6 +77,6 @@ export class JwtPermissionsGuard
       );
     }
 
-    return user;
+    return user as TUser;
   }
 }

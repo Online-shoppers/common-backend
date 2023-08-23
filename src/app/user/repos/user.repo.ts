@@ -16,10 +16,10 @@ export class UserRepo extends EntityRepository<UserEntity> {
     super(manager, UserEntity);
   }
   async getList() {
-    return await this.findAll();
+    return this.findAll();
   }
   async getById(id: string) {
-    return await this.findOne({ id });
+    return this.findOne({ id });
   }
   async archiveUser(userId: string) {
     const user = await this.findOne({ id: userId });
@@ -36,6 +36,7 @@ export class UserRepo extends EntityRepository<UserEntity> {
       password: dto.password,
       roleId: dto_role.id,
       roleType: dto_role.type,
+      cart: { products: [] },
     });
 
     await this.getEntityManager().persistAndFlush(newUser);
