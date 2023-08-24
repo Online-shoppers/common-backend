@@ -8,6 +8,7 @@ import { UserService } from '../user/user.service';
 import { OrderEntity } from './entities/order.entity';
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
+import { OrderGateway } from './orderGateway';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { OrderService } from './order.service';
     }),
   ],
   controllers: [OrderController],
-  providers: [OrderService, UserService],
+  providers: [OrderService, UserService, OrderGateway],
 })
 export class OrderModule {}

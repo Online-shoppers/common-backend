@@ -2,6 +2,8 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { AccessoriesModule } from 'app/accessories/accessories.module';
 import { BeerModule } from 'app/beer/beer.module';
@@ -19,6 +21,7 @@ import { UserModule } from './app/user/user.module';
 // ========== configs ==========
 import app_config from './config/app.config';
 import database_config from './config/database.config';
+import { NotificationsService } from './shared/notifications/user/userNotification.service';
 
 @Module({
   imports: [
@@ -43,6 +46,8 @@ import database_config from './config/database.config';
     RefreshTokenModule,
     OrderModule,
     OrderProductModule,
+    EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [],

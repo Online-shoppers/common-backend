@@ -1,8 +1,8 @@
 import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
+import { OrderStatuses } from '../../shared/enums/order-statuses.enum';
 import { UserService } from '../user/user.service';
-import { EditOrderForm } from './dto/edit-order.form';
 import { NewOrderForm } from './dto/new-order.form';
 import { OrderDTO } from './dto/order.dto';
 import { OrderRepo } from './repo/order.repo';
@@ -42,18 +42,14 @@ export class OrderService {
     return this.orderRepo.findOne({ id });
   }
 
-  async update(id: string, updateOrderDto: EditOrderForm) {
+  async update(id: string, status: OrderStatuses) {
     const existing = await this.orderRepo.getById(id);
     const em = this.orderRepo.getEntityManager();
+    existing.status = status;
 
-    const edited = wrap(existing).assign(
-      { ...updateOrderDto, created: existing.created },
-      { mergeObjects: true },
-    );
+    await em.persistAndFlush(existing);
 
-    await em.persistAndFlush(edited);
-
-    return edited;
+    return existing;
   }
 
   remove(id: string) {
