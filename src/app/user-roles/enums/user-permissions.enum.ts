@@ -1,9 +1,9 @@
 export enum UserPermissions {
   All = 'permissions.all',
-  RefreshToken = 'permissions.auth.refresh-token',
-  SignOut = 'permissions.auth.sign-out',
 
-  // ============== users ==========
+  // Users
   GetUsers = 'permissions.users.get-users',
-  GetUserInfo = 'permissions.users.get-user-info',
+
+  // Carts
+  GetOtherCarts = 'permissions.carts.get-other-carts',
 }

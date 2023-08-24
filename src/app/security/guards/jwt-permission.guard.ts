@@ -5,7 +5,6 @@ import {
   Logger,
   SetMetadata,
   UnauthorizedException,
-  createParamDecorator,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,14 +14,7 @@ import { UserPermissions } from '../../user-roles/enums/user-permissions.enum';
 import { UserSessionDto } from '../dto/user-session.dto';
 
 export const RestrictRequest = (...scopes: UserPermissions[]) =>
-  SetMetadata('user_permissions', scopes);
-
-export const CurrentUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
-    return request.user as UserSessionDto;
-  },
-);
+  SetMetadata('user_permissions', [UserPermissions.All, ...scopes]);
 
 @Injectable()
 export class JwtPermissionsGuard
@@ -46,7 +38,6 @@ export class JwtPermissionsGuard
     return super.canActivate(context);
   }
 
-  // TODO: Fix types and logic (param user is boolean)
   handleRequest<TUser = UserSessionDto>(
     err: Error,
     user: UserSessionDto,
