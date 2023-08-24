@@ -17,7 +17,6 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,

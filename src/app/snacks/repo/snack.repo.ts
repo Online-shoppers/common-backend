@@ -1,14 +1,28 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
+import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
 import { SnacksDTO } from '../dto/snack.dto';
 import { SnacksEntity } from '../entities/snack.entity';
 
 @Injectable()
 export class SnacksRepo extends EntityRepository<SnacksEntity> {
-  async getSnacksList() {
-    return this.findAll();
+  async getBeerList(page: number, size: number, includeArchived: boolean) {
+    const archived = includeArchived ? { $in: [true, false] } : false;
+
+    const [total, pageItems] = await Promise.all([
+      this.count({ archived }),
+      this.find({ archived }, { offset: size * page - size, limit: size }),
+    ]);
+
+    const response: SnacksPaginationResponse = {
+      info: { total },
+      items: SnacksDTO.fromEntities(pageItems),
+    };
+
+    return response;
   }
+
   async getSnacksById(id: string) {
     try {
       const product = await this.findOneOrFail({ id });

@@ -6,9 +6,12 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseBoolPipe,
+  ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -31,6 +35,7 @@ import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
 import { ProductTypes } from 'shared/enums/productTypes.enum';
 
+import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
 import { SnacksService } from './snacks.service';
 
@@ -39,16 +44,22 @@ import { SnacksService } from './snacks.service';
 export class SnacksController {
   constructor(private readonly snacksService: SnacksService) {}
 
-  @ApiOperation({ summary: 'Get all snacks list' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'size', type: Number, required: false })
+  @ApiQuery({ name: 'includeArchived', type: Boolean, required: false })
   @ApiResponse({
-    status: HttpStatus.OK,
-    type: SnacksDTO,
-    isArray: true,
+    type: SnacksPaginationResponse,
   })
   @Get()
-  async getAllSnacks(): Promise<SnacksDTO[]> {
-    const entities = await this.snacksService.getAllSnacks();
-    return entities.map(entity => SnacksDTO.fromEntity(entity));
+  async getPageAccessories(
+    @Query('page', ParseIntPipe)
+    page = 1,
+    @Query('size', ParseIntPipe)
+    size = 20,
+    @Query('includeArchived', new ParseBoolPipe({ optional: true }))
+    includeArchived = false,
+  ) {
+    return this.snacksService.getPageSnacks(page, size, includeArchived);
   }
 
   @Get(':snacksId')

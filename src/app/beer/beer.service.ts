@@ -9,6 +9,7 @@ import { BeerRepo } from './repo/beer.repo';
 @Injectable()
 export class BeerService {
   constructor(private readonly repo_beer: BeerRepo) {}
+
   async getPageBeer(page: number, size: number, includeArchived: boolean) {
     return this.repo_beer.getBeerList(page, size, includeArchived);
   }
@@ -16,6 +17,7 @@ export class BeerService {
   async getBeerInfo(id: string) {
     return await this.repo_beer.getById(id);
   }
+
   async createBeer(beerData: Partial<BeerDTO>): Promise<BeerEntity> {
     const beerEntityData: Partial<BeerEntity> = {
       id: beerData.id,

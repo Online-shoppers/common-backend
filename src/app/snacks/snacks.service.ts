@@ -7,12 +7,15 @@ import { SnacksRepo } from './repo/snack.repo';
 @Injectable()
 export class SnacksService {
   constructor(private readonly repo_snacks: SnacksRepo) {}
-  async getAllSnacks() {
-    return await this.repo_snacks.getSnacksList();
+
+  async getPageSnacks(page: number, size: number, includeArchived: boolean) {
+    return this.repo_snacks.getBeerList(page, size, includeArchived);
   }
+
   async getSnacksInfo(id: string) {
     return await this.repo_snacks.getSnacksById(id);
   }
+
   async createSnacks(snacksData: Partial<SnacksDTO>): Promise<SnacksEntity> {
     const snacksEntityData: Partial<SnacksEntity> = {
       id: snacksData.id,
