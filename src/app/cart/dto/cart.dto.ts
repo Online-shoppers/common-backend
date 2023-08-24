@@ -17,13 +17,15 @@ export class CartDto extends UUIDDto {
   products: CartProductDto[];
 
   static async fromEntity(entity?: CartEntity) {
+    if (!entity.products.isInitialized) {
+      await entity.products.init();
+    }
+
     const it = new CartDto();
     it.id = entity.id;
     it.created = entity.created.valueOf();
     it.updated = entity.updated.valueOf();
     it.total = await entity.total();
-
-    await entity.products.init();
     it.products = await CartProductDto.fromCollection(entity.products);
 
     return it;

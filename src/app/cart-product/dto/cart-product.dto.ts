@@ -59,10 +59,12 @@ export class CartProductDto extends UUIDDto {
   }
 
   static async fromCollection(collection?: Collection<CartProductEntity>) {
-    await collection.init();
+    if (!collection.isInitialized) {
+      await collection.init();
+    }
 
     return collection
-      .getItems(false)
+      .getItems()
       .map(entity => CartProductDto.fromEntity(entity));
   }
 }

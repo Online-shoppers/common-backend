@@ -31,14 +31,7 @@ export class CartService {
       { populate: true },
     );
 
-    await cart.products.init();
-    const dto = await CartDto.fromEntity(cart);
-
-    return dto;
-  }
-
-  getCartProducts(cartId: string) {
-    return this.cartProductsRepo.find({ cart: { id: cartId } });
+    return CartDto.fromEntity(cart);
   }
 
   async getUserCartProducts(userId: string) {
@@ -52,7 +45,7 @@ export class CartService {
     const em = this.cartRepo.getEntityManager();
 
     const [cart, product] = await Promise.all([
-      this.cartRepo.findOne({ user: { id: userId } }),
+      this.cartRepo.findOne({ user: { id: userId } }, { populate: true }),
       this.productsRepo.findOne({ id: productId }),
     ]);
 
@@ -100,7 +93,7 @@ export class CartService {
     const em = this.cartRepo.getEntityManager();
 
     const [cart, product] = await Promise.all([
-      this.cartRepo.findOne({ user: { id: userId } }),
+      this.cartRepo.findOne({ user: { id: userId } }, { populate: true }),
       this.productsRepo.findOne({
         cartProduct: { id: cartProductId },
       }),
@@ -109,6 +102,9 @@ export class CartService {
     const cartProduct = await this.cartProductsRepo.findOne({
       id: cartProductId,
     });
+
+    await cart.products.init();
+    console.log(await CartProductDto.fromCollection(cart.products));
 
     if (!cartProduct) {
       throw new BadRequestException('No such item in cart');
@@ -146,7 +142,10 @@ export class CartService {
   }
 
   async clearCart(userId: string) {
-    const cart = await this.cartRepo.findOne({ user: { id: userId } });
+    const cart = await this.cartRepo.findOne(
+      { user: { id: userId } },
+      { populate: true },
+    );
     const em = this.cartRepo.getEntityManager();
 
     await cart.products.init();
