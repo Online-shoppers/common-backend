@@ -33,19 +33,14 @@ export class AtStrategyService extends Strategy {
     payload: UserSessionDto,
     done: VerifiedCallback,
   ) {
-    done(null, payload);
-
     const user = await this.securityService.getUserById(payload.id);
+
     if (!user) {
       return done(
         new HttpException('User does not exists', HttpStatusCode.Unauthorized),
         false,
       );
     }
-
-    //     if (!user) {
-    //   return done({ message: 'user doesnt exist' }, false);
-    // }
 
     done(null, payload);
   }

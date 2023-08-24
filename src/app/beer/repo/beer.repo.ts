@@ -1,5 +1,5 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { BeerDTO } from '../dto/beer.dto';
 import { BeerEntity } from '../entities/beer.entity';
@@ -11,7 +11,12 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
   }
 
   async getById(id: string) {
-    return await this.findOne({ id });
+    try {
+      const product = await this.findOneOrFail({ id });
+      return product;
+    } catch (err) {
+      throw new BadRequestException('Product does not exist');
+    }
   }
 
   async getAllProductsSortedByPriceAsc() {
@@ -45,7 +50,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
   }
 
   async archiveBeer(beerId: string) {
-    const beer = await this.findOne({ id: beerId });
+    const beer = await this.getById(beerId);
     beer.archived = true;
     await this.getEntityManager().persistAndFlush(beer);
     return BeerDTO.fromEntity(beer);

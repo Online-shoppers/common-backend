@@ -47,6 +47,6 @@ export class SnacksService {
   }
 
   async archiveSnacks(snacksId: string) {
-    return await this.repo_snacks.archiveSnacks(snacksId);
+    return this.repo_snacks.archiveSnack(snacksId);
   }
 }

@@ -70,7 +70,6 @@ export class SecurityService {
     const secret = this.config.get<string>('RT_SECRET');
     try {
       const tokenEntity = await this.repo_refresh_token.findOne({ token });
-      console.log(tokenEntity);
       if (!tokenEntity) {
         return false;
       }
@@ -78,7 +77,6 @@ export class SecurityService {
       const payload = this.jwtService.verify(token, { secret });
       return new Date().getTime() < payload.exp * 1000;
     } catch (err) {
-      console.log(err);
       return false;
     }
   }
@@ -88,7 +86,6 @@ export class SecurityService {
       const payload = this.jwtService.verify(token, { secret });
       return new Date().getTime() < payload.exp * 1000;
     } catch (err) {
-      console.log(err);
       return false;
     }
   }

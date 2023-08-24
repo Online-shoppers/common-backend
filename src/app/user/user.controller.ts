@@ -1,14 +1,23 @@
 import {
-  BadRequestException,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+import { CurrentUser } from 'app/security/decorators/current-user.decorator';
+import { UserSessionDto } from 'app/security/dto/user-session.dto';
 import { JwtPermissionsGuard } from 'app/security/guards/jwt-permission.guard';
 
 import { UserDto } from './dtos/user.dto';
@@ -25,8 +34,6 @@ export class UserController {
     type: UserDto,
     isArray: true,
   })
-  @UseGuards(JwtPermissionsGuard)
-  // @RestrictRequest(UserPermissions.GetUsers)
   @Get()
   async getUsers() {
     const entities = await this.userService.getUsers();
@@ -43,13 +50,31 @@ export class UserController {
     const entity = await this.userService.getUserInfo(userId);
     return UserDto.fromEntity(entity);
   }
+
   @ApiOperation({ summary: 'Makes user archived' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: UserDto,
   })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: UserSessionDto,
+  ) {
+    if (!user) {
+      throw new ForbiddenException(
+        'You have to be logged in to archive your profile',
+      );
+    }
+
+    if (user.id !== id) {
+      throw new ForbiddenException(
+        'You have no rights to archive others profile',
+      );
+    }
+
     return this.userService.archiveUser(id);
   }
 }

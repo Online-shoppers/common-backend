@@ -10,9 +10,23 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { isEnum } from 'class-validator';
+
+import {
+  JwtPermissionsGuard,
+  RestrictRequest,
+} from 'app/security/guards/jwt-permission.guard';
+import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
 import { ProductTypes } from 'shared/enums/productTypes.enum';
 
@@ -45,6 +59,9 @@ export class BeerController {
     return BeerDTO.fromEntity(entity);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
+  @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: BeerDTO })
   @ApiBody({ type: BeerDTO })
   @Post()
@@ -64,6 +81,9 @@ export class BeerController {
     return BeerDTO.fromEntity(entity);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
+  @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: BeerDTO })
   @ApiBody({ type: BeerDTO })
   @Put(':id')
@@ -80,6 +100,9 @@ export class BeerController {
     return BeerDTO.fromEntity(updatedBeer);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
+  @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: BeerDTO })
   @Delete(':id')
   async remove(@Param('id') id: string) {

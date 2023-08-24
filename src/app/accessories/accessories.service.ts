@@ -7,8 +7,12 @@ import { AccessoryRepo } from './repo/accessories.repo';
 @Injectable()
 export class AccessoriesService {
   constructor(private readonly repo_accessory: AccessoryRepo) {}
-  async getAllAccessories() {
-    return await this.repo_accessory.getAccessoriesList();
+  async getPageAccessories(
+    page: number,
+    size: number,
+    includeArchived: boolean,
+  ) {
+    return this.repo_accessory.getAccessoriesList(page, size, includeArchived);
   }
   async getAccessoryInfo(id: string) {
     return await this.repo_accessory.getAccessoryById(id);

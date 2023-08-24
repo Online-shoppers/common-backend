@@ -10,7 +10,7 @@ import { UUIDEntity } from './uuid.entity';
 
 @Entity({
   tableName: 'products',
-  discriminatorColumn: 'descr',
+  discriminatorColumn: 'category',
   discriminatorValue: 'product',
   customRepository: () => ProductRepo,
 })

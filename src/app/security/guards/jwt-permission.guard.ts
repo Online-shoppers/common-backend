@@ -46,7 +46,6 @@ export class JwtPermissionsGuard
     // status?: any,
   ): TUser {
     if (err || !user) {
-      this.logger.error('User is not authorized to perform request');
       throw (
         err || new UnauthorizedException({ message: 'UnauthorizedException' })
       );
@@ -60,9 +59,8 @@ export class JwtPermissionsGuard
       return user as TUser;
     }
     if (difference(this.permissions, user.permissions).length) {
-      this.logger.error('permission');
       throw new UnauthorizedException(
-        new UnauthorizedException({ message: 'perm' }),
+        'User does not have neccessary permissions',
       );
     }
 
