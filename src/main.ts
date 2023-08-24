@@ -16,7 +16,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document, {
-    swaggerOptions: { defaultModelsExpandDepth: 2 },
+    swaggerOptions: { defaultModelsExpandDepth: 2, persistAuthorization: true },
   });
 
   app.enableCors();

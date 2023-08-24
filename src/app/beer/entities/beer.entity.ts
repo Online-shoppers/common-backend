@@ -1,4 +1,4 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/core';
 
 import { ProductEntity } from '../../../shared/entities/product.entity';
 import { BeerRepo } from '../repo/beer.repo';
