@@ -41,8 +41,8 @@ export class UserSessionDto {
     return {
       id: entity.id,
       email: entity.email,
-      role_id: entity.roleId,
-      role_type: entity.roleType,
+      role_id: entity.role.id,
+      role_type: entity.role.type,
       permissions,
     };
   }

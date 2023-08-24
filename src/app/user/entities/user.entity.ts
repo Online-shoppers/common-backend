@@ -33,20 +33,7 @@ export class UserEntity extends UUIDEntity {
   @Property({ name: 'archived', default: false })
   archived: boolean;
 
-  @Property({ name: 'role_id' })
-  roleId!: string;
-
-  @Enum({ name: 'role_type', array: false, items: () => UserRoles })
-  roleType!: UserRoles;
-
-  @ManyToOne({
-    entity: () => UserRoleEntity,
-    inversedBy: e => e.users,
-    joinColumns: ['role_id', 'role_type'],
-    referencedColumnNames: ['id', 'type'],
-    nullable: true,
-    lazy: true,
-  })
+  @ManyToOne(() => UserRoleEntity)
   role?: UserRoleEntity;
 
   @OneToMany(() => RefreshTokenEntity, e => e.user)
@@ -56,8 +43,5 @@ export class UserEntity extends UUIDEntity {
   cart!: CartEntity;
 
   @OneToMany({ entity: () => OrderEntity, mappedBy: order => order.buyer })
-  orders!: OrderEntity;
-
-  //TODO
-  // Add relations
+  orders!: OrderEntity[];
 }

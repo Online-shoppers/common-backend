@@ -1,16 +1,16 @@
 import {
   BadRequestException,
-  Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
   Param,
-  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { NewUserForm } from './dtos/new-user.form';
+import { JwtPermissionsGuard } from 'app/security/guards/jwt-permission.guard';
+
 import { UserDto } from './dtos/user.dto';
 import { UserService } from './user.service';
 
@@ -25,8 +25,7 @@ export class UserController {
     type: UserDto,
     isArray: true,
   })
-  // @ApiBearerAuth()
-  // @UseGuards(JwtPermissionsGuard)
+  @UseGuards(JwtPermissionsGuard)
   // @RestrictRequest(UserPermissions.GetUsers)
   @Get()
   async getUsers() {
@@ -44,7 +43,7 @@ export class UserController {
     const entity = await this.userService.getUserInfo(userId);
     return UserDto.fromEntity(entity);
   }
-  @ApiOperation({ summary: 'Make user archived' })
+  @ApiOperation({ summary: 'Makes user archived' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: UserDto,
@@ -52,26 +51,5 @@ export class UserController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.userService.archiveUser(id);
-  }
-
-  @ApiOperation({ summary: 'Get user info' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: UserDto,
-  })
-  @ApiBody({ type: UserDto, isArray: true })
-  @Post()
-  async addUsers(@Body() body: NewUserForm[]) {
-    const [form] = body;
-    const dto = NewUserForm.from(form);
-    const errors = await NewUserForm.validate(dto);
-    if (errors) {
-      throw new BadRequestException({
-        message: 'errors.invalid-form.user-new',
-        errors,
-      });
-    }
-    const entity = await this.userService.addNewUser(dto);
-    return UserDto.fromEntity(entity);
   }
 }

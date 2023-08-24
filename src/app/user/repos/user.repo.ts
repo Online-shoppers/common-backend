@@ -10,11 +10,12 @@ import { UserEntity } from '../entities/user.entity';
 @Injectable()
 export class UserRepo extends EntityRepository<UserEntity> {
   constructor(
-    private readonly manager: EntityManager,
+    readonly manager: EntityManager,
     private readonly userRolesRepo: UserRolesRepo,
   ) {
     super(manager, UserEntity);
   }
+
   async getList() {
     return this.findAll();
   }
@@ -22,9 +23,13 @@ export class UserRepo extends EntityRepository<UserEntity> {
     return this.findOne({ id });
   }
   async archiveUser(userId: string) {
+    const em = this.getEntityManager();
+
     const user = await this.findOne({ id: userId });
     user.archived = true;
-    await this.persistAndFlush(user);
+
+    await em.persistAndFlush(user);
+
     return UserDto.fromEntity(user);
   }
 
@@ -34,8 +39,7 @@ export class UserRepo extends EntityRepository<UserEntity> {
       lastName: dto.lastName,
       email: dto.email,
       password: dto.password,
-      roleId: dto_role.id,
-      roleType: dto_role.type,
+      role: { id: dto_role.id, type: dto_role.type },
       cart: { products: [] },
     });
 
@@ -46,7 +50,7 @@ export class UserRepo extends EntityRepository<UserEntity> {
   async getUserRoles(userId: string) {
     const user = await this.findOne({ id: userId });
 
-    const userRoles = await this.userRolesRepo.findOne({ id: user.roleId });
+    const userRoles = await this.userRolesRepo.findOne({ id: user.role.id });
     return userRoles.permissions;
   }
 }
