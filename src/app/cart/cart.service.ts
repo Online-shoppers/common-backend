@@ -1,11 +1,12 @@
 import { wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
@@ -13,6 +14,7 @@ import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity
 import { ProductEntity } from 'shared/entities/product.entity';
 
 import { CartDto } from './dto/cart.dto';
+import { CartEntity } from './entities/cart.entity';
 import { CartRepo } from './repo/cart.repo';
 
 @Injectable()
@@ -23,6 +25,8 @@ export class CartService {
     private readonly productsRepo: EntityRepository<ProductEntity>,
     @InjectRepository(CartProductEntity)
     private readonly cartProductsRepo: EntityRepository<CartProductEntity>,
+
+    private readonly entityManager: EntityManager,
   ) {}
 
   async getUsersCart(userId: string) {
@@ -150,11 +154,29 @@ export class CartService {
 
     await cart.products.init();
 
-    this.cartProductsRepo.nativeDelete({ cart: { id: cart.id } });
+    await this.cartProductsRepo.nativeDelete({ cart: { id: cart.id } });
 
     const cleared = wrap(cart).assign({ products: [] }, { mergeObjects: true });
     await em.persistAndFlush(cleared);
 
     return CartDto.fromEntity(cart);
+  }
+
+  @Cron('* * * * * *')
+  async handleCron() {
+    const currentTime = Date.now();
+
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000); // 15 минут назад
+    const abandonedCarts = await this.entityManager
+      .fork()
+      .createQueryBuilder(CartEntity, 'cart')
+      .leftJoinAndSelect('cart.user', 'user')
+      .where({ updated: { $gte: fifteenMinutesAgo } })
+      .select(['cart.id', 'user.email']) // Выбираем id корзины и email пользователя
+      .getResult();
+
+    const userEmails = abandonedCarts.map(cart => cart.user.email);
+
+    return userEmails;
   }
 }
