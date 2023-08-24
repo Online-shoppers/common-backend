@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
+import { UserEvent } from '../../shared/notifications/user/user.event';
 import { UserRoleDto } from '../user-roles/dto/user-role.dto';
 import { UserRoles } from '../user-roles/enums/user-roles.enum';
 import { UserRolesRepo } from '../user-roles/repos/user-role.repo';
@@ -11,6 +13,7 @@ export class UserService {
   constructor(
     private readonly repo_user: UserRepo,
     private readonly repo_user_roles: UserRolesRepo,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async getUserByEmail(email: string) {
@@ -29,12 +32,15 @@ export class UserService {
   }
 
   async archiveUser(userId: string) {
-    return await this.repo_user.archiveUser(userId);
+    const user = await this.repo_user.archiveUser(userId);
+    this.eventEmitter.emit('delete.user', new UserEvent(user.email));
   }
 
   async addNewUser(dto: NewUserForm) {
     const e_role = await this.repo_user_roles.getDefaultRole(UserRoles.Client);
     const dto_role = UserRoleDto.fromEntity(e_role);
-    return await this.repo_user.addUser(dto, dto_role);
+    const user = await this.repo_user.addUser(dto, dto_role);
+    this.eventEmitter.emit('new.user', new UserEvent(user.email));
+    return user;
   }
 }
