@@ -88,6 +88,26 @@
           "enumItems": ["beer", "snacks", "accessories"],
           "mappedType": "enum"
         },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "enumItems": [
+            "Ale",
+            "Lager",
+            "Wheat Beer",
+            "Pretzels",
+            "Nachos",
+            "Spicy Wings",
+            "Beer Glasses",
+            "Bottle Opener",
+            "Beer Coasters"
+          ],
+          "mappedType": "enum"
+        },
         "archived": {
           "name": "archived",
           "type": "boolean",
@@ -143,16 +163,6 @@
           "primary": false,
           "nullable": true,
           "mappedType": "integer"
-        },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "enumItems": ["xrusteam", "chips", "fish"],
-          "mappedType": "enum"
         },
         "weight": {
           "name": "weight",
@@ -869,6 +879,7 @@
           "localTableName": "public.cart-product",
           "referencedColumnNames": ["id"],
           "referencedTableName": "public.cart",
+          "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "cart-product_product_id_foreign": {
