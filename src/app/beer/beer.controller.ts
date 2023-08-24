@@ -7,6 +7,8 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseBoolPipe,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -17,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -32,28 +35,33 @@ import { ProductTypes } from 'shared/enums/productTypes.enum';
 
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
+import { BeerPaginationResponse } from './dto/pagination-response.dto';
 
 @ApiTags('Beer')
 @Controller('beer')
 export class BeerController {
   constructor(private readonly beerService: BeerService) {}
 
-  @ApiOperation({ summary: 'Get all beers list' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'size', type: Number, required: false })
+  @ApiQuery({ name: 'includeArchived', type: Boolean, required: false })
   @ApiResponse({
-    status: HttpStatus.OK,
-    type: BeerDTO,
-    isArray: true,
+    type: BeerPaginationResponse,
   })
   @Get()
-  async getAllBeers(
-    @Query('sortOption') sortOption?: string,
-  ): Promise<BeerDTO[]> {
-    const entities = await this.beerService.getAllBeers(sortOption);
-    return entities.map(entity => BeerDTO.fromEntity(entity));
+  async getPageAccessories(
+    @Query('page', ParseIntPipe)
+    page = 1,
+    @Query('size', ParseIntPipe)
+    size = 20,
+    @Query('includeArchived', new ParseBoolPipe({ optional: true }))
+    includeArchived = false,
+  ) {
+    return this.beerService.getPageBeer(page, size, includeArchived);
   }
 
   @ApiResponse({ type: BeerDTO })
-  @Get(':beerId')
+  @Get(':id')
   async getBeerById(@Param('id') id: string) {
     const entity = await this.beerService.getBeerInfo(id);
     return BeerDTO.fromEntity(entity);

@@ -9,17 +9,8 @@ import { BeerRepo } from './repo/beer.repo';
 @Injectable()
 export class BeerService {
   constructor(private readonly repo_beer: BeerRepo) {}
-  async getAllBeers(sortOption?: string) {
-    const sortMethods = {
-      'price-asc': this.repo_beer.getAllProductsSortedByPriceAsc,
-      'price-desc': this.repo_beer.getAllProductsSortedByPriceDesc,
-    };
-
-    const sortMethod = sortMethods[sortOption] || this.repo_beer.getList();
-
-    return await (typeof sortMethod === 'function'
-      ? sortMethod.call(this.repo_beer)
-      : sortMethod);
+  async getPageBeer(page: number, size: number, includeArchived: boolean) {
+    return this.repo_beer.getBeerList(page, size, includeArchived);
   }
 
   async getBeerInfo(id: string) {

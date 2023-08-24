@@ -41,7 +41,6 @@ import { AccessoryPaginationResponse } from './dto/pagination-response.dto';
 export class AccessoriesController {
   constructor(private readonly accessoriesService: AccessoriesService) {}
 
-  @ApiOperation({ summary: 'Get all accessories list' })
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'size', type: Number, required: false })
   @ApiQuery({ name: 'includeArchived', type: Boolean, required: false })
@@ -49,7 +48,7 @@ export class AccessoriesController {
     type: AccessoryPaginationResponse,
   })
   @Get()
-  async getAllAccessories(
+  async getPageAccessories(
     @Query('page', ParseIntPipe)
     page = 1,
     @Query('size', ParseIntPipe)
