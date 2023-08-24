@@ -1,17 +1,35 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { BeerDTO } from '../dto/beer.dto';
+import { BeerPaginationResponse } from '../dto/pagination-response.dto';
 import { BeerEntity } from '../entities/beer.entity';
 
 @Injectable()
 export class BeerRepo extends EntityRepository<BeerEntity> {
-  async getList() {
-    return await this.findAll();
+  async getBeerList(page: number, size: number, includeArchived: boolean) {
+    const archived = includeArchived ? { $in: [true, false] } : false;
+
+    const [total, pageItems] = await Promise.all([
+      this.count({ archived }),
+      this.find({ archived }, { offset: size * page - size, limit: size }),
+    ]);
+
+    const response: BeerPaginationResponse = {
+      info: { total },
+      items: BeerDTO.fromEntities(pageItems),
+    };
+
+    return response;
   }
 
   async getById(id: string) {
-    return await this.findOne({ id });
+    try {
+      const product = await this.findOneOrFail({ id });
+      return product;
+    } catch (err) {
+      throw new BadRequestException('Product does not exist');
+    }
   }
 
   async getAllProductsSortedByPriceAsc() {
@@ -45,7 +63,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
   }
 
   async archiveBeer(beerId: string) {
-    const beer = await this.findOne({ id: beerId });
+    const beer = await this.getById(beerId);
     beer.archived = true;
     await this.getEntityManager().persistAndFlush(beer);
     return BeerDTO.fromEntity(beer);

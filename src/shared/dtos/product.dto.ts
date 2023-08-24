@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 
 import { ProductEntity } from 'shared/entities/product.entity';
@@ -39,7 +38,6 @@ export class ProductDTO extends UUIDDto {
 
   @ApiProperty()
   @IsBoolean()
-  @Transform(({ value }) => value === 'false')
   archived: boolean;
 
   public static fromEntity(entity: ProductEntity) {

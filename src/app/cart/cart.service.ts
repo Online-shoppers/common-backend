@@ -108,7 +108,6 @@ export class CartService {
     });
 
     await cart.products.init();
-    console.log(await CartProductDto.fromCollection(cart.products));
 
     if (!cartProduct) {
       throw new BadRequestException('No such item in cart');

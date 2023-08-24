@@ -5,16 +5,37 @@ import {
   Delete,
   Get,
   HttpStatus,
-  NotFoundException,
   Param,
+  ParseBoolPipe,
+  ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { isEnum } from 'class-validator';
+
+import { CurrentUser } from 'app/security/decorators/current-user.decorator';
+import { UserSessionDto } from 'app/security/dto/user-session.dto';
+import {
+  JwtPermissionsGuard,
+  RestrictRequest,
+} from 'app/security/guards/jwt-permission.guard';
+import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
 import { ProductTypes } from 'shared/enums/productTypes.enum';
 
+import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
 import { SnacksService } from './snacks.service';
 
@@ -23,25 +44,34 @@ import { SnacksService } from './snacks.service';
 export class SnacksController {
   constructor(private readonly snacksService: SnacksService) {}
 
-  @ApiOperation({ summary: 'Get all snacks list' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'size', type: Number, required: false })
+  @ApiQuery({ name: 'includeArchived', type: Boolean, required: false })
   @ApiResponse({
-    status: HttpStatus.OK,
-    type: SnacksDTO,
-    isArray: true,
+    type: SnacksPaginationResponse,
   })
   @Get()
-  async getAllSnacks(): Promise<SnacksDTO[]> {
-    const entities = await this.snacksService.getAllSnacks();
-    return entities.map(entity => SnacksDTO.fromEntity(entity));
+  async getPageAccessories(
+    @Query('page', ParseIntPipe)
+    page = 1,
+    @Query('size', ParseIntPipe)
+    size = 20,
+    @Query('includeArchived', new ParseBoolPipe({ optional: true }))
+    includeArchived = false,
+  ) {
+    return this.snacksService.getPageSnacks(page, size, includeArchived);
   }
 
   @Get(':snacksId')
   @ApiResponse({ type: SnacksDTO })
-  async getSnacksById(@Param('id') id: string) {
-    const entity = await this.snacksService.getSnacksInfo(id);
+  async getSnacksById(@Param('snacksId', ParseUUIDPipe) snackId: string) {
+    const entity = await this.snacksService.getSnacksInfo(snackId);
     return SnacksDTO.fromEntity(entity);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
+  @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiBody({ type: SnacksDTO })
   @ApiResponse({ type: SnacksDTO })
   @Post()
@@ -61,22 +91,27 @@ export class SnacksController {
     return SnacksDTO.fromEntity(entity);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
+  @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiBody({ type: SnacksDTO })
   @ApiResponse({ type: SnacksDTO })
-  @Put(':id')
+  @Put(':snackId')
   async updatedSnacks(
-    @Param('id') id: string,
+    @Param('snackId') snackId: string,
     @Body() updateData: Partial<SnacksDTO>,
   ) {
-    const updatedSnacks = await this.snacksService.updateSnacks(id, updateData);
-
-    if (!updatedSnacks) {
-      throw new NotFoundException(`Snacks with id ${id} not found`);
-    }
+    const updatedSnacks = await this.snacksService.updateSnacks(
+      snackId,
+      updateData,
+    );
 
     return SnacksDTO.fromEntity(updatedSnacks);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
+  @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: SnacksDTO })
   @Delete(':id')
   async remove(@Param('id') id: string) {

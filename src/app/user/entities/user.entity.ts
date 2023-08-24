@@ -1,6 +1,5 @@
 import {
   Entity,
-  Enum,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -13,7 +12,6 @@ import { OrderEntity } from 'app/order/entities/order.entity';
 import { UUIDEntity } from '../../../shared/entities/uuid.entity';
 import { RefreshTokenEntity } from '../../refresh-token/entity/refresh-token.entity';
 import { UserRoleEntity } from '../../user-roles/entities/user-role.entity';
-import { UserRoles } from '../../user-roles/enums/user-roles.enum';
 import { UserRepo } from '../repos/user.repo';
 
 @Entity({ tableName: 'user', customRepository: () => UserRepo })

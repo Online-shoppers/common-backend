@@ -1,10 +1,12 @@
 import { Entity, Property } from '@mikro-orm/core';
 
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+
 import { ProductEntity } from '../../../shared/entities/product.entity';
 import { BeerRepo } from '../repo/beer.repo';
 
 @Entity({
-  discriminatorValue: 'beer',
+  discriminatorValue: ProductCategory.CATEGORY_BEER,
   customRepository: () => BeerRepo,
 })
 export class BeerEntity extends ProductEntity {
