@@ -1,12 +1,13 @@
 import { wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotAcceptableException,
 } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
@@ -19,14 +20,14 @@ import { CartRepo } from './repo/cart.repo';
 
 @Injectable()
 export class CartService {
+  protected readonly logger = new Logger('Cart Service');
+
   constructor(
     private readonly cartRepo: CartRepo,
     @InjectRepository(ProductEntity)
     private readonly productsRepo: EntityRepository<ProductEntity>,
     @InjectRepository(CartProductEntity)
-    private readonly cartProductsRepo: EntityRepository<CartProductEntity>,
-
-    private readonly entityManager: EntityManager,
+    private readonly cartProductsRepo: EntityRepository<CartProductEntity>, // private readonly entityManager: EntityManager,
   ) {}
 
   async getUsersCart(userId: string) {
@@ -161,21 +162,22 @@ export class CartService {
     return CartDto.fromEntity(cart);
   }
 
-  @Cron('* * * * * *')
-  async handleCron() {
-    const currentTime = Date.now();
+  @Cron(CronExpression.EVERY_MINUTE)
+  async notifyAbandonedCarts() {
+    const now = Date.now();
 
-    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000); // 15 минут назад
-    const abandonedCarts = await this.entityManager
-      .fork()
-      .createQueryBuilder(CartEntity, 'cart')
-      .leftJoinAndSelect('cart.user', 'user')
-      .where({ updated: { $gte: fifteenMinutesAgo } })
-      .select(['cart.id', 'user.email']) // Выбираем id корзины и email пользователя
-      .getResult();
+    const fifteenMinutesAgo = new Date(now - 15 * 60 * 1000);
 
-    const userEmails = abandonedCarts.map(cart => cart.user.email);
+    const em = this.cartRepo.getEntityManager().fork();
 
-    return userEmails;
+    const abandonedCarts = await em.find(
+      CartEntity,
+      { updated: { $lte: fifteenMinutesAgo } },
+      { populate: ['user.email'] },
+    );
+
+    const emails = abandonedCarts.map(cart => cart.user.email);
+
+    this.logger.log(emails.join(', ').concat(' have abandoned cart'));
   }
 }
