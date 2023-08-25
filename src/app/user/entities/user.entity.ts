@@ -1,4 +1,5 @@
 import {
+  Collection,
   Entity,
   ManyToOne,
   OneToMany,
@@ -8,6 +9,7 @@ import {
 
 import { CartEntity } from 'app/cart/entities/cart.entity';
 import { OrderEntity } from 'app/order/entities/order.entity';
+import { ReviewEntity } from 'app/reviews/entities/review.entity';
 
 import { UUIDEntity } from '../../../shared/entities/uuid.entity';
 import { RefreshTokenEntity } from '../../refresh-token/entity/refresh-token.entity';
@@ -41,5 +43,8 @@ export class UserEntity extends UUIDEntity {
   cart!: CartEntity;
 
   @OneToMany({ entity: () => OrderEntity, mappedBy: order => order.buyer })
-  orders!: OrderEntity[];
+  orders = new Collection<OrderEntity>(this);
+
+  @OneToMany(() => ReviewEntity, review => review.user)
+  reviews = new Collection<ReviewEntity>(this);
 }

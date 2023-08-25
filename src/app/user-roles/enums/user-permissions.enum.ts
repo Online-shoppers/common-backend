@@ -3,6 +3,7 @@ export enum UserPermissions {
 
   // Products
   CanManageProducts = 'permissions.products.manage',
+  CanLeaveReviews = 'permissions.products.leave-reviews',
 
   // Users
   // GetUsers = 'permissions.users.get-users',
