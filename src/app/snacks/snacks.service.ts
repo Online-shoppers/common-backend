@@ -15,7 +15,7 @@ export class SnacksService {
   }
 
   async getSnackInfo(id: string) {
-    return await this.repo_snacks.getSnackById(id);
+    return this.repo_snacks.getSnackById(id);
   }
 
   async createSnack(createData: CreateSnackForm) {

@@ -1,10 +1,8 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   ParseBoolPipe,
   ParseIntPipe,
@@ -21,7 +19,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { isEnum } from 'class-validator';
 
 import {
   JwtPermissionsGuard,
@@ -29,11 +26,11 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { ProductTypes } from 'shared/enums/productTypes.enum';
-
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
+import { CreateBeerForm } from './dto/create-beer.form';
 import { BeerPaginationResponse } from './dto/pagination-response.dto';
+import { UpdateBeerForm } from './dto/update-beer.form';
 
 @ApiTags('Beer')
 @Controller('beer')
@@ -68,42 +65,26 @@ export class BeerController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
+  @ApiBody({ type: CreateBeerForm })
   @ApiResponse({ type: BeerDTO })
-  @ApiBody({ type: BeerDTO })
   @Post()
-  async createBeer(@Body() beerData: Partial<BeerDTO>) {
-    const validTypes = [
-      ProductTypes.LAGER,
-      ProductTypes.ALE,
-      ProductTypes.WHEAT_BEER,
-    ];
-    if (
-      !isEnum(beerData.type, ProductTypes) ||
-      !validTypes.includes(beerData.type)
-    ) {
-      throw new BadRequestException(`Invalid beer type: ${beerData.type}`);
-    }
-    const entity = await this.beerService.createBeer(beerData);
-    return BeerDTO.fromEntity(entity);
+  async createBeer(@Body() beerData: CreateBeerForm) {
+    const dto = CreateBeerForm.from(beerData);
+    return this.beerService.createBeer(dto);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
+  @ApiBody({ type: UpdateBeerForm })
   @ApiResponse({ type: BeerDTO })
-  @ApiBody({ type: BeerDTO })
   @Put(':id')
   async updateBeer(
     @Param('id') id: string,
-    @Body() updateData: Partial<BeerDTO>,
+    @Body() updateData: UpdateBeerForm,
   ) {
-    const updatedBeer = await this.beerService.updateBeer(id, updateData);
-
-    if (!updatedBeer) {
-      throw new NotFoundException(`Beer with id ${id} not found`);
-    }
-
-    return BeerDTO.fromEntity(updatedBeer);
+    const dto = UpdateBeerForm.from(updateData);
+    return this.beerService.updateBeer(id, dto);
   }
 
   @ApiBearerAuth()

@@ -16,7 +16,7 @@ export class AccessoriesService {
   }
 
   async getAccessoryInfo(id: string) {
-    return await this.repo_accessory.getAccessoryById(id);
+    return this.repo_accessory.getAccessoryById(id);
   }
 
   async createAccessory(
@@ -55,6 +55,6 @@ export class AccessoriesService {
   }
 
   async archiveAccessory(accessoryId: string) {
-    return await this.repo_accessory.archiveAccessory(accessoryId);
+    return this.repo_accessory.archiveAccessory(accessoryId);
   }
 }

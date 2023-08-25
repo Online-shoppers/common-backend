@@ -70,7 +70,8 @@ export class SnacksController {
   @ApiResponse({ type: SnacksDTO })
   @Post()
   async createSnacks(@Body() snacksData: CreateSnackForm) {
-    return this.snacksService.createSnack(snacksData);
+    const dto = CreateSnackForm.from(snacksData);
+    return this.snacksService.createSnack(dto);
   }
 
   @ApiBearerAuth()
@@ -84,7 +85,6 @@ export class SnacksController {
     @Body() updateData: UpdateSnackForm,
   ) {
     const dto = UpdateSnackForm.from(updateData);
-
     return this.snacksService.updateSnack(id, dto);
   }
 

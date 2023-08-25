@@ -1,6 +1,8 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+
 import { CreateSnackForm } from '../dto/create-snack.form';
 import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
 import { SnacksDTO } from '../dto/snack.dto';
@@ -34,7 +36,10 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
   }
 
   async createSnack(snackData: CreateSnackForm) {
-    const snack = this.em.create(SnacksEntity, snackData);
+    const snack = this.em.create(SnacksEntity, {
+      ...snackData,
+      category: ProductCategory.SNACKS,
+    });
     await this.getEntityManager().persistAndFlush(snack);
 
     return snack;

@@ -6,12 +6,12 @@ import { OrderEntity } from '../entities/order.entity';
 @Injectable()
 export class OrderRepo extends EntityRepository<OrderEntity> {
   async getList() {
-    return await this.findAll().then(data => {
+    return this.findAll().then(data => {
       return data;
     });
   }
 
   async getById(id: string) {
-    return await this.findOne({ id });
+    return this.findOne({ id });
   }
 }

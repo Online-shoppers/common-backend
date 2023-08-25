@@ -1,9 +1,9 @@
+import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { ProductCategory } from 'shared/enums/productCategory.enum';
-
 import { BeerDTO } from './dto/beer.dto';
-import { BeerEntity } from './entities/beer.entity';
+import { CreateBeerForm } from './dto/create-beer.form';
+import { UpdateBeerForm } from './dto/update-beer.form';
 import { BeerRepo } from './repo/beer.repo';
 
 @Injectable()
@@ -15,45 +15,24 @@ export class BeerService {
   }
 
   async getBeerInfo(id: string) {
-    return await this.repo_beer.getById(id);
+    return this.repo_beer.getBeerById(id);
   }
 
-  async createBeer(beerData: Partial<BeerDTO>): Promise<BeerEntity> {
-    const beerEntityData: Partial<BeerEntity> = {
-      id: beerData.id,
-      name: beerData.name,
-      price: beerData.price,
-      description: beerData.description,
-      image_url: beerData.image_url,
-      quantity: beerData.quantity,
-      category: ProductCategory.CATEGORY_BEER,
-      type: beerData.type,
-      archived: beerData.archived,
-      abv: beerData.abv,
-      country: beerData.country,
-      volume: beerData.volume,
-      ibu: beerData.ibu,
-    };
-    return this.repo_beer.createBeer(beerEntityData);
+  async createBeer(beerData: CreateBeerForm) {
+    const created = await this.repo_beer.createBeer(beerData);
+    return BeerDTO.fromEntity(created);
   }
-  async updateBeer(
-    id: string,
-    updateData: Partial<BeerDTO>,
-  ): Promise<BeerEntity | null> {
-    const existingBeer = await this.repo_beer.getById(id);
 
-    if (!existingBeer) {
-      return null;
-    }
+  async updateBeer(id: string, updateData: UpdateBeerForm) {
+    const existing = await this.repo_beer.getBeerById(id);
 
-    const { created, updated, ...updateFields } = updateData;
+    const data = wrap(existing).assign(updateData, { merge: true });
+    const updated = await this.repo_beer.updateBeer(data);
 
-    Object.assign(existingBeer, updateFields);
-
-    return this.repo_beer.updateBeer(id, existingBeer);
+    return BeerDTO.fromEntity(updated);
   }
 
   async archiveBeer(beerId: string) {
-    return await this.repo_beer.archiveBeer(beerId);
+    return this.repo_beer.archiveBeer(beerId);
   }
 }

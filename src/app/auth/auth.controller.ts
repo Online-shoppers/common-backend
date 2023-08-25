@@ -29,7 +29,7 @@ export class AuthController {
         errors,
       });
     }
-    return await this.authService.signUp(dto);
+    return this.authService.signUp(dto);
   }
 
   @ApiBody({ type: UserSignInForm })
@@ -38,7 +38,7 @@ export class AuthController {
   @Post('/sign-in')
   async signIn(@Body() body: UserSignInForm): Promise<Tokens> {
     const dto = UserSignInForm.from(body);
-    return await this.authService.signIn(dto);
+    return this.authService.signIn(dto);
   }
 
   @ApiBody({ type: TokensDto })
@@ -46,7 +46,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh tokens' })
   @Post('/refresh')
   async refreshTokens(@Body() body: TokensDto): Promise<Tokens> {
-    return await this.securityService.refreshTokens(
+    return this.securityService.refreshTokens(
       body.access_token,
       body.refresh_token,
     );
