@@ -29,11 +29,10 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { ProductTypes } from 'shared/enums/productTypes.enum';
-
 import { AccessoriesService } from './accessories.service';
 import { AccessoryDTO } from './dto/accessory.dto';
 import { AccessoryPaginationResponse } from './dto/pagination-response.dto';
+import { AccessoryTypes } from './enums/accessory-types.enum';
 
 @ApiTags('Accessory')
 @Controller('accessory')
@@ -76,7 +75,7 @@ export class AccessoriesController {
   @ApiResponse({ type: AccessoryDTO })
   @Post()
   async createAccessory(@Body() accessoryData: Partial<AccessoryDTO>) {
-    if (!isEnum(accessoryData.type, ProductTypes)) {
+    if (!isEnum(accessoryData.type, AccessoryTypes)) {
       throw new BadRequestException(`Invalid beer type: ${accessoryData.type}`);
     }
     const entity = await this.accessoriesService.createAccessory(accessoryData);
