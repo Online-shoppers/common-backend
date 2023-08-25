@@ -29,10 +29,9 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { ProductTypes } from 'shared/enums/productTypes.enum';
-
 import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
+import { SnackTypes } from './enums/snack-types.enum';
 import { SnacksService } from './snacks.service';
 
 @ApiTags('Snack')
@@ -72,7 +71,7 @@ export class SnacksController {
   @ApiResponse({ type: SnacksDTO })
   @Post()
   async createSnacks(@Body() snacksData: Partial<SnacksDTO>) {
-    if (!isEnum(snacksData.type, ProductTypes)) {
+    if (!isEnum(snacksData.type, SnackTypes)) {
       throw new BadRequestException(`Invalid beer type: ${snacksData.type}`);
     }
     const entity = await this.snacksService.createSnacks(snacksData);
