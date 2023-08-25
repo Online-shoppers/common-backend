@@ -4,14 +4,13 @@ import * as bcrypt from 'bcrypt';
 
 import { AccessoryEntity } from 'app/accessories/entities/accessory.entity';
 import { BeerEntity } from 'app/beer/entities/beer.entity';
+import { ProductCategories } from 'app/products/enums/product-categories.enum';
+import { ProductTypes } from 'app/products/enums/product-types.enum';
 import { SnacksEntity } from 'app/snacks/entities/snack.entity';
 import { UserRoleEntity } from 'app/user-roles/entities/user-role.entity';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 import { UserRoles } from 'app/user-roles/enums/user-roles.enum';
 import { UserEntity } from 'app/user/entities/user.entity';
-
-import { ProductCategory } from 'shared/enums/productCategory.enum';
-import { ProductTypes } from 'shared/enums/productTypes.enum';
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -68,7 +67,7 @@ export class DatabaseSeeder extends Seeder {
       volume: 1,
       country: 'Ireland',
       archived: false,
-      category: ProductCategory.BEER,
+      category: ProductCategories.BEER,
       quantity: 1000,
       image_url:
         'https://vinepair.com/wp-content/uploads/2016/12/roundup-hitachino-nest.jpg',
@@ -85,7 +84,7 @@ export class DatabaseSeeder extends Seeder {
       volume: 1,
       country: 'Austria',
       archived: false,
-      category: ProductCategory.BEER,
+      category: ProductCategories.BEER,
       quantity: 1000,
       image_url:
         'https://static.independent.co.uk/2022/09/13/09/Augustiner%20lagerbier%20hell.png?quality=75&width=320&auto=webp 320w, https://static.independent.co.uk/2022/09/13/09/Augustiner%20lagerbier%20hell.png?quality=75&width=640&auto=webp 640w',
@@ -101,7 +100,7 @@ export class DatabaseSeeder extends Seeder {
       volume: 1,
       country: 'America',
       archived: false,
-      category: ProductCategory.BEER,
+      category: ProductCategories.BEER,
       quantity: 1000,
       image_url:
         'https://media.nedigital.sg/fairprice/fpol/media/images/product/XL/10170935_XL1_20230113.jpg',
@@ -118,7 +117,7 @@ export class DatabaseSeeder extends Seeder {
       price: 10,
       weight: 100,
       archived: false,
-      category: ProductCategory.SNACKS,
+      category: ProductCategories.SNACKS,
       quantity: 1000,
       image_url:
         'https://www.maggi.ru/data/images/recept/img640x500/recept_3621_j42a.jpg',
@@ -132,7 +131,7 @@ export class DatabaseSeeder extends Seeder {
       price: 3,
       weight: 30,
       archived: false,
-      category: ProductCategory.SNACKS,
+      category: ProductCategories.SNACKS,
       quantity: 1000,
       image_url:
         'https://www.thecountrycook.net/wp-content/uploads/2022/07/thumbnail-Homemade-Soft-Pretzels-scaled.jpg',
@@ -146,7 +145,7 @@ export class DatabaseSeeder extends Seeder {
       price: 8,
       weight: 200,
       archived: false,
-      category: ProductCategory.SNACKS,
+      category: ProductCategories.SNACKS,
       quantity: 1000,
       image_url:
         'https://www.jessicagavin.com/wp-content/uploads/2023/01/BBQ-chicken-wings-21-1200.jpg',
@@ -163,7 +162,7 @@ export class DatabaseSeeder extends Seeder {
       price: 8,
       weight: 70,
       archived: false,
-      category: ProductCategory.ACCESSORIES,
+      category: ProductCategories.ACCESSORIES,
       quantity: 1000,
       image_url:
         'https://www.ikea.com/us/en/images/products/lodraet-beer-glass-clear-glass__0712433_pe728846_s5.jpg?f=xl',
@@ -177,7 +176,7 @@ export class DatabaseSeeder extends Seeder {
       price: 8,
       weight: 25,
       archived: false,
-      category: ProductCategory.ACCESSORIES,
+      category: ProductCategories.ACCESSORIES,
       quantity: 1000,
       image_url:
         'https://assets.stickermule.com/image/fetch/c_lfill,fl_lossy,f_auto,h_720,q_auto:best,w_1320/https%3A%2F%2Fstorage.googleapis.com%2Fsm-content%2Fcore%2Fproducts%2FproductAliases%2Fbeer-coasters%2Fgallery_3',
@@ -191,7 +190,7 @@ export class DatabaseSeeder extends Seeder {
       price: 15,
       weight: 25,
       archived: false,
-      category: ProductCategory.ACCESSORIES,
+      category: ProductCategories.ACCESSORIES,
       quantity: 1000,
       image_url:
         'https://ae04.alicdn.com/kf/H7df5c7d8236846d4a6ab5b9798ba2140p.jpg',

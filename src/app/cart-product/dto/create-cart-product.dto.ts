@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsString } from 'class-validator';
 
-import { ProductCategory } from 'shared/enums/productCategory.enum';
+import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
 export class CreateCartProductForm {
   @IsString()
@@ -12,9 +12,9 @@ export class CreateCartProductForm {
   @ApiProperty()
   description?: string;
 
-  @IsEnum(ProductCategory)
+  @IsEnum(ProductCategories)
   @ApiProperty()
-  schema?: ProductCategory;
+  schema?: ProductCategories;
 
   @IsInt()
   @ApiProperty()

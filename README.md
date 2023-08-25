@@ -36,7 +36,7 @@ $ yarn run test:cov
 
 ```bash
 # seed the database with roles
-$ yarn mikro-orm seeder:run --class UserRolesSeeder
+$ yarn mikro-orm seeder:run --class DatabaseSeeder
 ```
 
 ##Env example

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import { ProductRepo } from '../../shared/repo/product.repo';
+import { ProductRepo } from 'app/products/repo/product.repo';
+
 import { CartProductDto } from '../cart-product/dto/cart-product.dto';
 import { OrderRepo } from '../order/repo/order.repo';
-import { OrderProductEntity } from './entity/order-product.entity';
 import { OrderProductRepo } from './repo/order-product.repo';
 
 @Injectable()

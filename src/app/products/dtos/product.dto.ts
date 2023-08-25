@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 
-import { ProductEntity } from 'shared/entities/product.entity';
-import { ProductCategory } from 'shared/enums/productCategory.enum';
-import { ProductTypes } from 'shared/enums/productTypes.enum';
+import { ProductEntity } from 'app/products/entities/product.entity';
 
-import { UUIDDto } from './uuid.dto';
+import { UUIDDto } from 'shared/dtos/uuid.dto';
+
+import { ProductCategories } from '../enums/product-categories.enum';
+import { ProductTypes } from '../enums/product-types.enum';
 
 export class ProductDTO extends UUIDDto {
   @ApiProperty()
@@ -29,8 +30,8 @@ export class ProductDTO extends UUIDDto {
   quantity: number;
 
   @ApiProperty()
-  @IsEnum(ProductCategory)
-  category: ProductCategory;
+  @IsEnum(ProductCategories)
+  category: ProductCategories;
 
   @ApiProperty()
   @IsEnum(ProductTypes)

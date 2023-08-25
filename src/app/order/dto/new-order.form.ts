@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString, validate } from 'class-validator';
 
 import { ErrorCodes } from 'shared/enums/error-codes.enum';
-import { OrderStatuses } from 'shared/enums/order-statuses.enum';
+
+import { OrderStatuses } from '../enums/order-statuses.enum';
 
 export class NewOrderForm {
   @ApiProperty()

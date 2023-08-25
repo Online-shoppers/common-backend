@@ -7,7 +7,7 @@ import {
   validate,
 } from 'class-validator';
 
-import { ProductTypes } from 'shared/enums/productTypes.enum';
+import { ProductTypes } from 'app/products/enums/product-types.enum';
 
 import { BeerTypes } from '../enums/beer-types.enum';
 
