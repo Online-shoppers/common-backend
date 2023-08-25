@@ -76,15 +76,7 @@ export class AccessoriesController {
   @ApiResponse({ type: AccessoryDTO })
   @Post()
   async createAccessory(@Body() accessoryData: Partial<AccessoryDTO>) {
-    const validTypes = [
-      ProductTypes.BEER_GLASSES,
-      ProductTypes.BOTTLE_OPENER,
-      ProductTypes.BEER_COASTERS,
-    ];
-    if (
-      !isEnum(accessoryData.type, ProductTypes) ||
-      !validTypes.includes(accessoryData.type)
-    ) {
+    if (!isEnum(accessoryData.type, ProductTypes)) {
       throw new BadRequestException(`Invalid beer type: ${accessoryData.type}`);
     }
     const entity = await this.accessoriesService.createAccessory(accessoryData);
