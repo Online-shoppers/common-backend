@@ -168,7 +168,10 @@ export class CartService {
 
     const fifteenMinutesAgo = new Date(now - 15 * 60 * 1000);
 
-    const abandonedCarts = await this.cartRepo.find(
+    const em = this.cartRepo.getEntityManager().fork();
+
+    const abandonedCarts = await em.find(
+      CartEntity,
       { updated: { $lte: fifteenMinutesAgo } },
       { populate: ['user.email'] },
     );
