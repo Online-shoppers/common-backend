@@ -3,9 +3,9 @@ import { Entity, Enum, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { UserEntity } from 'app/user/entities/user.entity';
 
 import { UUIDEntity } from 'shared/entities/uuid.entity';
-import { OrderStatuses } from 'shared/enums/order-statuses.enum';
 
 import { OrderProductEntity } from '../../order-item/entity/order-product.entity';
+import { OrderStatuses } from '../enums/order-statuses.enum';
 import { OrderRepo } from '../repo/order.repo';
 
 @Entity({ tableName: 'order', customRepository: () => OrderRepo })

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,11 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { isEnum } from 'class-validator';
 
-import { OrderStatuses } from '../../shared/enums/order-statuses.enum';
 import { NewOrderForm } from './dto/new-order.form';
 import { OrderDTO } from './dto/order.dto';
+import { OrderStatuses } from './enums/order-statuses.enum';
 import { OrderService } from './order.service';
 import { OrderGateway } from './orderGateway';
 

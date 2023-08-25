@@ -1,7 +1,7 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
-import { ProductCategory } from 'shared/enums/productCategory.enum';
+import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
 import { BeerDTO } from '../dto/beer.dto';
 import { CreateBeerForm } from '../dto/create-beer.form';
@@ -38,7 +38,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
   async createBeer(beerData: CreateBeerForm) {
     const beer = this.em.create(BeerEntity, {
       ...beerData,
-      category: ProductCategory.BEER,
+      category: ProductCategories.BEER,
     });
     await this.getEntityManager().persistAndFlush(beer);
 

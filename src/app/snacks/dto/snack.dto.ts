@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 
-import { ProductDTO } from '../../../shared/dtos/product.dto';
+import { ProductDTO } from 'app/products/dtos/product.dto';
+
 import { SnacksEntity } from '../entities/snack.entity';
 
 export class SnacksDTO extends ProductDTO {

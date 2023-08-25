@@ -2,11 +2,11 @@ import { Entity, Enum, OneToOne, Property } from '@mikro-orm/core';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 
-import { ProductTypes } from 'shared/enums/productTypes.enum';
+import { UUIDEntity } from 'shared/entities/uuid.entity';
 
-import { ProductCategory } from '../enums/productCategory.enum';
+import { ProductCategories } from '../enums/product-categories.enum';
+import { ProductTypes } from '../enums/product-types.enum';
 import { ProductRepo } from '../repo/product.repo';
-import { UUIDEntity } from './uuid.entity';
 
 @Entity({
   tableName: 'products',
@@ -30,8 +30,8 @@ export class ProductEntity extends UUIDEntity {
   @Property({ name: 'quantity' })
   quantity!: number;
 
-  @Enum(() => ProductCategory)
-  category!: ProductCategory;
+  @Enum(() => ProductCategories)
+  category!: ProductCategories;
 
   @Enum(() => ProductTypes)
   type!: ProductTypes;

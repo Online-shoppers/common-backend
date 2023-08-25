@@ -11,8 +11,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
-
-import { ProductEntity } from 'shared/entities/product.entity';
+import { ProductEntity } from 'app/products/entities/product.entity';
 
 import { CartDto } from './dto/cart.dto';
 import { CartEntity } from './entities/cart.entity';
