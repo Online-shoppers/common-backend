@@ -18,7 +18,7 @@ export class DatabaseSeeder extends Seeder {
     const defaultRole = em.create(UserRoleEntity, {
       name: UserRoles.Client,
       type: UserRoles.Client,
-      permissions: [],
+      permissions: [UserPermissions.CanLeaveReviews],
       isDefault: true,
     });
 

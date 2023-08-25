@@ -1,5 +1,5 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { UserRoleDto } from '../../user-roles/dto/user-role.dto';
 import { UserRolesRepo } from '../../user-roles/repos/user-role.repo';
@@ -10,7 +10,7 @@ import { UserEntity } from '../entities/user.entity';
 @Injectable()
 export class UserRepo extends EntityRepository<UserEntity> {
   constructor(
-    readonly manager: EntityManager,
+    private readonly manager: EntityManager,
     private readonly userRolesRepo: UserRolesRepo,
   ) {
     super(manager, UserEntity);
@@ -19,9 +19,16 @@ export class UserRepo extends EntityRepository<UserEntity> {
   async getList() {
     return this.findAll();
   }
+
   async getById(id: string) {
-    return this.findOne({ id });
+    try {
+      const user = await this.findOneOrFail({ id });
+      return user;
+    } catch (err) {
+      throw new BadRequestException('No user found');
+    }
   }
+
   async archiveUser(userId: string) {
     const em = this.getEntityManager();
 

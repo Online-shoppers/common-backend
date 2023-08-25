@@ -1,6 +1,14 @@
-import { Entity, Enum, OneToOne, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  Enum,
+  OneToMany,
+  OneToOne,
+  Property,
+} from '@mikro-orm/core';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
+import { ReviewEntity } from 'app/reviews/entities/review.entity';
 
 import { UUIDEntity } from 'shared/entities/uuid.entity';
 
@@ -43,4 +51,7 @@ export class ProductEntity extends UUIDEntity {
     mappedBy: cartProduct => cartProduct.product,
   })
   cartProduct: CartProductEntity;
+
+  @OneToMany(() => ReviewEntity, review => review.product)
+  reviews = new Collection<ReviewEntity>(this);
 }

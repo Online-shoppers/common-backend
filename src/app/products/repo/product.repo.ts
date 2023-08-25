@@ -1,5 +1,5 @@
 import { EntityRepository, FilterQuery } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { FilterProductsForm } from '../dtos/filter-products.form';
 import { ProductsPaginationResponse } from '../dtos/pagination-response.dto';
@@ -8,6 +8,15 @@ import { ProductEntity } from '../entities/product.entity';
 
 @Injectable()
 export class ProductRepo extends EntityRepository<ProductEntity> {
+  async getProductById(id: string) {
+    try {
+      const user = await this.findOneOrFail({ id });
+      return user;
+    } catch (err) {
+      throw new BadRequestException('No user found');
+    }
+  }
+
   async getProductsList(
     page: number,
     size: number,
