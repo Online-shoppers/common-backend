@@ -1,13 +1,12 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   ParseBoolPipe,
   ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -21,7 +20,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { isEnum } from 'class-validator';
 
 import {
   JwtPermissionsGuard,
@@ -31,8 +29,9 @@ import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
 import { AccessoriesService } from './accessories.service';
 import { AccessoryDTO } from './dto/accessory.dto';
+import { CreateAccessoryForm } from './dto/create-accessory.form';
 import { AccessoryPaginationResponse } from './dto/pagination-response.dto';
-import { AccessoryTypes } from './enums/accessory-types.enum';
+import { UpdateAccessoryForm } from './dto/update-accessory.form';
 
 @ApiTags('Accessory')
 @Controller('accessory')
@@ -47,9 +46,9 @@ export class AccessoriesController {
   })
   @Get()
   async getPageAccessories(
-    @Query('page', ParseIntPipe)
+    @Query('page', new ParseIntPipe({ optional: true }))
     page = 1,
-    @Query('size', ParseIntPipe)
+    @Query('size', new ParseIntPipe({ optional: true }))
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
@@ -63,7 +62,7 @@ export class AccessoriesController {
 
   @ApiResponse({ type: AccessoryDTO })
   @Get(':id')
-  async getAccessoryById(@Param('id') id: string) {
+  async getAccessoryById(@Param('id', ParseUUIDPipe) id: string) {
     const entity = await this.accessoriesService.getAccessoryInfo(id);
     return AccessoryDTO.fromEntity(entity);
   }
@@ -71,37 +70,26 @@ export class AccessoriesController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
-  @ApiBody({ type: AccessoryDTO })
+  @ApiBody({ type: CreateAccessoryForm })
   @ApiResponse({ type: AccessoryDTO })
   @Post()
-  async createAccessory(@Body() accessoryData: Partial<AccessoryDTO>) {
-    if (!isEnum(accessoryData.type, AccessoryTypes)) {
-      throw new BadRequestException(`Invalid beer type: ${accessoryData.type}`);
-    }
-    const entity = await this.accessoriesService.createAccessory(accessoryData);
-    return AccessoryDTO.fromEntity(entity);
+  async createAccessory(@Body() accessoryData: CreateAccessoryForm) {
+    const dto = CreateAccessoryForm.from(accessoryData);
+    return this.accessoriesService.createAccessory(dto);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
-  @ApiBody({ type: AccessoryDTO })
+  @ApiBody({ type: UpdateAccessoryForm })
   @ApiResponse({ type: AccessoryDTO })
   @Put(':id')
   async updateAccessory(
-    @Param('id') id: string,
-    @Body() updateData: Partial<AccessoryDTO>,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateData: UpdateAccessoryForm,
   ) {
-    const updatedAccessory = await this.accessoriesService.updateAccessory(
-      id,
-      updateData,
-    );
-
-    if (!updatedAccessory) {
-      throw new NotFoundException(`Accessory with id ${id} not found`);
-    }
-
-    return AccessoryDTO.fromEntity(updatedAccessory);
+    const dto = UpdateAccessoryForm.from(updateData);
+    return this.accessoriesService.updateAccessory(id, dto);
   }
 
   @ApiBearerAuth()
@@ -109,7 +97,7 @@ export class AccessoriesController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: AccessoryDTO })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.accessoriesService.archiveAccessory(id);
   }
 }

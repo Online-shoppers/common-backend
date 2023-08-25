@@ -1,12 +1,15 @@
+import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 import { AccessoryDTO } from './dto/accessory.dto';
-import { AccessoryEntity } from './entities/accessory.entity';
+import { CreateAccessoryForm } from './dto/create-accessory.form';
+import { UpdateAccessoryForm } from './dto/update-accessory.form';
 import { AccessoryRepo } from './repo/accessories.repo';
 
 @Injectable()
 export class AccessoriesService {
   constructor(private readonly repo_accessory: AccessoryRepo) {}
+
   async getPageAccessories(
     page: number,
     size: number,
@@ -16,45 +19,24 @@ export class AccessoriesService {
   }
 
   async getAccessoryInfo(id: string) {
-    return await this.repo_accessory.getAccessoryById(id);
+    return this.repo_accessory.getAccessoryById(id);
   }
 
-  async createAccessory(
-    accessoryData: Partial<AccessoryDTO>,
-  ): Promise<AccessoryEntity> {
-    const accessoryEntityData: Partial<AccessoryEntity> = {
-      id: accessoryData.id,
-      name: accessoryData.name,
-      price: accessoryData.price,
-      description: accessoryData.description,
-      image_url: accessoryData.image_url,
-      quantity: accessoryData.quantity,
-      category: accessoryData.category,
-      type: accessoryData.type,
-      archived: accessoryData.archived,
-      weight: accessoryData.weight,
-    };
-
-    return this.repo_accessory.createAccessory(accessoryEntityData);
+  async createAccessory(accessoryData: CreateAccessoryForm) {
+    const created = await this.repo_accessory.createAccessory(accessoryData);
+    return AccessoryDTO.fromEntity(created);
   }
-  async updateAccessory(
-    id: string,
-    updateData: Partial<AccessoryDTO>,
-  ): Promise<AccessoryEntity | null> {
-    const existingAccessory = await this.repo_accessory.getAccessoryById(id);
 
-    if (!existingAccessory) {
-      return null;
-    }
+  async updateAccessory(id: string, updateData: UpdateAccessoryForm) {
+    const existing = await this.repo_accessory.getAccessoryById(id);
 
-    const { created, updated, ...updateFields } = updateData;
+    const data = wrap(existing).assign(updateData, { merge: true });
+    const updated = await this.repo_accessory.updateAccessory(data);
 
-    Object.assign(existingAccessory, updateFields);
-
-    return this.repo_accessory.updateAccessory(id, existingAccessory);
+    return AccessoryDTO.fromEntity(updated);
   }
 
   async archiveAccessory(accessoryId: string) {
-    return await this.repo_accessory.archiveAccessory(accessoryId);
+    return this.repo_accessory.archiveAccessory(accessoryId);
   }
 }

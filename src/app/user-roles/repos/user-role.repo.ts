@@ -8,16 +8,19 @@ import { UserRoles } from '../enums/user-roles.enum';
 @Injectable()
 export class UserRolesRepo extends EntityRepository<UserRoleEntity> {
   async getAll() {
-    return await this.findAll();
+    return this.findAll();
   }
 
   async getById(id: string) {
-    return await this.findOne({ id });
+    return this.findOne({ id });
   }
 
   public async addOne(dto: NewUserRoleForm) {
+    const em = this.getEntityManager();
     const role_e = this.create(dto);
-    await this.persistAndFlush(role_e);
+
+    await em.persistAndFlush(role_e);
+
     return role_e;
   }
 

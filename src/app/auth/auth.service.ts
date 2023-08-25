@@ -22,7 +22,7 @@ export class AuthService {
       throw new BadRequestException('User already exists');
     }
 
-    dto.password = await this.securityService.hashData(dto.password);
+    dto.password = await this.securityService.hashPassword(dto.password);
 
     const entity = await this.userService.addNewUser(dto);
 
@@ -43,6 +43,6 @@ export class AuthService {
     if (!passwordMatches)
       throw new ForbiddenException('Password is not correct');
 
-    return await this.securityService.generateTokens(user);
+    return this.securityService.generateTokens(user);
   }
 }

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -21,7 +20,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { isEnum } from 'class-validator';
 
 import {
   JwtPermissionsGuard,
@@ -29,9 +27,10 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
+import { CreateSnackForm } from './dto/create-snack.form';
 import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
-import { SnackTypes } from './enums/snack-types.enum';
+import { UpdateSnackForm } from './dto/update-snack.form';
 import { SnacksService } from './snacks.service';
 
 @ApiTags('Snack')
@@ -46,10 +45,10 @@ export class SnacksController {
     type: SnacksPaginationResponse,
   })
   @Get()
-  async getPageAccessories(
-    @Query('page', ParseIntPipe)
+  async getPageSnacks(
+    @Query('page', new ParseIntPipe({ optional: true }))
     page = 1,
-    @Query('size', ParseIntPipe)
+    @Query('size', new ParseIntPipe({ optional: true }))
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
@@ -60,37 +59,33 @@ export class SnacksController {
   @Get(':id')
   @ApiResponse({ type: SnacksDTO })
   async getSnacksById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.snacksService.getSnacksInfo(id);
+    const entity = await this.snacksService.getSnackInfo(id);
     return SnacksDTO.fromEntity(entity);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
-  @ApiBody({ type: SnacksDTO })
+  @ApiBody({ type: CreateSnackForm })
   @ApiResponse({ type: SnacksDTO })
   @Post()
-  async createSnacks(@Body() snacksData: Partial<SnacksDTO>) {
-    if (!isEnum(snacksData.type, SnackTypes)) {
-      throw new BadRequestException(`Invalid beer type: ${snacksData.type}`);
-    }
-    const entity = await this.snacksService.createSnacks(snacksData);
-    return SnacksDTO.fromEntity(entity);
+  async createSnacks(@Body() snacksData: CreateSnackForm) {
+    const dto = CreateSnackForm.from(snacksData);
+    return this.snacksService.createSnack(dto);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
-  @ApiBody({ type: SnacksDTO })
+  @ApiBody({ type: UpdateSnackForm })
   @ApiResponse({ type: SnacksDTO })
   @Put(':id')
   async updatedSnacks(
-    @Param('id') id: string,
-    @Body() updateData: Partial<SnacksDTO>,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateData: UpdateSnackForm,
   ) {
-    const updatedSnacks = await this.snacksService.updateSnacks(id, updateData);
-
-    return SnacksDTO.fromEntity(updatedSnacks);
+    const dto = UpdateSnackForm.from(updateData);
+    return this.snacksService.updateSnack(id, dto);
   }
 
   @ApiBearerAuth()
@@ -98,7 +93,7 @@ export class SnacksController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: SnacksDTO })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.snacksService.archiveSnacks(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.snacksService.archiveSnack(id);
   }
 }

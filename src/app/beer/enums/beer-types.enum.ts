@@ -1,5 +1,5 @@
 export enum BeerTypes {
-  ALE = 'Ale',
-  LAGER = 'Lager',
-  WHEAT_BEER = 'Wheat Beer',
+  ALE = 'ALE',
+  LAGER = 'LAGER',
+  WHEAT_BEER = 'WHEAT_BEER',
 }

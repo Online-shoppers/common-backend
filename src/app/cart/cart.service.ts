@@ -172,7 +172,10 @@ export class CartService {
 
     const abandonedCarts = await em.find(
       CartEntity,
-      { updated: { $lte: fifteenMinutesAgo } },
+      {
+        updated: { $lte: fifteenMinutesAgo },
+        products: { quantity: { $gte: 1 } },
+      },
       { populate: ['user.email'] },
     );
 
