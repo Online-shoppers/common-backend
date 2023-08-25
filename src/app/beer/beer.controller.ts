@@ -6,6 +6,7 @@ import {
   Param,
   ParseBoolPipe,
   ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -44,10 +45,10 @@ export class BeerController {
     type: BeerPaginationResponse,
   })
   @Get()
-  async getPageAccessories(
-    @Query('page', ParseIntPipe)
+  async getPageBeer(
+    @Query('page', new ParseIntPipe({ optional: true }))
     page = 1,
-    @Query('size', ParseIntPipe)
+    @Query('size', new ParseIntPipe({ optional: true }))
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
@@ -57,7 +58,7 @@ export class BeerController {
 
   @ApiResponse({ type: BeerDTO })
   @Get(':id')
-  async getBeerById(@Param('id') id: string) {
+  async getBeerById(@Param('id', ParseUUIDPipe) id: string) {
     const entity = await this.beerService.getBeerInfo(id);
     return BeerDTO.fromEntity(entity);
   }
@@ -80,7 +81,7 @@ export class BeerController {
   @ApiResponse({ type: BeerDTO })
   @Put(':id')
   async updateBeer(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateBeerForm,
   ) {
     const dto = UpdateBeerForm.from(updateData);
@@ -92,7 +93,7 @@ export class BeerController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: BeerDTO })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.beerService.archiveBeer(id);
   }
 }

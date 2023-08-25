@@ -1,7 +1,10 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+
 import { AccessoryDTO } from '../dto/accessory.dto';
+import { CreateAccessoryForm } from '../dto/create-accessory.form';
 import { AccessoryPaginationResponse } from '../dto/pagination-response.dto';
 import { AccessoryEntity } from '../entities/accessory.entity';
 
@@ -35,32 +38,30 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
       throw new BadRequestException('Product does not exist');
     }
   }
-  async createAccessory(
-    accessoryData: Partial<AccessoryEntity>,
-  ): Promise<AccessoryEntity> {
-    const accessory = this.em.create(AccessoryEntity, accessoryData);
+
+  async createAccessory(accessoryData: CreateAccessoryForm) {
+    const accessory = this.em.create(AccessoryEntity, {
+      ...accessoryData,
+      category: ProductCategory.ACCESSORIES,
+    });
     await this.getEntityManager().persistAndFlush(accessory);
+
     return accessory;
   }
-  async updateAccessory(
-    id: string,
-    updateData: Partial<AccessoryEntity>,
-  ): Promise<AccessoryEntity | null> {
-    const accessory = await this.findOne({ id });
 
-    if (!accessory) {
-      return null;
-    }
-
-    Object.assign(accessory, updateData);
-
-    await this.getEntityManager().persistAndFlush(accessory);
-    return accessory;
+  async updateAccessory(accessoryEntity: AccessoryEntity) {
+    await this.getEntityManager().persistAndFlush(accessoryEntity);
+    return accessoryEntity;
   }
+
   async archiveAccessory(accessoryId: string) {
+    const em = this.getEntityManager();
+
     const accessory = await this.getAccessoryById(accessoryId);
     accessory.archived = true;
-    await this.getEntityManager().persistAndFlush(accessory);
+
+    await em.persistAndFlush(accessory);
+
     return AccessoryDTO.fromEntity(accessory);
   }
 }

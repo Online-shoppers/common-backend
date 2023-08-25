@@ -45,10 +45,10 @@ export class SnacksController {
     type: SnacksPaginationResponse,
   })
   @Get()
-  async getPageAccessories(
-    @Query('page', ParseIntPipe)
+  async getPageSnacks(
+    @Query('page', new ParseIntPipe({ optional: true }))
     page = 1,
-    @Query('size', ParseIntPipe)
+    @Query('size', new ParseIntPipe({ optional: true }))
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
@@ -81,7 +81,7 @@ export class SnacksController {
   @ApiResponse({ type: SnacksDTO })
   @Put(':id')
   async updatedSnacks(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateSnackForm,
   ) {
     const dto = UpdateSnackForm.from(updateData);
@@ -93,7 +93,7 @@ export class SnacksController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: SnacksDTO })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.snacksService.archiveSnack(id);
   }
 }
