@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -21,7 +20,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { isEnum } from 'class-validator';
 
 import {
   JwtPermissionsGuard,
@@ -29,10 +27,10 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { ProductTypes } from 'shared/enums/productTypes.enum';
-
+import { CreateSnackForm } from './dto/create-snack.form';
 import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
+import { UpdateSnackForm } from './dto/update-snack.form';
 import { SnacksService } from './snacks.service';
 
 @ApiTags('Snack')
@@ -61,45 +59,33 @@ export class SnacksController {
   @Get(':id')
   @ApiResponse({ type: SnacksDTO })
   async getSnacksById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.snacksService.getSnacksInfo(id);
+    const entity = await this.snacksService.getSnackInfo(id);
     return SnacksDTO.fromEntity(entity);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
-  @ApiBody({ type: SnacksDTO })
+  @ApiBody({ type: CreateSnackForm })
   @ApiResponse({ type: SnacksDTO })
   @Post()
-  async createSnacks(@Body() snacksData: Partial<SnacksDTO>) {
-    const validTypes = [
-      ProductTypes.PRETZELS,
-      ProductTypes.NACHOS,
-      ProductTypes.SPICY_WINGS,
-    ];
-    if (
-      !isEnum(snacksData.type, ProductTypes) ||
-      !validTypes.includes(snacksData.type)
-    ) {
-      throw new BadRequestException(`Invalid beer type: ${snacksData.type}`);
-    }
-    const entity = await this.snacksService.createSnacks(snacksData);
-    return SnacksDTO.fromEntity(entity);
+  async createSnacks(@Body() snacksData: CreateSnackForm) {
+    return this.snacksService.createSnack(snacksData);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
-  @ApiBody({ type: SnacksDTO })
+  @ApiBody({ type: UpdateSnackForm })
   @ApiResponse({ type: SnacksDTO })
   @Put(':id')
   async updatedSnacks(
     @Param('id') id: string,
-    @Body() updateData: Partial<SnacksDTO>,
+    @Body() updateData: UpdateSnackForm,
   ) {
-    const updatedSnacks = await this.snacksService.updateSnacks(id, updateData);
+    const dto = UpdateSnackForm.from(updateData);
 
-    return SnacksDTO.fromEntity(updatedSnacks);
+    return this.snacksService.updateSnack(id, dto);
   }
 
   @ApiBearerAuth()
@@ -108,6 +94,6 @@ export class SnacksController {
   @ApiResponse({ type: SnacksDTO })
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.snacksService.archiveSnacks(id);
+    return this.snacksService.archiveSnack(id);
   }
 }

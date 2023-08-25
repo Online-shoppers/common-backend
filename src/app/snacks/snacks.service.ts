@@ -1,7 +1,9 @@
+import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
+import { CreateSnackForm } from './dto/create-snack.form';
 import { SnacksDTO } from './dto/snack.dto';
-import { SnacksEntity } from './entities/snack.entity';
+import { UpdateSnackForm } from './dto/update-snack.form';
 import { SnacksRepo } from './repo/snack.repo';
 
 @Injectable()
@@ -9,47 +11,28 @@ export class SnacksService {
   constructor(private readonly repo_snacks: SnacksRepo) {}
 
   async getPageSnacks(page: number, size: number, includeArchived: boolean) {
-    return this.repo_snacks.getBeerList(page, size, includeArchived);
+    return this.repo_snacks.getSnacksList(page, size, includeArchived);
   }
 
-  async getSnacksInfo(id: string) {
-    return await this.repo_snacks.getSnacksById(id);
+  async getSnackInfo(id: string) {
+    return await this.repo_snacks.getSnackById(id);
   }
 
-  async createSnacks(snacksData: Partial<SnacksDTO>): Promise<SnacksEntity> {
-    const snacksEntityData: Partial<SnacksEntity> = {
-      id: snacksData.id,
-      name: snacksData.name,
-      price: snacksData.price,
-      description: snacksData.description,
-      image_url: snacksData.image_url,
-      quantity: snacksData.quantity,
-      category: snacksData.category,
-      type: snacksData.type,
-      archived: snacksData.archived,
-      weight: snacksData.weight,
-    };
-
-    return this.repo_snacks.createSnacks(snacksEntityData);
-  }
-  async updateSnacks(
-    id: string,
-    updateData: Partial<SnacksDTO>,
-  ): Promise<SnacksEntity | null> {
-    const existingSnacks = await this.repo_snacks.getSnacksById(id);
-
-    if (!existingSnacks) {
-      return null;
-    }
-
-    const { created, updated, ...updateFields } = updateData;
-
-    Object.assign(existingSnacks, updateFields);
-
-    return this.repo_snacks.updateSnacks(id, existingSnacks);
+  async createSnack(createData: CreateSnackForm) {
+    const created = await this.repo_snacks.createSnack(createData);
+    return SnacksDTO.fromEntity(created);
   }
 
-  async archiveSnacks(snacksId: string) {
+  async updateSnack(id: string, updateData: UpdateSnackForm) {
+    const existing = await this.repo_snacks.getSnackById(id);
+
+    const data = wrap(existing).assign(updateData, { merge: true });
+    const updated = await this.repo_snacks.updateSnack(data);
+
+    return SnacksDTO.fromEntity(updated);
+  }
+
+  async archiveSnack(snacksId: string) {
     return this.repo_snacks.archiveSnack(snacksId);
   }
 }

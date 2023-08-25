@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsNumber } from 'class-validator';
 
 import { ProductDTO } from '../../../shared/dtos/product.dto';
 import { SnacksEntity } from '../entities/snack.entity';
@@ -15,6 +15,8 @@ export class SnacksDTO extends ProductDTO {
     }
     const it = new SnacksDTO();
     it.id = entity.id;
+    it.created = entity.created.valueOf();
+    it.updated = entity.updated.valueOf();
     it.name = entity.name;
     it.price = entity.price;
     it.description = entity.description;
