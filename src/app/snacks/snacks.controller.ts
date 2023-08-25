@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   ParseBoolPipe,
   ParseIntPipe,
@@ -18,15 +17,12 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { isEnum } from 'class-validator';
 
-import { CurrentUser } from 'app/security/decorators/current-user.decorator';
-import { UserSessionDto } from 'app/security/dto/user-session.dto';
 import {
   JwtPermissionsGuard,
   RestrictRequest,
@@ -62,10 +58,10 @@ export class SnacksController {
     return this.snacksService.getPageSnacks(page, size, includeArchived);
   }
 
-  @Get(':snacksId')
+  @Get(':id')
   @ApiResponse({ type: SnacksDTO })
-  async getSnacksById(@Param('snacksId', ParseUUIDPipe) snackId: string) {
-    const entity = await this.snacksService.getSnacksInfo(snackId);
+  async getSnacksById(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = await this.snacksService.getSnacksInfo(id);
     return SnacksDTO.fromEntity(entity);
   }
 
@@ -96,15 +92,12 @@ export class SnacksController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiBody({ type: SnacksDTO })
   @ApiResponse({ type: SnacksDTO })
-  @Put(':snackId')
+  @Put(':id')
   async updatedSnacks(
-    @Param('snackId') snackId: string,
+    @Param('id') id: string,
     @Body() updateData: Partial<SnacksDTO>,
   ) {
-    const updatedSnacks = await this.snacksService.updateSnacks(
-      snackId,
-      updateData,
-    );
+    const updatedSnacks = await this.snacksService.updateSnacks(id, updateData);
 
     return SnacksDTO.fromEntity(updatedSnacks);
   }

@@ -21,7 +21,7 @@ export class ProductEntity extends UUIDEntity {
   @Property({ name: 'price' })
   price!: number;
 
-  @Property({ name: 'description' })
+  @Property({ name: 'description', length: 500 })
   description!: string;
 
   @Property({ name: 'image_url' })

@@ -35,20 +35,6 @@ export class CartController {
     return this.cartService.getUsersCart(user.id);
   }
 
-  @Get(':userId')
-  @RestrictRequest(UserPermissions.GetOtherCarts)
-  findCartById(
-    @CurrentUser() user: UserSessionDto,
-    @Query('userId', ParseUUIDPipe) userId: string,
-  ) {
-    if (userId !== user.id) {
-      throw new ForbiddenException(
-        'You are not allowed to request other peoples carts',
-      );
-    }
-    return this.cartService.getUsersCart(userId);
-  }
-
   @Get('/products')
   @RestrictRequest(UserPermissions.GetOtherCarts)
   findCartProducts(@CurrentUser() user: UserSessionDto) {
@@ -59,7 +45,7 @@ export class CartController {
     return this.cartService.getUserCartProducts(user.id);
   }
 
-  @Post('/products/:productId')
+  @Post('/products')
   addProductToCart(
     @Query('productId') productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
@@ -72,7 +58,7 @@ export class CartController {
     return this.cartService.addProductToCart(user.id, productId, quantity);
   }
 
-  @Put('/products/:cartProductId')
+  @Put('/products')
   updateProductInCart(
     @Query('cartProductId') cartProductId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
