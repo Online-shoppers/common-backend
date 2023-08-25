@@ -72,15 +72,7 @@ export class SnacksController {
   @ApiResponse({ type: SnacksDTO })
   @Post()
   async createSnacks(@Body() snacksData: Partial<SnacksDTO>) {
-    const validTypes = [
-      ProductTypes.PRETZELS,
-      ProductTypes.NACHOS,
-      ProductTypes.SPICY_WINGS,
-    ];
-    if (
-      !isEnum(snacksData.type, ProductTypes) ||
-      !validTypes.includes(snacksData.type)
-    ) {
+    if (!isEnum(snacksData.type, ProductTypes)) {
       throw new BadRequestException(`Invalid beer type: ${snacksData.type}`);
     }
     const entity = await this.snacksService.createSnacks(snacksData);

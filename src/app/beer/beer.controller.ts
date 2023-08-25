@@ -34,6 +34,7 @@ import { ProductTypes } from 'shared/enums/productTypes.enum';
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
 import { BeerPaginationResponse } from './dto/pagination-response.dto';
+import { BeerTypes } from './enums/beer-types.enum';
 
 @ApiTags('Beer')
 @Controller('beer')
@@ -72,15 +73,7 @@ export class BeerController {
   @ApiBody({ type: BeerDTO })
   @Post()
   async createBeer(@Body() beerData: Partial<BeerDTO>) {
-    const validTypes = [
-      ProductTypes.LAGER,
-      ProductTypes.ALE,
-      ProductTypes.WHEAT_BEER,
-    ];
-    if (
-      !isEnum(beerData.type, ProductTypes) ||
-      !validTypes.includes(beerData.type)
-    ) {
+    if (!isEnum(beerData.type, BeerTypes)) {
       throw new BadRequestException(`Invalid beer type: ${beerData.type}`);
     }
     const entity = await this.beerService.createBeer(beerData);
