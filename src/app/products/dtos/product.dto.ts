@@ -57,4 +57,12 @@ export class ProductDTO extends UUIDDto {
 
     return it;
   }
+
+  public static fromEntities(entities?: ProductEntity[]) {
+    if (!Array.isArray(entities)) {
+      return [];
+    }
+
+    return entities.map(entity => this.fromEntity(entity));
+  }
 }
