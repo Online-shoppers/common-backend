@@ -1,13 +1,16 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+
+import { CreateSnackForm } from '../dto/create-snack.form';
 import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
 import { SnacksDTO } from '../dto/snack.dto';
 import { SnacksEntity } from '../entities/snack.entity';
 
 @Injectable()
 export class SnacksRepo extends EntityRepository<SnacksEntity> {
-  async getBeerList(page: number, size: number, includeArchived: boolean) {
+  async getSnacksList(page: number, size: number, includeArchived: boolean) {
     const archived = includeArchived ? { $in: [true, false] } : false;
 
     const [total, pageItems] = await Promise.all([
@@ -23,7 +26,7 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
     return response;
   }
 
-  async getSnacksById(id: string) {
+  async getSnackById(id: string) {
     try {
       const product = await this.findOneOrFail({ id });
       return product;
@@ -31,30 +34,26 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
       throw new BadRequestException('Product does not exist');
     }
   }
-  async createSnacks(snacksData: Partial<SnacksEntity>): Promise<SnacksEntity> {
-    const snacks = this.em.create(SnacksEntity, snacksData);
-    await this.getEntityManager().persistAndFlush(snacks);
-    return snacks;
+
+  async createSnack(snackData: CreateSnackForm) {
+    const snack = this.em.create(SnacksEntity, {
+      ...snackData,
+      category: ProductCategory.SNACKS,
+    });
+    await this.getEntityManager().persistAndFlush(snack);
+
+    return snack;
   }
-  async updateSnacks(
-    id: string,
-    updateData: Partial<SnacksEntity>,
-  ): Promise<SnacksEntity | null> {
-    const snacks = await this.findOne({ id });
 
-    if (!snacks) {
-      return null;
-    }
-
-    Object.assign(snacks, updateData);
-
-    await this.getEntityManager().persistAndFlush(snacks);
-    return snacks;
+  async updateSnack(snackEntity: SnacksEntity) {
+    await this.getEntityManager().persistAndFlush(snackEntity);
+    return snackEntity;
   }
+
   async archiveSnack(snacksId: string) {
     const em = this.getEntityManager();
 
-    const snack = await this.getSnacksById(snacksId);
+    const snack = await this.getSnackById(snacksId);
     snack.archived = true;
 
     await em.persistAndFlush(snack);

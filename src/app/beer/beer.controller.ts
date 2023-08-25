@@ -1,13 +1,12 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   ParseBoolPipe,
   ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -21,7 +20,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { isEnum } from 'class-validator';
 
 import {
   JwtPermissionsGuard,
@@ -29,12 +27,11 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { ProductTypes } from 'shared/enums/productTypes.enum';
-
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
+import { CreateBeerForm } from './dto/create-beer.form';
 import { BeerPaginationResponse } from './dto/pagination-response.dto';
-import { BeerTypes } from './enums/beer-types.enum';
+import { UpdateBeerForm } from './dto/update-beer.form';
 
 @ApiTags('Beer')
 @Controller('beer')
@@ -48,10 +45,10 @@ export class BeerController {
     type: BeerPaginationResponse,
   })
   @Get()
-  async getPageAccessories(
-    @Query('page', ParseIntPipe)
+  async getPageBeer(
+    @Query('page', new ParseIntPipe({ optional: true }))
     page = 1,
-    @Query('size', ParseIntPipe)
+    @Query('size', new ParseIntPipe({ optional: true }))
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
@@ -61,7 +58,7 @@ export class BeerController {
 
   @ApiResponse({ type: BeerDTO })
   @Get(':id')
-  async getBeerById(@Param('id') id: string) {
+  async getBeerById(@Param('id', ParseUUIDPipe) id: string) {
     const entity = await this.beerService.getBeerInfo(id);
     return BeerDTO.fromEntity(entity);
   }
@@ -69,34 +66,26 @@ export class BeerController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
+  @ApiBody({ type: CreateBeerForm })
   @ApiResponse({ type: BeerDTO })
-  @ApiBody({ type: BeerDTO })
   @Post()
-  async createBeer(@Body() beerData: Partial<BeerDTO>) {
-    if (!isEnum(beerData.type, BeerTypes)) {
-      throw new BadRequestException(`Invalid beer type: ${beerData.type}`);
-    }
-    const entity = await this.beerService.createBeer(beerData);
-    return BeerDTO.fromEntity(entity);
+  async createBeer(@Body() beerData: CreateBeerForm) {
+    const dto = CreateBeerForm.from(beerData);
+    return this.beerService.createBeer(dto);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
   @RestrictRequest(UserPermissions.CanManageProducts)
+  @ApiBody({ type: UpdateBeerForm })
   @ApiResponse({ type: BeerDTO })
-  @ApiBody({ type: BeerDTO })
   @Put(':id')
   async updateBeer(
-    @Param('id') id: string,
-    @Body() updateData: Partial<BeerDTO>,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateData: UpdateBeerForm,
   ) {
-    const updatedBeer = await this.beerService.updateBeer(id, updateData);
-
-    if (!updatedBeer) {
-      throw new NotFoundException(`Beer with id ${id} not found`);
-    }
-
-    return BeerDTO.fromEntity(updatedBeer);
+    const dto = UpdateBeerForm.from(updateData);
+    return this.beerService.updateBeer(id, dto);
   }
 
   @ApiBearerAuth()
@@ -104,7 +93,7 @@ export class BeerController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: BeerDTO })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.beerService.archiveBeer(id);
   }
 }

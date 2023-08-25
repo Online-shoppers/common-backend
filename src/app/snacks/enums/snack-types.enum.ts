@@ -1,5 +1,5 @@
 export enum SnackTypes {
-  PRETZELS = 'Pretzels',
-  NACHOS = 'Nachos',
-  SPICY_WINGS = 'Spicy Wings',
+  PRETZELS = 'PRETZELS',
+  NACHOS = 'NACHOS',
+  SPICY_WINGS = 'SPICY_WINGS',
 }

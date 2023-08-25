@@ -1,7 +1,10 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+
 import { BeerDTO } from '../dto/beer.dto';
+import { CreateBeerForm } from '../dto/create-beer.form';
 import { BeerPaginationResponse } from '../dto/pagination-response.dto';
 import { BeerEntity } from '../entities/beer.entity';
 
@@ -23,7 +26,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
     return response;
   }
 
-  async getById(id: string) {
+  async getBeerById(id: string) {
     try {
       const product = await this.findOneOrFail({ id });
       return product;
@@ -32,40 +35,29 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
     }
   }
 
-  async getAllProductsSortedByPriceAsc() {
-    return this.em.find(BeerEntity, {}, { orderBy: { price: 'ASC' } });
-  }
-
-  async getAllProductsSortedByPriceDesc() {
-    return this.em.find(BeerEntity, {}, { orderBy: { price: 'DESC' } });
-  }
-
-  async createBeer(beerData: Partial<BeerEntity>): Promise<BeerEntity> {
-    const beer = this.em.create(BeerEntity, beerData);
+  async createBeer(beerData: CreateBeerForm) {
+    const beer = this.em.create(BeerEntity, {
+      ...beerData,
+      category: ProductCategory.BEER,
+    });
     await this.getEntityManager().persistAndFlush(beer);
+
     return beer;
   }
 
-  async updateBeer(
-    id: string,
-    updateData: Partial<BeerEntity>,
-  ): Promise<BeerEntity | null> {
-    const beer = await this.findOne({ id });
-
-    if (!beer) {
-      return null;
-    }
-
-    Object.assign(beer, updateData);
-
-    await this.getEntityManager().persistAndFlush(beer);
-    return beer;
+  async updateBeer(beerEntity: BeerEntity) {
+    await this.getEntityManager().persistAndFlush(beerEntity);
+    return beerEntity;
   }
 
   async archiveBeer(beerId: string) {
-    const beer = await this.getById(beerId);
+    const em = this.getEntityManager();
+
+    const beer = await this.getBeerById(beerId);
     beer.archived = true;
-    await this.getEntityManager().persistAndFlush(beer);
+
+    await em.persistAndFlush(beer);
+
     return BeerDTO.fromEntity(beer);
   }
 }

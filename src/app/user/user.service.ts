@@ -17,18 +17,18 @@ export class UserService {
   ) {}
 
   async getUserByEmail(email: string) {
-    return await this.repo_user.findOne({ email: email });
+    return this.repo_user.findOne({ email: email });
   }
 
   async getUserById(userId: string) {
-    return await this.repo_user.findOne({ id: userId });
+    return this.repo_user.findOne({ id: userId });
   }
 
   async getUsers() {
-    return await this.repo_user.getList();
+    return this.repo_user.getList();
   }
   async getUserInfo(userId: string) {
-    return await this.repo_user.getById(userId);
+    return this.repo_user.getById(userId);
   }
 
   async archiveUser(userId: string) {

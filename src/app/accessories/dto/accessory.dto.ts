@@ -15,6 +15,8 @@ export class AccessoryDTO extends ProductDTO {
     }
     const it = new AccessoryDTO();
     it.id = entity.id;
+    it.created = entity.created.valueOf();
+    it.updated = entity.updated.valueOf();
     it.name = entity.name;
     it.price = entity.price;
     it.description = entity.description;

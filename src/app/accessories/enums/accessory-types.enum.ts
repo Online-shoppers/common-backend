@@ -1,5 +1,5 @@
 export enum AccessoryTypes {
-  BEER_GLASSES = 'Beer Glasses',
-  BOTTLE_OPENER = 'Bottle Opener',
-  BEER_COASTERS = 'Beer Coasters',
+  BEER_GLASSES = 'BEER_GLASSES',
+  BOTTLE_OPENER = 'BOTTLE_OPENER',
+  BEER_COASTERS = 'BEER_COASTERS',
 }

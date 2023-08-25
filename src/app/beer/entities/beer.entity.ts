@@ -6,7 +6,7 @@ import { ProductEntity } from '../../../shared/entities/product.entity';
 import { BeerRepo } from '../repo/beer.repo';
 
 @Entity({
-  discriminatorValue: ProductCategory.CATEGORY_BEER,
+  discriminatorValue: ProductCategory.BEER,
   customRepository: () => BeerRepo,
 })
 export class BeerEntity extends ProductEntity {

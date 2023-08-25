@@ -19,13 +19,14 @@ export class SecurityService {
   ) {}
 
   public async getUserById(userId: string) {
-    return await this.repo_user.getById(userId);
-  }
-  hashData(data) {
-    return bcrypt.hash(data, 10);
+    return this.repo_user.getById(userId);
   }
 
-  comparePassword(inputPassword, hashedPassword) {
+  hashPassword(password: string) {
+    return bcrypt.hash(password, 10);
+  }
+
+  comparePassword(inputPassword: string, hashedPassword: string) {
     return bcrypt.compare(inputPassword, hashedPassword);
   }
 
@@ -63,7 +64,7 @@ export class SecurityService {
     const accessPayload = this.jwtService.decode(accessToken) as UserSessionDto;
 
     const user = await this.repo_user.findOne({ id: accessPayload.id });
-    return await this.generateTokens(user);
+    return this.generateTokens(user);
   }
 
   async validateRefreshToken(token: string) {
