@@ -37,7 +37,7 @@ export class ProductRepo extends EntityRepository<ProductEntity> {
 
     const response: ProductsPaginationResponse = {
       info: { total },
-      items: ProductDTO.fromEntities(pageItems),
+      items: await ProductDTO.fromEntities(pageItems),
     };
 
     return response;

@@ -22,7 +22,7 @@ export class BeerDTO extends ProductDTO {
   @IsNumber()
   ibu: number;
 
-  static fromEntity(entity?: BeerEntity) {
+  static async fromEntity(entity?: BeerEntity) {
     if (!entity) {
       return;
     }
@@ -36,6 +36,7 @@ export class BeerDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.rating = await entity.rating();
     it.type = entity.type;
     it.archived = entity.archived;
     it.abv = entity.abv;
@@ -46,10 +47,10 @@ export class BeerDTO extends ProductDTO {
     return it;
   }
 
-  static fromEntities(entities?: BeerEntity[]) {
+  static async fromEntities(entities?: BeerEntity[]) {
     if (!entities?.map) {
       return;
     }
-    return entities.map(entity => this.fromEntity(entity));
+    return Promise.all(entities.map(entity => this.fromEntity(entity)));
   }
 }

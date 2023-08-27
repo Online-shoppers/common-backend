@@ -20,7 +20,7 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
 
     const response: SnacksPaginationResponse = {
       info: { total },
-      items: SnacksDTO.fromEntities(pageItems),
+      items: await SnacksDTO.fromEntities(pageItems),
     };
 
     return response;

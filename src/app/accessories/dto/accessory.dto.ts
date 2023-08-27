@@ -10,10 +10,11 @@ export class AccessoryDTO extends ProductDTO {
   @IsNumber()
   weight: number;
 
-  static fromEntity(entity?: AccessoryEntity) {
+  static async fromEntity(entity?: AccessoryEntity) {
     if (!entity) {
       return;
     }
+
     const it = new AccessoryDTO();
     it.id = entity.id;
     it.created = entity.created.valueOf();
@@ -24,16 +25,17 @@ export class AccessoryDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.rating = await entity.rating();
     it.type = entity.type;
     it.archived = entity.archived;
     it.weight = entity.weight;
     return it;
   }
 
-  static fromEntities(entities?: AccessoryEntity[]) {
+  static async fromEntities(entities?: AccessoryEntity[]) {
     if (!entities?.map) {
       return;
     }
-    return entities.map(entity => this.fromEntity(entity));
+    return Promise.all(entities.map(entity => this.fromEntity(entity)));
   }
 }

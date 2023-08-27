@@ -20,7 +20,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
 
     const response: BeerPaginationResponse = {
       info: { total },
-      items: BeerDTO.fromEntities(pageItems),
+      items: await BeerDTO.fromEntities(pageItems),
     };
 
     return response;
