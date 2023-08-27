@@ -34,6 +34,10 @@ export class ProductDTO extends UUIDDto {
   category: ProductCategories;
 
   @ApiProperty()
+  @IsNumber()
+  rating: number;
+
+  @ApiProperty()
   @IsEnum(ProductTypes)
   type: ProductTypes;
 
@@ -41,7 +45,7 @@ export class ProductDTO extends UUIDDto {
   @IsBoolean()
   archived: boolean;
 
-  public static fromEntity(entity: ProductEntity) {
+  public static async fromEntity(entity: ProductEntity) {
     const it = new ProductDTO();
 
     it.id = entity.id;
@@ -50,6 +54,7 @@ export class ProductDTO extends UUIDDto {
     it.name = entity.name;
     it.description = entity.description;
     it.category = entity.category;
+    it.rating = await entity.rating();
     it.image_url = entity.image_url;
     it.price = entity.price;
     it.quantity = entity.quantity;
@@ -58,11 +63,11 @@ export class ProductDTO extends UUIDDto {
     return it;
   }
 
-  public static fromEntities(entities?: ProductEntity[]) {
+  public static async fromEntities(entities?: ProductEntity[]) {
     if (!Array.isArray(entities)) {
-      return [];
+      return Promise.all([]);
     }
 
-    return entities.map(entity => this.fromEntity(entity));
+    return Promise.all(entities.map(entity => this.fromEntity(entity)));
   }
 }

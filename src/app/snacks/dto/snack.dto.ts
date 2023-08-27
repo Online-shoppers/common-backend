@@ -10,7 +10,7 @@ export class SnacksDTO extends ProductDTO {
   @IsNumber()
   weight: number;
 
-  static fromEntity(entity?: SnacksEntity) {
+  static async fromEntity(entity?: SnacksEntity) {
     if (!entity) {
       return;
     }
@@ -24,16 +24,17 @@ export class SnacksDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.rating = await entity.rating();
     it.type = entity.type;
     it.archived = entity.archived;
     it.weight = entity.weight;
     return it;
   }
 
-  static fromEntities(entities?: SnacksEntity[]) {
+  static async fromEntities(entities?: SnacksEntity[]) {
     if (!entities?.map) {
       return;
     }
-    return entities.map(entity => this.fromEntity(entity));
+    return Promise.all(entities.map(entity => this.fromEntity(entity)));
   }
 }

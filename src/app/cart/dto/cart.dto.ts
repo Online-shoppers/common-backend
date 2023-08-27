@@ -17,7 +17,7 @@ export class CartDto extends UUIDDto {
   products: CartProductDto[];
 
   static async fromEntity(entity?: CartEntity) {
-    if (!entity.products.isInitialized) {
+    if (!entity.products.isInitialized()) {
       await entity.products.init();
     }
 

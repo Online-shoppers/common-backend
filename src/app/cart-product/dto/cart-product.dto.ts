@@ -60,7 +60,7 @@ export class CartProductDto extends UUIDDto {
   }
 
   static async fromCollection(collection?: Collection<CartProductEntity>) {
-    if (!collection.isInitialized) {
+    if (!collection.isInitialized()) {
       await collection.init();
     }
 

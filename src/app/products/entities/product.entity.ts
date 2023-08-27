@@ -38,6 +38,24 @@ export class ProductEntity extends UUIDEntity {
   @Property({ name: 'quantity' })
   quantity!: number;
 
+  @Property({ persist: false })
+  async rating() {
+    if (!this.reviews.isInitialized()) {
+      await this.reviews.init();
+    }
+
+    if (this.reviews.length === 0) {
+      return 0;
+    }
+
+    const points = this.reviews
+      .getItems()
+      .map(review => review.rating)
+      .reduce((acc, rating) => acc + rating, 0);
+
+    return Math.round((points * 10) / this.reviews.length) / 10;
+  }
+
   @Enum(() => ProductCategories)
   category!: ProductCategories;
 

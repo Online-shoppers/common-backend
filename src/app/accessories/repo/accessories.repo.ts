@@ -24,7 +24,7 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
 
     const response: AccessoryPaginationResponse = {
       info: { total },
-      items: AccessoryDTO.fromEntities(pageItems),
+      items: await AccessoryDTO.fromEntities(pageItems),
     };
 
     return response;
