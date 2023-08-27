@@ -14,6 +14,12 @@ export class SnacksDTO extends ProductDTO {
     if (!entity) {
       return;
     }
+
+    const [rating, reviewsAmount] = await Promise.all([
+      await entity.rating(),
+      await entity.reviewsAmount(),
+    ]);
+
     const it = new SnacksDTO();
     it.id = entity.id;
     it.created = entity.created.valueOf();
@@ -24,7 +30,8 @@ export class SnacksDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
-    it.rating = await entity.rating();
+    it.rating = rating;
+    it.reviews_amount = reviewsAmount;
     it.type = entity.type;
     it.archived = entity.archived;
     it.weight = entity.weight;

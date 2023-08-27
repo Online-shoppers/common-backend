@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsNumber, IsString } from 'class-validator';
 
 import { ProductEntity } from 'app/products/entities/product.entity';
 
@@ -38,6 +38,10 @@ export class ProductDTO extends UUIDDto {
   rating: number;
 
   @ApiProperty()
+  @IsInt()
+  reviews_amount: number;
+
+  @ApiProperty()
   @IsEnum(ProductTypes)
   type: ProductTypes;
 
@@ -48,13 +52,19 @@ export class ProductDTO extends UUIDDto {
   public static async fromEntity(entity: ProductEntity) {
     const it = new ProductDTO();
 
+    const [rating, reviewsAmount] = await Promise.all([
+      await entity.rating(),
+      await entity.reviewsAmount(),
+    ]);
+
     it.id = entity.id;
     it.created = entity.created.valueOf();
     it.updated = entity.updated.valueOf();
     it.name = entity.name;
     it.description = entity.description;
     it.category = entity.category;
-    it.rating = await entity.rating();
+    it.rating = rating;
+    it.reviews_amount = reviewsAmount;
     it.image_url = entity.image_url;
     it.price = entity.price;
     it.quantity = entity.quantity;

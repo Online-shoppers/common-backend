@@ -56,6 +56,17 @@ export class ProductEntity extends UUIDEntity {
     return Math.round((points * 10) / this.reviews.length) / 10;
   }
 
+  @Property({ persist: false })
+  async reviewsAmount() {
+    if (!this.reviews.isInitialized()) {
+      await this.reviews.init();
+    }
+
+    const amount = this.reviews.getItems().length;
+
+    return amount;
+  }
+
   @Enum(() => ProductCategories)
   category!: ProductCategories;
 
