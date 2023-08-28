@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsString, validate } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsString,
+  Max,
+  Min,
+  validate,
+} from 'class-validator';
 
 export class EditReviewForm {
   @ApiProperty()
@@ -12,6 +19,8 @@ export class EditReviewForm {
 
   @ApiProperty()
   @IsInt()
+  @Min(1)
+  @Max(5)
   rating: number;
 
   @ApiProperty()

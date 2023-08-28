@@ -1,11 +1,10 @@
 import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { SortProduct } from 'shared/enums/sort-products.enum';
-
 import { AccessoryDTO } from './dto/accessory.dto';
 import { CreateAccessoryForm } from './dto/create-accessory.form';
 import { UpdateAccessoryForm } from './dto/update-accessory.form';
+import { AccessorySorting } from './enums/accessory-sorting.enum';
 import { AccessoryRepo } from './repo/accessories.repo';
 
 @Injectable()
@@ -16,15 +15,13 @@ export class AccessoriesService {
     page: number,
     size: number,
     includeArchived: boolean,
-    sortDirection: SortProduct,
-    sortByField: string,
+    sortOption: AccessorySorting,
   ) {
     return this.repo_accessory.getAccessoriesList(
       page,
       size,
       includeArchived,
-      sortDirection,
-      sortByField,
+      sortOption,
     );
   }
 

@@ -1,15 +1,15 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Body, Injectable } from '@nestjs/common';
+import { isEnum } from 'class-validator';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
-
-import { SortProduct } from 'shared/enums/sort-products.enum';
 
 import { CreateSnackForm } from '../dto/create-snack.form';
 import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
 import { SnacksDTO } from '../dto/snack.dto';
 import { SnacksEntity } from '../entities/snack.entity';
 import { SnackSortFields } from '../enums/snack-sort-fields.enum';
+import { SnackSorting } from '../enums/snack-sorting.enum';
 
 @Injectable()
 export class SnacksRepo extends EntityRepository<SnacksEntity> {
@@ -17,13 +17,12 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
     page: number,
     size: number,
     includeArchived: boolean,
-    sortDirection: SortProduct,
-    sortByField: string,
+    sortOption: SnackSorting,
   ) {
-    if (
-      !Object.values(SnackSortFields).includes(sortByField as SnackSortFields)
-    ) {
-      throw new Error(`Недопустимое поле сортировки "${sortByField}"`);
+    const [field, order] = sortOption.split(':');
+
+    if (!Object.values(SnackSortFields).includes(field as SnackSortFields)) {
+      throw new Error(`Недопустимое поле сортировки "${field}"`);
     }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
@@ -35,7 +34,7 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
           offset: size * page - size,
           limit: size,
           orderBy: {
-            [sortByField]: sortDirection,
+            [field]: order,
           },
         },
       ),

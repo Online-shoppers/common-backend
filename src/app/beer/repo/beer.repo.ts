@@ -3,13 +3,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
-import { SortProduct } from 'shared/enums/sort-products.enum';
-
 import { BeerDTO } from '../dto/beer.dto';
 import { CreateBeerForm } from '../dto/create-beer.form';
 import { BeerPaginationResponse } from '../dto/pagination-response.dto';
 import { BeerEntity } from '../entities/beer.entity';
 import { BeerSortFields } from '../enums/beer-sort-fields.enum';
+import { BeerSorting } from '../enums/beer-sorting.enum';
 
 @Injectable()
 export class BeerRepo extends EntityRepository<BeerEntity> {
@@ -17,13 +16,11 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
     page: number,
     size: number,
     includeArchived: boolean,
-    sortDirection: SortProduct,
-    sortByField: string,
+    sortOption: BeerSorting,
   ) {
-    if (
-      !Object.values(BeerSortFields).includes(sortByField as BeerSortFields)
-    ) {
-      throw new Error(`Недопустимое поле сортировки "${sortByField}"`);
+    const [field, direction] = sortOption.split(':');
+    if (!Object.values(BeerSortFields).includes(field as BeerSortFields)) {
+      throw new Error(`Недопустимое поле сортировки "${field}"`);
     }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
@@ -35,7 +32,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
           offset: size * page - size,
           limit: size,
           orderBy: {
-            [sortByField]: sortDirection,
+            [field]: direction,
           },
         },
       ),
