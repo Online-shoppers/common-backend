@@ -29,7 +29,7 @@ export class ReviewRepo extends EntityRepository<ReviewEntity> {
   }
 
   async getProductReviews(productId: string) {
-    return this.find({ product: { id: productId } });
+    return this.find({ product: { id: productId } }, { populate: ['user'] });
   }
 
   async addProductReview(
@@ -50,7 +50,11 @@ export class ReviewRepo extends EntityRepository<ReviewEntity> {
       product,
     });
 
-    await this.manager.persistAndFlush(created);
+    try {
+      await this.manager.persistAndFlush(created);
+    } catch (err) {
+      throw new BadRequestException('Bad values');
+    }
 
     return created;
   }
@@ -59,7 +63,7 @@ export class ReviewRepo extends EntityRepository<ReviewEntity> {
     const em = this.getEntityManager();
 
     const product = await this.getProductReviewById(id);
-    const edited = wrap(product).assign({ ...data, edited: true });
+    const edited = wrap(product).assign({ id: 'hello', edited: true });
 
     await em.persistAndFlush(edited);
 

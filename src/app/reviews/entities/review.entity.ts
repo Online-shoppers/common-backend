@@ -11,18 +11,9 @@ import { ReviewRepo } from '../repo/review.repo';
   customRepository: () => ReviewRepo,
 })
 export class ReviewEntity extends UUIDEntity {
-  @Property()
-  summary: string;
-
-  @Property()
+  @Property({ length: 1000 })
   text: string;
 
-  @Check({
-    expression: (entity: Record<'rating', string>) => `${entity.rating} <= 5`,
-  })
-  @Check({
-    expression: (entity: Record<'rating', string>) => `${entity.rating} >= 1`,
-  })
   @Property()
   rating: number;
 
