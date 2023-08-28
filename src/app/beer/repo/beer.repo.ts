@@ -7,15 +7,35 @@ import { BeerDTO } from '../dto/beer.dto';
 import { CreateBeerForm } from '../dto/create-beer.form';
 import { BeerPaginationResponse } from '../dto/pagination-response.dto';
 import { BeerEntity } from '../entities/beer.entity';
+import { BeerSortFields } from '../enums/beer-sort-fields.enum';
+import { BeerSorting } from '../enums/beer-sorting.enum';
 
 @Injectable()
 export class BeerRepo extends EntityRepository<BeerEntity> {
-  async getBeerList(page: number, size: number, includeArchived: boolean) {
+  async getBeerList(
+    page: number,
+    size: number,
+    includeArchived: boolean,
+    sortOption: BeerSorting,
+  ) {
+    const [field, direction] = sortOption.split(':');
+    if (!Object.values(BeerSortFields).includes(field as BeerSortFields)) {
+      throw new Error(`Недопустимое поле сортировки "${field}"`);
+    }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
     const [total, pageItems] = await Promise.all([
       this.count({ archived }),
-      this.find({ archived }, { offset: size * page - size, limit: size }),
+      this.find(
+        { archived },
+        {
+          offset: size * page - size,
+          limit: size,
+          orderBy: {
+            [field]: direction,
+          },
+        },
+      ),
     ]);
 
     const response: BeerPaginationResponse = {

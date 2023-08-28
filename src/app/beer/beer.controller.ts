@@ -1,3 +1,4 @@
+import { Enum } from '@mikro-orm/core';
 import {
   Body,
   Controller,
@@ -5,6 +6,7 @@ import {
   Get,
   Param,
   ParseBoolPipe,
+  ParseEnumPipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -32,6 +34,7 @@ import { BeerDTO } from './dto/beer.dto';
 import { CreateBeerForm } from './dto/create-beer.form';
 import { BeerPaginationResponse } from './dto/pagination-response.dto';
 import { UpdateBeerForm } from './dto/update-beer.form';
+import { BeerSorting } from './enums/beer-sorting.enum';
 
 @ApiTags('Beer')
 @Controller('beer')
@@ -41,6 +44,12 @@ export class BeerController {
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'size', type: Number, required: false })
   @ApiQuery({ name: 'includeArchived', type: Boolean, required: false })
+  @ApiQuery({
+    name: 'sortOption',
+    type: 'enum',
+    enum: BeerSorting,
+    required: false,
+  })
   @ApiResponse({
     type: BeerPaginationResponse,
   })
@@ -52,8 +61,15 @@ export class BeerController {
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
+    @Query('sortOption', new ParseEnumPipe(BeerSorting))
+    sortOption: BeerSorting,
   ) {
-    return this.beerService.getPageBeer(page, size, includeArchived);
+    return this.beerService.getPageBeer(
+      page,
+      size,
+      includeArchived,
+      sortOption,
+    );
   }
 
   @ApiResponse({ type: BeerDTO })

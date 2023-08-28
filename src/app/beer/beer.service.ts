@@ -4,14 +4,20 @@ import { Injectable } from '@nestjs/common';
 import { BeerDTO } from './dto/beer.dto';
 import { CreateBeerForm } from './dto/create-beer.form';
 import { UpdateBeerForm } from './dto/update-beer.form';
+import { BeerSorting } from './enums/beer-sorting.enum';
 import { BeerRepo } from './repo/beer.repo';
 
 @Injectable()
 export class BeerService {
   constructor(private readonly repo_beer: BeerRepo) {}
 
-  async getPageBeer(page: number, size: number, includeArchived: boolean) {
-    return this.repo_beer.getBeerList(page, size, includeArchived);
+  async getPageBeer(
+    page: number,
+    size: number,
+    includeArchived: boolean,
+    sortOption: BeerSorting,
+  ) {
+    return this.repo_beer.getBeerList(page, size, includeArchived, sortOption);
   }
 
   async getBeerInfo(id: string) {
