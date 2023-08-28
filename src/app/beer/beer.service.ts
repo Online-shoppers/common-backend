@@ -1,6 +1,8 @@
 import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
+import { SortProduct } from 'shared/enums/sort-products.enum';
+
 import { BeerDTO } from './dto/beer.dto';
 import { CreateBeerForm } from './dto/create-beer.form';
 import { UpdateBeerForm } from './dto/update-beer.form';
@@ -10,8 +12,20 @@ import { BeerRepo } from './repo/beer.repo';
 export class BeerService {
   constructor(private readonly repo_beer: BeerRepo) {}
 
-  async getPageBeer(page: number, size: number, includeArchived: boolean) {
-    return this.repo_beer.getBeerList(page, size, includeArchived);
+  async getPageBeer(
+    page: number,
+    size: number,
+    includeArchived: boolean,
+    sortDirection: SortProduct,
+    sortByField: string,
+  ) {
+    return this.repo_beer.getBeerList(
+      page,
+      size,
+      includeArchived,
+      sortDirection,
+      sortByField,
+    );
   }
 
   async getBeerInfo(id: string) {

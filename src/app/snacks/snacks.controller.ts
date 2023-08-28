@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseBoolPipe,
+  ParseEnumPipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -35,6 +36,7 @@ import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
 import { UpdateSnackForm } from './dto/update-snack.form';
 import { SnacksEntity } from './entities/snack.entity';
+import { SnackSortFields } from './enums/snack-sort-fields.enum';
 import { SnacksService } from './snacks.service';
 
 @ApiTags('Snack')
@@ -59,7 +61,8 @@ export class SnacksController {
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
     @Query('direction') sortDirection: SortProduct,
-    @Query('field') sortByField: string,
+    @Query('field', new ParseEnumPipe(SnackSortFields))
+    sortByField: SnackSortFields,
   ) {
     return this.snacksService.getPageSnacks(
       page,

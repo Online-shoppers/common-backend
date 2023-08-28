@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20230825140039 extends Migration {
+export class Migration20230828074547 extends Migration {
   async up(): Promise<void> {
     this.addSql(
       'alter table "user_roles" alter column "permissions" type text[] using ("permissions"::text[]);',

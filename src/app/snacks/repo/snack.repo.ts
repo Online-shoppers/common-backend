@@ -1,5 +1,6 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Body, Injectable } from '@nestjs/common';
+import { isEnum } from 'class-validator';
 
 import { ProductCategory } from 'shared/enums/productCategory.enum';
 import { SortProduct } from 'shared/enums/sort-products.enum';
@@ -8,6 +9,7 @@ import { CreateSnackForm } from '../dto/create-snack.form';
 import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
 import { SnacksDTO } from '../dto/snack.dto';
 import { SnacksEntity } from '../entities/snack.entity';
+import { SnackSortFields } from '../enums/snack-sort-fields.enum';
 
 @Injectable()
 export class SnacksRepo extends EntityRepository<SnacksEntity> {
@@ -18,6 +20,11 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
     sortDirection: SortProduct,
     sortByField: string,
   ) {
+    if (
+      !Object.values(SnackSortFields).includes(sortByField as SnackSortFields)
+    ) {
+      throw new Error(`Недопустимое поле сортировки "${sortByField}"`);
+    }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
     const [total, pageItems] = await Promise.all([

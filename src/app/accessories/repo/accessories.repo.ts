@@ -2,11 +2,13 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { ProductCategory } from 'shared/enums/productCategory.enum';
+import { SortProduct } from 'shared/enums/sort-products.enum';
 
 import { AccessoryDTO } from '../dto/accessory.dto';
 import { CreateAccessoryForm } from '../dto/create-accessory.form';
 import { AccessoryPaginationResponse } from '../dto/pagination-response.dto';
 import { AccessoryEntity } from '../entities/accessory.entity';
+import { AccessorySortFields } from '../enums/accessory-sort-fields.enum';
 
 @Injectable()
 export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
@@ -14,12 +16,30 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
     page: number,
     size: number,
     includeArchived: boolean,
+    sortDirection: SortProduct,
+    sortByField: string,
   ) {
+    if (
+      !Object.values(AccessorySortFields).includes(
+        sortByField as AccessorySortFields,
+      )
+    ) {
+      throw new Error(`Недопустимое поле сортировки "${sortByField}"`);
+    }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
     const [total, pageItems] = await Promise.all([
       this.count({ archived }),
-      this.find({ archived }, { offset: size * page - size, limit: size }),
+      this.find(
+        { archived },
+        {
+          offset: size * page - size,
+          limit: size,
+          orderBy: {
+            [sortByField]: sortDirection,
+          },
+        },
+      ),
     ]);
 
     const response: AccessoryPaginationResponse = {
