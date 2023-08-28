@@ -1,21 +1,47 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Body, Injectable } from '@nestjs/common';
+import { isEnum } from 'class-validator';
 
-import { ProductCategories } from 'app/products/enums/product-categories.enum';
+
+import { ProductCategory } from 'shared/enums/productCategory.enum';
+import { SortProduct } from 'shared/enums/sort-products.enum';
+
+
 
 import { CreateSnackForm } from '../dto/create-snack.form';
 import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
 import { SnacksDTO } from '../dto/snack.dto';
 import { SnacksEntity } from '../entities/snack.entity';
+import { SnackSortFields } from '../enums/snack-sort-fields.enum';
 
 @Injectable()
 export class SnacksRepo extends EntityRepository<SnacksEntity> {
-  async getSnacksList(page: number, size: number, includeArchived: boolean) {
+  async getSnacksList(
+    page: number,
+    size: number,
+    includeArchived: boolean,
+    sortDirection: SortProduct,
+    sortByField: string,
+  ) {
+    if (
+      !Object.values(SnackSortFields).includes(sortByField as SnackSortFields)
+    ) {
+      throw new Error(`Недопустимое поле сортировки "${sortByField}"`);
+    }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
     const [total, pageItems] = await Promise.all([
       this.count({ archived }),
-      this.find({ archived }, { offset: size * page - size, limit: size }),
+      this.find(
+        { archived },
+        {
+          offset: size * page - size,
+          limit: size,
+          orderBy: {
+            [sortByField]: sortDirection,
+          },
+        },
+      ),
     ]);
 
     const response: SnacksPaginationResponse = {

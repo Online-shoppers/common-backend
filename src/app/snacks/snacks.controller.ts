@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseBoolPipe,
+  ParseEnumPipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -20,6 +21,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
 
 import {
   JwtPermissionsGuard,
@@ -27,10 +29,14 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
+import { SortProduct } from 'shared/enums/sort-products.enum';
+
 import { CreateSnackForm } from './dto/create-snack.form';
 import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
 import { UpdateSnackForm } from './dto/update-snack.form';
+import { SnacksEntity } from './entities/snack.entity';
+import { SnackSortFields } from './enums/snack-sort-fields.enum';
 import { SnacksService } from './snacks.service';
 
 @ApiTags('Snack')
@@ -41,6 +47,8 @@ export class SnacksController {
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'size', type: Number, required: false })
   @ApiQuery({ name: 'includeArchived', type: Boolean, required: false })
+  @ApiQuery({ name: 'sortDirection', type: IsEnum, required: false })
+  @ApiQuery({ name: 'sortByField', type: String, required: false })
   @ApiResponse({
     type: SnacksPaginationResponse,
   })
@@ -52,8 +60,17 @@ export class SnacksController {
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
+    @Query('direction') sortDirection: SortProduct,
+    @Query('field', new ParseEnumPipe(SnackSortFields))
+    sortByField: SnackSortFields,
   ) {
-    return this.snacksService.getPageSnacks(page, size, includeArchived);
+    return this.snacksService.getPageSnacks(
+      page,
+      size,
+      includeArchived,
+      sortDirection,
+      sortByField,
+    );
   }
 
   @Get(':id')
