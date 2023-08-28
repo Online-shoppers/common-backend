@@ -2,8 +2,9 @@ import { Collection } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsNumber, IsString } from 'class-validator';
 
+import { ProductCategories } from 'app/products/enums/product-categories.enum';
+
 import { UUIDDto } from 'shared/dtos/uuid.dto';
-import { ProductCategory } from 'shared/enums/productCategory.enum';
 
 import { CartProductEntity } from '../entities/cart-product.entity';
 
@@ -16,9 +17,9 @@ export class CartProductDto extends UUIDDto {
   @ApiProperty()
   description: string;
 
-  @IsEnum(ProductCategory)
+  @IsEnum(ProductCategories)
   @ApiProperty()
-  category: ProductCategory;
+  category: ProductCategories;
 
   @IsInt()
   @ApiProperty()
@@ -59,7 +60,7 @@ export class CartProductDto extends UUIDDto {
   }
 
   static async fromCollection(collection?: Collection<CartProductEntity>) {
-    if (!collection.isInitialized) {
+    if (!collection.isInitialized()) {
       await collection.init();
     }
 

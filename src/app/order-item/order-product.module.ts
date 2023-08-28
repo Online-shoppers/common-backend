@@ -1,8 +1,9 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
-import { ProductEntity } from '../../shared/entities/product.entity';
-import { OrderEntity } from '../order/entities/order.entity';
+import { OrderEntity } from 'app/order/entities/order.entity';
+import { ProductEntity } from 'app/products/entities/product.entity';
+
 import { OrderProductEntity } from './entity/order-product.entity';
 import { OrderProductController } from './order-product.controller';
 import { OrderProductService } from './order-product.service';

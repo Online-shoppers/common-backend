@@ -1,10 +1,10 @@
 import { Entity, Enum, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
 
 import { CartEntity } from 'app/cart/entities/cart.entity';
+import { ProductEntity } from 'app/products/entities/product.entity';
+import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
-import { ProductEntity } from 'shared/entities/product.entity';
 import { UUIDEntity } from 'shared/entities/uuid.entity';
-import { ProductCategory } from 'shared/enums/productCategory.enum';
 
 import { CartProductRepo } from '../repo/cart-product.repo';
 
@@ -16,8 +16,8 @@ export class CartProductEntity extends UUIDEntity {
   @Property()
   description!: string;
 
-  @Enum(() => ProductCategory)
-  category!: ProductCategory;
+  @Enum(() => ProductCategories)
+  category!: ProductCategories;
 
   @Property()
   quantity!: number;

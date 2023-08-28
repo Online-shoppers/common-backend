@@ -1,8 +1,10 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
+
 import { ProductCategory } from 'shared/enums/productCategory.enum';
 import { SortProduct } from 'shared/enums/sort-products.enum';
+
 
 import { AccessoryDTO } from '../dto/accessory.dto';
 import { CreateAccessoryForm } from '../dto/create-accessory.form';
@@ -44,7 +46,7 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
 
     const response: AccessoryPaginationResponse = {
       info: { total },
-      items: AccessoryDTO.fromEntities(pageItems),
+      items: await AccessoryDTO.fromEntities(pageItems),
     };
 
     return response;
@@ -62,7 +64,7 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
   async createAccessory(accessoryData: CreateAccessoryForm) {
     const accessory = this.em.create(AccessoryEntity, {
       ...accessoryData,
-      category: ProductCategory.ACCESSORIES,
+      category: ProductCategories.ACCESSORIES,
     });
     await this.getEntityManager().persistAndFlush(accessory);
 

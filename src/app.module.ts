@@ -19,6 +19,8 @@ import { UserModule } from 'app/user/user.module';
 
 import { NotificationsService } from 'shared/notifications/user/userNotification.service';
 
+import { ProductsModule } from './app/products/products.module';
+import { ReviewsModule } from './app/reviews/reviews.module';
 // ========== configs ==========
 import app_config from './config/app.config';
 import database_config from './config/database.config';
@@ -35,6 +37,8 @@ import database_config from './config/database.config';
       useFactory: (config: ConfigService) => config.get('database'),
       inject: [ConfigService],
     }),
+    EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     SnacksModule,
     BeerModule,
     AccessoriesModule,
@@ -46,8 +50,8 @@ import database_config from './config/database.config';
     RefreshTokenModule,
     OrderModule,
     OrderProductModule,
-    EventEmitterModule.forRoot(),
-    ScheduleModule.forRoot(),
+    ProductsModule,
+    ReviewsModule,
   ],
   controllers: [],
   providers: [],

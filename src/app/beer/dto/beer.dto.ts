@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
-import { ProductDTO } from '../../../shared/dtos/product.dto';
+import { ProductDTO } from 'app/products/dtos/product.dto';
+
 import { BeerEntity } from '../entities/beer.entity';
 
 export class BeerDTO extends ProductDTO {
@@ -21,10 +22,16 @@ export class BeerDTO extends ProductDTO {
   @IsNumber()
   ibu: number;
 
-  static fromEntity(entity?: BeerEntity) {
+  static async fromEntity(entity?: BeerEntity) {
     if (!entity) {
       return;
     }
+
+    const [rating, reviewsAmount] = await Promise.all([
+      await entity.rating(),
+      await entity.reviewsAmount(),
+    ]);
+
     const it = new BeerDTO();
     it.id = entity.id;
     it.created = entity.created.valueOf();
@@ -35,6 +42,8 @@ export class BeerDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.rating = rating;
+    it.reviews_amount = reviewsAmount;
     it.type = entity.type;
     it.archived = entity.archived;
     it.abv = entity.abv;
@@ -45,10 +54,10 @@ export class BeerDTO extends ProductDTO {
     return it;
   }
 
-  static fromEntities(entities?: BeerEntity[]) {
+  static async fromEntities(entities?: BeerEntity[]) {
     if (!entities?.map) {
       return;
     }
-    return entities.map(entity => this.fromEntity(entity));
+    return Promise.all(entities.map(entity => this.fromEntity(entity)));
   }
 }

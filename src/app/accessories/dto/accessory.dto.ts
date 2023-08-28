@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 
-import { ProductDTO } from '../../../shared/dtos/product.dto';
+import { ProductDTO } from 'app/products/dtos/product.dto';
+
 import { AccessoryEntity } from '../entities/accessory.entity';
 
 export class AccessoryDTO extends ProductDTO {
@@ -9,10 +10,16 @@ export class AccessoryDTO extends ProductDTO {
   @IsNumber()
   weight: number;
 
-  static fromEntity(entity?: AccessoryEntity) {
+  static async fromEntity(entity?: AccessoryEntity) {
     if (!entity) {
       return;
     }
+
+    const [rating, reviewsAmount] = await Promise.all([
+      await entity.rating(),
+      await entity.reviewsAmount(),
+    ]);
+
     const it = new AccessoryDTO();
     it.id = entity.id;
     it.created = entity.created.valueOf();
@@ -23,16 +30,18 @@ export class AccessoryDTO extends ProductDTO {
     it.image_url = entity.image_url;
     it.quantity = entity.quantity;
     it.category = entity.category;
+    it.rating = rating;
+    it.reviews_amount = reviewsAmount;
     it.type = entity.type;
     it.archived = entity.archived;
     it.weight = entity.weight;
     return it;
   }
 
-  static fromEntities(entities?: AccessoryEntity[]) {
+  static async fromEntities(entities?: AccessoryEntity[]) {
     if (!entities?.map) {
       return;
     }
-    return entities.map(entity => this.fromEntity(entity));
+    return Promise.all(entities.map(entity => this.fromEntity(entity)));
   }
 }

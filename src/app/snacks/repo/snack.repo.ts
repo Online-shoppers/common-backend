@@ -2,8 +2,11 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Body, Injectable } from '@nestjs/common';
 import { isEnum } from 'class-validator';
 
+
 import { ProductCategory } from 'shared/enums/productCategory.enum';
 import { SortProduct } from 'shared/enums/sort-products.enum';
+
+
 
 import { CreateSnackForm } from '../dto/create-snack.form';
 import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
@@ -43,7 +46,7 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
 
     const response: SnacksPaginationResponse = {
       info: { total },
-      items: SnacksDTO.fromEntities(pageItems),
+      items: await SnacksDTO.fromEntities(pageItems),
     };
 
     return response;
@@ -61,7 +64,7 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
   async createSnack(snackData: CreateSnackForm) {
     const snack = this.em.create(SnacksEntity, {
       ...snackData,
-      category: ProductCategory.SNACKS,
+      category: ProductCategories.SNACKS,
     });
     await this.getEntityManager().persistAndFlush(snack);
 

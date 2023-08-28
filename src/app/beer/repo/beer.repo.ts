@@ -4,6 +4,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ProductCategory } from 'shared/enums/productCategory.enum';
 import { SortProduct } from 'shared/enums/sort-products.enum';
 
+
 import { BeerDTO } from '../dto/beer.dto';
 import { CreateBeerForm } from '../dto/create-beer.form';
 import { BeerPaginationResponse } from '../dto/pagination-response.dto';
@@ -42,7 +43,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
 
     const response: BeerPaginationResponse = {
       info: { total },
-      items: BeerDTO.fromEntities(pageItems),
+      items: await BeerDTO.fromEntities(pageItems),
     };
 
     return response;
@@ -60,7 +61,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
   async createBeer(beerData: CreateBeerForm) {
     const beer = this.em.create(BeerEntity, {
       ...beerData,
-      category: ProductCategory.BEER,
+      category: ProductCategories.BEER,
     });
     await this.getEntityManager().persistAndFlush(beer);
 

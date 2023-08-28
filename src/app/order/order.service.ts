@@ -1,10 +1,9 @@
-import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { OrderStatuses } from '../../shared/enums/order-statuses.enum';
 import { UserService } from '../user/user.service';
 import { NewOrderForm } from './dto/new-order.form';
 import { OrderDTO } from './dto/order.dto';
+import { OrderStatuses } from './enums/order-statuses.enum';
 import { OrderRepo } from './repo/order.repo';
 
 @Injectable()
