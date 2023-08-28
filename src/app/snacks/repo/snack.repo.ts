@@ -1,12 +1,9 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Body, Injectable } from '@nestjs/common';
-import { isEnum } from 'class-validator';
 
+import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
-import { ProductCategory } from 'shared/enums/productCategory.enum';
 import { SortProduct } from 'shared/enums/sort-products.enum';
-
-
 
 import { CreateSnackForm } from '../dto/create-snack.form';
 import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
