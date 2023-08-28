@@ -1,12 +1,11 @@
 import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { SortProduct } from 'shared/enums/sort-products.enum';
-
 import { CreateSnackForm } from './dto/create-snack.form';
 import { SnacksDTO } from './dto/snack.dto';
 import { UpdateSnackForm } from './dto/update-snack.form';
 import { SnacksEntity } from './entities/snack.entity';
+import { SnackSorting } from './enums/snack-sorting.enum';
 import { SnacksRepo } from './repo/snack.repo';
 
 @Injectable()
@@ -17,15 +16,13 @@ export class SnacksService {
     page: number,
     size: number,
     includeArchived: boolean,
-    sortDirection: SortProduct,
-    sortByField: string,
+    sortOption: SnackSorting,
   ) {
     return this.repo_snacks.getSnacksList(
       page,
       size,
       includeArchived,
-      sortDirection,
-      sortByField,
+      sortOption,
     );
   }
 

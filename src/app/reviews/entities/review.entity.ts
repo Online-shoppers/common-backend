@@ -17,12 +17,6 @@ export class ReviewEntity extends UUIDEntity {
   @Property()
   text: string;
 
-  @Check({
-    expression: (entity: Record<'rating', string>) => `${entity.rating} <= 5`,
-  })
-  @Check({
-    expression: (entity: Record<'rating', string>) => `${entity.rating} >= 1`,
-  })
   @Property()
   rating: number;
 

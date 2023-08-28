@@ -3,13 +3,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
-import { SortProduct } from 'shared/enums/sort-products.enum';
-
 import { AccessoryDTO } from '../dto/accessory.dto';
 import { CreateAccessoryForm } from '../dto/create-accessory.form';
 import { AccessoryPaginationResponse } from '../dto/pagination-response.dto';
 import { AccessoryEntity } from '../entities/accessory.entity';
 import { AccessorySortFields } from '../enums/accessory-sort-fields.enum';
+import { AccessorySorting } from '../enums/accessory-sorting.enum';
 
 @Injectable()
 export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
@@ -17,15 +16,13 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
     page: number,
     size: number,
     includeArchived: boolean,
-    sortDirection: SortProduct,
-    sortByField: string,
+    sortOption: AccessorySorting,
   ) {
+    const [field, direction] = sortOption.split(':');
     if (
-      !Object.values(AccessorySortFields).includes(
-        sortByField as AccessorySortFields,
-      )
+      !Object.values(AccessorySortFields).includes(field as AccessorySortFields)
     ) {
-      throw new Error(`Недопустимое поле сортировки "${sortByField}"`);
+      throw new Error(`Недопустимое поле сортировки "${field}"`);
     }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
@@ -37,7 +34,7 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
           offset: size * page - size,
           limit: size,
           orderBy: {
-            [sortByField]: sortDirection,
+            [field]: direction,
           },
         },
       ),

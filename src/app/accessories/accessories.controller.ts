@@ -1,3 +1,4 @@
+import { Enum } from '@mikro-orm/core';
 import {
   Body,
   Controller,
@@ -28,14 +29,13 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { SortProduct } from 'shared/enums/sort-products.enum';
-
 import { AccessoriesService } from './accessories.service';
 import { AccessoryDTO } from './dto/accessory.dto';
 import { CreateAccessoryForm } from './dto/create-accessory.form';
 import { AccessoryPaginationResponse } from './dto/pagination-response.dto';
 import { UpdateAccessoryForm } from './dto/update-accessory.form';
 import { AccessorySortFields } from './enums/accessory-sort-fields.enum';
+import { AccessorySorting } from './enums/accessory-sorting.enum';
 
 @ApiTags('Accessory')
 @Controller('accessory')
@@ -45,8 +45,12 @@ export class AccessoriesController {
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'size', type: Number, required: false })
   @ApiQuery({ name: 'includeArchived', type: Boolean, required: false })
-  @ApiQuery({ name: 'sortDirection', type: String, required: false })
-  @ApiQuery({ name: 'sortByField', type: String, required: false })
+  @ApiQuery({
+    name: 'sortOption',
+    type: 'enum',
+    enum: AccessorySorting,
+    required: false,
+  })
   @ApiResponse({
     type: AccessoryPaginationResponse,
   })
@@ -58,16 +62,14 @@ export class AccessoriesController {
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
-    @Query('direction') sortDirection: SortProduct,
-    @Query('field', new ParseEnumPipe(AccessorySortFields))
-    sortByField: AccessorySortFields,
+    @Query('sortOption', new ParseEnumPipe(AccessorySorting))
+    sortOption: AccessorySorting,
   ) {
     return this.accessoriesService.getPageAccessories(
       page,
       size,
       includeArchived,
-      sortDirection,
-      sortByField,
+      sortOption,
     );
   }
 
