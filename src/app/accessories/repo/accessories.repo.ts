@@ -1,10 +1,9 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
+import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
-import { ProductCategory } from 'shared/enums/productCategory.enum';
 import { SortProduct } from 'shared/enums/sort-products.enum';
-
 
 import { AccessoryDTO } from '../dto/accessory.dto';
 import { CreateAccessoryForm } from '../dto/create-accessory.form';
