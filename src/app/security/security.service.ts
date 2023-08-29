@@ -2,7 +2,9 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { I18nService } from 'nestjs-i18n';
 
+import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { RefreshTokenRepo } from '../refresh-token/repo/refresh-token.repo';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserRepo } from '../user/repos/user.repo';
@@ -16,6 +18,7 @@ export class SecurityService {
     private readonly repo_refresh_token: RefreshTokenRepo,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
+    private readonly i18nSerivce: I18nService,
   ) {}
 
   public async getUserById(userId: string) {
@@ -58,7 +61,9 @@ export class SecurityService {
       this.validateAccessToken(accessToken) &&
       (await this.validateRefreshToken(refreshToken));
     if (!validTokens) {
-      throw new NotAcceptableException('Invalid tokens');
+      throw new NotAcceptableException(
+        this.i18nSerivce.translate(ErrorCodes.InvalidTokens),
+      );
     }
 
     const accessPayload = this.jwtService.decode(accessToken) as UserSessionDto;

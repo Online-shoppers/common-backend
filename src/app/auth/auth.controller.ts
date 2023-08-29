@@ -1,5 +1,6 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { TokensDto } from '../security/dto/tokens.dto';
@@ -15,17 +16,21 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly securityService: SecurityService,
+    private readonly i18nService: I18nService,
   ) {}
 
   @ApiBody({ type: UserSignUpForm })
   @ApiResponse({ type: TokensDto })
   @Post('/sign-up')
-  async signUp(@Body() body: UserSignUpForm): Promise<Tokens> {
+  async signUp(
+    @Body() body: UserSignUpForm,
+    @I18n() i18n: I18nContext,
+  ): Promise<Tokens> {
     const dto = UserSignUpForm.from(body);
     const errors = await UserSignUpForm.validate(dto);
     if (errors) {
       throw new BadRequestException({
-        message: ErrorCodes.InvalidForm,
+        message: i18n.t(ErrorCodes.InvalidForm),
         errors,
       });
     }

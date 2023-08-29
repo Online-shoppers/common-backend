@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, validate } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
 

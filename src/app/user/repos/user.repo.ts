@@ -1,6 +1,8 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 
+import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
 import { UserRoleDto } from '../../user-roles/dto/user-role.dto';
 import { UserRolesRepo } from '../../user-roles/repos/user-role.repo';
 import { NewUserForm } from '../dtos/new-user.form';
@@ -12,6 +14,7 @@ export class UserRepo extends EntityRepository<UserEntity> {
   constructor(
     private readonly manager: EntityManager,
     private readonly userRolesRepo: UserRolesRepo,
+    private readonly i18nService: I18nService,
   ) {
     super(manager, UserEntity);
   }
@@ -25,7 +28,9 @@ export class UserRepo extends EntityRepository<UserEntity> {
       const user = await this.findOneOrFail({ id });
       return user;
     } catch (err) {
-      throw new BadRequestException('No user found');
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.NotExists_User),
+      );
     }
   }
 

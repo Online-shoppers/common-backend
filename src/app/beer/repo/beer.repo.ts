@@ -3,11 +3,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
+import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
 import { BeerDTO } from '../dto/beer.dto';
 import { CreateBeerForm } from '../dto/create-beer.form';
 import { BeerPaginationResponse } from '../dto/pagination-response.dto';
 import { BeerEntity } from '../entities/beer.entity';
-import { BeerSortFields } from '../enums/beer-sort-fields.enum';
 import { BeerSorting } from '../enums/beer-sorting.enum';
 
 @Injectable()
@@ -19,9 +19,6 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
     sortOption: BeerSorting,
   ) {
     const [field, direction] = sortOption.split(':');
-    if (!Object.values(BeerSortFields).includes(field as BeerSortFields)) {
-      throw new Error(`Недопустимое поле сортировки "${field}"`);
-    }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
     const [total, pageItems] = await Promise.all([
@@ -51,7 +48,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
       const product = await this.findOneOrFail({ id });
       return product;
     } catch (err) {
-      throw new BadRequestException('Product does not exist');
+      throw new BadRequestException(ErrorCodes.NotExists_Product);
     }
   }
 
