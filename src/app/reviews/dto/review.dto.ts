@@ -6,9 +6,13 @@ import { UUIDDto } from 'shared/dtos/uuid.dto';
 import { ReviewEntity } from '../entities/review.entity';
 
 export class ReviewDto extends UUIDDto {
-  @IsString()
   @ApiProperty()
-  summary: string;
+  @IsString()
+  userName: string;
+
+  @ApiProperty()
+  @IsUUID()
+  userId: string;
 
   @IsString()
   @ApiProperty()
@@ -26,20 +30,16 @@ export class ReviewDto extends UUIDDto {
   @ApiProperty()
   archived: boolean;
 
-  @IsUUID()
-  @ApiProperty()
-  userId: string;
-
   public static fromEntity(entity: ReviewEntity) {
     const it = new ReviewDto();
 
     it.id = entity.id;
     it.created = entity.created.valueOf();
     it.updated = entity.updated.valueOf();
-    it.summary = entity.summary;
+    it.userName = entity.user.firstName.concat(' ', entity.user.lastName);
+    it.userId = entity.user.id;
     it.text = entity.text;
     it.rating = entity.rating;
-    it.userId = entity.user.id;
     it.edited = entity.edited;
     it.archived = entity.archived;
 

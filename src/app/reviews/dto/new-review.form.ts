@@ -1,11 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNumber, IsString, Max, Min, validate } from 'class-validator';
+import { IsInt, IsString, Max, Min, validate } from 'class-validator';
 
 export class NewReviewForm {
-  @ApiProperty()
-  @IsString()
-  summary: string;
-
   @ApiProperty()
   @IsString()
   text: string;
@@ -19,7 +15,6 @@ export class NewReviewForm {
   static from(form: NewReviewForm) {
     const it = new NewReviewForm();
 
-    it.summary = form.summary;
     it.text = form.text;
     it.rating = form.rating;
 

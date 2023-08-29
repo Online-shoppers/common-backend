@@ -11,10 +11,7 @@ import { ReviewRepo } from '../repo/review.repo';
   customRepository: () => ReviewRepo,
 })
 export class ReviewEntity extends UUIDEntity {
-  @Property()
-  summary: string;
-
-  @Property()
+  @Property({ length: 1000 })
   text: string;
 
   @Property()

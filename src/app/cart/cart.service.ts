@@ -49,6 +49,10 @@ export class CartService {
   }
 
   async addProductToCart(userId: string, productId: string, quantity: number) {
+    if (quantity <= 0) {
+      throw new BadRequestException('Quantity should be positive');
+    }
+
     const em = this.cartRepo.getEntityManager();
 
     const [cart, product] = await Promise.all([
@@ -129,11 +133,21 @@ export class CartService {
     const now = new Date();
 
     if (cartProduct) {
+      if (quantity <= 0) {
+        cart.products.remove(cartProduct);
+        em.remove(cartProduct);
+
+        cart.updated = now;
+
+        await em.persistAndFlush(cart);
+
+        return CartDto.fromEntity(cart);
+      }
+
       cartProduct.quantity = quantity;
       cart.updated = now;
 
       await em.persistAndFlush(cartProduct);
-      await em.persistAndFlush(cart);
     } else {
       const cartProduct = this.cartProductsRepo.create({
         name: product.name,
@@ -147,10 +161,38 @@ export class CartService {
       cart.updated = now;
 
       await em.persistAndFlush(cartProduct);
-      await em.persistAndFlush(cart);
     }
 
+    await em.persistAndFlush(cart);
+
     return CartDto.fromEntity(cart);
+  }
+
+  async deleteProductFromCart(userId: string, cartProductId: string) {
+    const cart = await this.cartRepo.findOne(
+      { user: { id: userId } },
+      { populate: true },
+    );
+
+    const em = this.cartRepo.getEntityManager();
+
+    try {
+      const cartProduct = await this.cartProductsRepo.findOneOrFail({
+        id: cartProductId,
+      });
+
+      cart.products.remove(cartProduct);
+      em.remove(cartProduct);
+
+      cart.updated = new Date();
+
+      await em.persistAndFlush(cart);
+
+      return CartDto.fromEntity(cart);
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestException('No such product in the cart');
+    }
   }
 
   async clearCart(userId: string) {

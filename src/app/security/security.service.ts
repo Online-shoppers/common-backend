@@ -86,6 +86,7 @@ export class SecurityService {
       return false;
     }
   }
+
   validateAccessToken(token: string) {
     const secret = this.config.get<string>('AT_SECRET');
     try {

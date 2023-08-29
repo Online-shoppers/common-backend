@@ -1,8 +1,8 @@
 import {
   Controller,
   Delete,
-  ForbiddenException,
   Get,
+  Param,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -11,9 +11,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
+import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
 import {
@@ -24,6 +25,7 @@ import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { CartService } from './cart.service';
+import { CartDto } from './dto/cart.dto';
 
 @ApiTags('Cart')
 @ApiBearerAuth()
@@ -32,49 +34,41 @@ import { CartService } from './cart.service';
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
+  @ApiResponse({ type: CartDto })
   @Get()
   findCart(@CurrentUser() user: UserSessionDto) {
     return this.cartService.getUsersCart(user.id);
   }
 
+  @ApiResponse({ type: CartProductDto, isArray: true })
   @Get('/products')
   @RestrictRequest(UserPermissions.GetOtherCarts)
   findCartProducts(
     @CurrentUser() user: UserSessionDto,
     @I18n() i18n: I18nContext,
   ) {
-    if (!user) {
-      throw new ForbiddenException(i18n.t(ErrorCodes.NotAuthorizedRequest));
-    }
-
     return this.cartService.getUserCartProducts(user.id);
   }
 
-  @Post('/products')
+  @ApiResponse({ type: CartDto })
+  @Post('/products/:productId')
   addProductToCart(
-    @Query('productId') productId: string,
+    @Param('productId', ParseUUIDPipe) productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
     @I18n() i18n: I18nContext,
   ) {
-    if (!user) {
-      throw new ForbiddenException(i18n.t(ErrorCodes.NotAuthorizedRequest));
-    }
-
     return this.cartService.addProductToCart(user.id, productId, quantity);
   }
 
-  @Put('/products')
+  @ApiResponse({ type: CartDto })
+  @Put('/products/:cartProductId')
   updateProductInCart(
-    @Query('cartProductId') cartProductId: string,
+    @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
     @I18n() i18n: I18nContext,
   ) {
-    if (!user) {
-      throw new ForbiddenException(i18n.t(ErrorCodes.NotAuthorizedRequest));
-    }
-
     return this.cartService.updateProductInCart(
       user.id,
       cartProductId,
@@ -82,12 +76,18 @@ export class CartController {
     );
   }
 
-  @Delete('/products')
-  clearCart(@CurrentUser() user: UserSessionDto, @I18n() i18n: I18nContext) {
-    if (!user) {
-      throw new ForbiddenException(i18n.t(ErrorCodes.NotAuthorizedRequest));
-    }
+  @ApiResponse({ type: CartDto })
+  @Delete('/products/:cartProductId')
+  async deleteProductFromCart(
+    @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
+    @CurrentUser() user: UserSessionDto,
+  ) {
+    return this.cartService.deleteProductFromCart(user.id, cartProductId);
+  }
 
+  @ApiResponse({ type: CartDto })
+  @Delete('/products')
+  clearCart(@CurrentUser() user: UserSessionDto) {
     return this.cartService.clearCart(user.id);
   }
 }

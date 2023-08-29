@@ -11,10 +11,6 @@ import {
 export class EditReviewForm {
   @ApiProperty()
   @IsString()
-  summary: string;
-
-  @ApiProperty()
-  @IsString()
   text: string;
 
   @ApiProperty()
@@ -30,7 +26,6 @@ export class EditReviewForm {
   static from(form: EditReviewForm) {
     const it = new EditReviewForm();
 
-    it.summary = form.summary;
     it.text = form.text;
     it.rating = form.rating;
     it.archived = form.archived;

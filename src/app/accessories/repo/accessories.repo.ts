@@ -9,6 +9,7 @@ import { AccessoryDTO } from '../dto/accessory.dto';
 import { CreateAccessoryForm } from '../dto/create-accessory.form';
 import { AccessoryPaginationResponse } from '../dto/pagination-response.dto';
 import { AccessoryEntity } from '../entities/accessory.entity';
+import { AccessorySorting } from '../enums/accessory-sorting.enum';
 
 @Injectable()
 export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
@@ -19,12 +20,23 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
     page: number,
     size: number,
     includeArchived: boolean,
+    sortOption: AccessorySorting,
   ) {
+    const [field, direction] = sortOption.split(':');
     const archived = includeArchived ? { $in: [true, false] } : false;
 
     const [total, pageItems] = await Promise.all([
       this.count({ archived }),
-      this.find({ archived }, { offset: size * page - size, limit: size }),
+      this.find(
+        { archived },
+        {
+          offset: size * page - size,
+          limit: size,
+          orderBy: {
+            [field]: direction,
+          },
+        },
+      ),
     ]);
 
     const response: AccessoryPaginationResponse = {

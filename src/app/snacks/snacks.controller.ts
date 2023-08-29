@@ -1,3 +1,4 @@
+import { Enum } from '@mikro-orm/core';
 import {
   Body,
   Controller,
@@ -5,6 +6,7 @@ import {
   Get,
   Param,
   ParseBoolPipe,
+  ParseEnumPipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
@@ -20,6 +22,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
 
 import {
   JwtPermissionsGuard,
@@ -31,6 +34,9 @@ import { CreateSnackForm } from './dto/create-snack.form';
 import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
 import { UpdateSnackForm } from './dto/update-snack.form';
+import { SnacksEntity } from './entities/snack.entity';
+import { SnackSortFields } from './enums/snack-sort-fields.enum';
+import { SnackSorting } from './enums/snack-sorting.enum';
 import { SnacksService } from './snacks.service';
 
 @ApiTags('Snack')
@@ -41,6 +47,12 @@ export class SnacksController {
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'size', type: Number, required: false })
   @ApiQuery({ name: 'includeArchived', type: Boolean, required: false })
+  @ApiQuery({
+    name: 'sortOption',
+    type: 'enum',
+    enum: SnackSorting,
+    required: false,
+  })
   @ApiResponse({
     type: SnacksPaginationResponse,
   })
@@ -52,8 +64,15 @@ export class SnacksController {
     size = 20,
     @Query('includeArchived', new ParseBoolPipe({ optional: true }))
     includeArchived = false,
+    @Query('sortOption', new ParseEnumPipe(SnackSorting))
+    sortOptin: SnackSorting,
   ) {
-    return this.snacksService.getPageSnacks(page, size, includeArchived);
+    return this.snacksService.getPageSnacks(
+      page,
+      size,
+      includeArchived,
+      sortOptin,
+    );
   }
 
   @Get(':id')

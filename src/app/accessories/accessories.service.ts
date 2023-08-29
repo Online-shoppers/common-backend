@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AccessoryDTO } from './dto/accessory.dto';
 import { CreateAccessoryForm } from './dto/create-accessory.form';
 import { UpdateAccessoryForm } from './dto/update-accessory.form';
+import { AccessorySorting } from './enums/accessory-sorting.enum';
 import { AccessoryRepo } from './repo/accessories.repo';
 
 @Injectable()
@@ -14,8 +15,14 @@ export class AccessoriesService {
     page: number,
     size: number,
     includeArchived: boolean,
+    sortOption: AccessorySorting,
   ) {
-    return this.repo_accessory.getAccessoriesList(page, size, includeArchived);
+    return this.repo_accessory.getAccessoriesList(
+      page,
+      size,
+      includeArchived,
+      sortOption,
+    );
   }
 
   async getAccessoryInfo(id: string) {

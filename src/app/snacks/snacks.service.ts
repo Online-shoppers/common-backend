@@ -4,14 +4,26 @@ import { Injectable } from '@nestjs/common';
 import { CreateSnackForm } from './dto/create-snack.form';
 import { SnacksDTO } from './dto/snack.dto';
 import { UpdateSnackForm } from './dto/update-snack.form';
+import { SnacksEntity } from './entities/snack.entity';
+import { SnackSorting } from './enums/snack-sorting.enum';
 import { SnacksRepo } from './repo/snack.repo';
 
 @Injectable()
 export class SnacksService {
   constructor(private readonly repo_snacks: SnacksRepo) {}
 
-  async getPageSnacks(page: number, size: number, includeArchived: boolean) {
-    return this.repo_snacks.getSnacksList(page, size, includeArchived);
+  async getPageSnacks(
+    page: number,
+    size: number,
+    includeArchived: boolean,
+    sortOption: SnackSorting,
+  ) {
+    return this.repo_snacks.getSnacksList(
+      page,
+      size,
+      includeArchived,
+      sortOption,
+    );
   }
 
   async getSnackInfo(id: string) {
