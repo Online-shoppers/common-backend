@@ -1,8 +1,10 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
+import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
 import { CreateSnackForm } from '../dto/create-snack.form';
 import { SnacksPaginationResponse } from '../dto/pagination-response.dto';
 import { SnacksDTO } from '../dto/snack.dto';
@@ -10,6 +12,9 @@ import { SnacksEntity } from '../entities/snack.entity';
 
 @Injectable()
 export class SnacksRepo extends EntityRepository<SnacksEntity> {
+  constructor(em: EntityManager, private readonly i18nSerivice: I18nService) {
+    super(em, SnacksEntity);
+  }
   async getSnacksList(page: number, size: number, includeArchived: boolean) {
     const archived = includeArchived ? { $in: [true, false] } : false;
 
@@ -31,7 +36,9 @@ export class SnacksRepo extends EntityRepository<SnacksEntity> {
       const product = await this.findOneOrFail({ id });
       return product;
     } catch (err) {
-      throw new BadRequestException('Product does not exist');
+      throw new BadRequestException(
+        this.i18nSerivice.translate(ErrorCodes.NotExists_Product),
+      );
     }
   }
 

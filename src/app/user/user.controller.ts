@@ -15,18 +15,23 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
 import { JwtPermissionsGuard } from 'app/security/guards/jwt-permission.guard';
 
+import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { UserDto } from './dtos/user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly i18nService: I18nService,
+  ) {}
 
   @ApiOperation({ summary: 'Get all users list' })
   @ApiResponse({
@@ -62,17 +67,14 @@ export class UserController {
   async remove(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: UserSessionDto,
+    @I18n() i18n: I18nContext,
   ) {
     if (!user) {
-      throw new ForbiddenException(
-        'You have to be logged in to archive your profile',
-      );
+      throw new ForbiddenException(i18n.t(ErrorCodes.Invalid_Permission));
     }
 
     if (user.id !== id) {
-      throw new ForbiddenException(
-        'You have no rights to archive others profile',
-      );
+      throw new ForbiddenException(i18n.t(ErrorCodes.Invalid_Permission));
     }
 
     return this.userService.archiveUser(id);

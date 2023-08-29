@@ -8,11 +8,13 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { I18nService } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 import { ProductEntity } from 'app/products/entities/product.entity';
 
+import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { CartDto } from './dto/cart.dto';
 import { CartEntity } from './entities/cart.entity';
 import { CartRepo } from './repo/cart.repo';
@@ -26,7 +28,8 @@ export class CartService {
     @InjectRepository(ProductEntity)
     private readonly productsRepo: EntityRepository<ProductEntity>,
     @InjectRepository(CartProductEntity)
-    private readonly cartProductsRepo: EntityRepository<CartProductEntity>, // private readonly entityManager: EntityManager,
+    private readonly cartProductsRepo: EntityRepository<CartProductEntity>,
+    private readonly i18nService: I18nService,
   ) {}
 
   async getUsersCart(userId: string) {
@@ -59,7 +62,9 @@ export class CartService {
     });
 
     if (product.quantity < (cartProduct?.quantity || 0) + quantity) {
-      throw new NotAcceptableException('Not enough in stock');
+      throw new NotAcceptableException(
+        this.i18nService.translate(ErrorCodes.NotEnough_Product),
+      );
     }
 
     const now = new Date();
@@ -110,11 +115,15 @@ export class CartService {
     await cart.products.init();
 
     if (!cartProduct) {
-      throw new BadRequestException('No such item in cart');
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart),
+      );
     }
 
     if (product.quantity < quantity) {
-      throw new NotAcceptableException('Not enough in stock');
+      throw new NotAcceptableException(
+        this.i18nService.translate(ErrorCodes.NotEnough_Product),
+      );
     }
 
     const now = new Date();

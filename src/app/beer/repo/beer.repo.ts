@@ -1,8 +1,10 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
+import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
 import { BeerDTO } from '../dto/beer.dto';
 import { CreateBeerForm } from '../dto/create-beer.form';
 import { BeerPaginationResponse } from '../dto/pagination-response.dto';
@@ -31,7 +33,7 @@ export class BeerRepo extends EntityRepository<BeerEntity> {
       const product = await this.findOneOrFail({ id });
       return product;
     } catch (err) {
-      throw new BadRequestException('Product does not exist');
+      throw new BadRequestException(ErrorCodes.NotExists_Product);
     }
   }
 

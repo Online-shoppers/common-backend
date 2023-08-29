@@ -5,7 +5,6 @@ import { OrderEntity } from '../../order/entities/order.entity';
 import { OrderProductRepo } from '../repo/order-product.repo';
 
 @Entity({
-  discriminatorValue: 'order-item',
   customRepository: () => OrderProductRepo,
 })
 export class OrderProductEntity extends UUIDEntity {
@@ -19,5 +18,5 @@ export class OrderProductEntity extends UUIDEntity {
   description!: string;
 
   @ManyToOne(() => OrderEntity)
-  order: OrderEntity;
+  order?: OrderEntity;
 }

@@ -25,8 +25,12 @@ export class OrderController {
 
   @ApiBody({ type: NewOrderForm })
   @Post()
-  create(@Body() orderForm: NewOrderForm) {
-    return this.orderService.createOrder(orderForm);
+  async create(@Body() orderForm: NewOrderForm) {
+    const dto = OrderDTO.fromEntity(
+      await this.orderService.createOrder(orderForm),
+    );
+
+    return dto;
   }
 
   @ApiResponse({ type: OrderDTO, isArray: true })

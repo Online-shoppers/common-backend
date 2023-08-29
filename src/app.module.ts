@@ -4,6 +4,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
+import { join } from 'lodash';
+import {
+  AcceptLanguageResolver,
+  CookieResolver,
+  HeaderResolver,
+  I18nModule,
+  QueryResolver,
+} from 'nestjs-i18n';
 
 import { AccessoriesModule } from 'app/accessories/accessories.module';
 import { AuthModule } from 'app/auth/auth.module';
@@ -32,6 +40,21 @@ import database_config from './config/database.config';
       load: [app_config, database_config],
       isGlobal: true,
     }),
+    {
+      ...I18nModule.forRoot({
+        fallbackLanguage: 'en',
+        loaderOptions: {
+          path: 'src/resources/i18n/',
+          watch: true,
+        },
+        resolvers: [
+          { use: QueryResolver, options: ['lang'] },
+          AcceptLanguageResolver,
+          new HeaderResolver(['x-lang']),
+        ],
+      }),
+      global: true,
+    },
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => config.get('database'),

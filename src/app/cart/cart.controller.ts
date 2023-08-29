@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
@@ -21,6 +22,7 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
+import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { CartService } from './cart.service';
 
 @ApiTags('Cart')
@@ -37,9 +39,12 @@ export class CartController {
 
   @Get('/products')
   @RestrictRequest(UserPermissions.GetOtherCarts)
-  findCartProducts(@CurrentUser() user: UserSessionDto) {
+  findCartProducts(
+    @CurrentUser() user: UserSessionDto,
+    @I18n() i18n: I18nContext,
+  ) {
     if (!user) {
-      throw new ForbiddenException('You have to log in to edit cart');
+      throw new ForbiddenException(i18n.t(ErrorCodes.NotAuthorizedRequest));
     }
 
     return this.cartService.getUserCartProducts(user.id);
@@ -50,9 +55,10 @@ export class CartController {
     @Query('productId') productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
+    @I18n() i18n: I18nContext,
   ) {
     if (!user) {
-      throw new ForbiddenException('You have to log in to edit cart');
+      throw new ForbiddenException(i18n.t(ErrorCodes.NotAuthorizedRequest));
     }
 
     return this.cartService.addProductToCart(user.id, productId, quantity);
@@ -63,9 +69,10 @@ export class CartController {
     @Query('cartProductId') cartProductId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
+    @I18n() i18n: I18nContext,
   ) {
     if (!user) {
-      throw new ForbiddenException('You have to log in to edit cart');
+      throw new ForbiddenException(i18n.t(ErrorCodes.NotAuthorizedRequest));
     }
 
     return this.cartService.updateProductInCart(
@@ -76,9 +83,9 @@ export class CartController {
   }
 
   @Delete('/products')
-  clearCart(@CurrentUser() user: UserSessionDto) {
+  clearCart(@CurrentUser() user: UserSessionDto, @I18n() i18n: I18nContext) {
     if (!user) {
-      throw new ForbiddenException('You have to log in to edit cart');
+      throw new ForbiddenException(i18n.t(ErrorCodes.NotAuthorizedRequest));
     }
 
     return this.cartService.clearCart(user.id);
