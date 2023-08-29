@@ -60,7 +60,7 @@ export class DatabaseSeeder extends Seeder {
       category: ProductCategories.BEER,
       quantity: 1000,
       image_url:
-        'https://vinepair.com/wp-content/uploads/2016/12/roundup-hitachino-nest.jpg',
+        'https://kentstreetcellars.com.au/cdn/shop/products/Hitachino-Nest-White-Ale_fe7a7e30-b221-4ce1-82e3-3cec38c6015e_1506x1506.png?v=1620322591',
     });
 
     const lager = em.create(BeerEntity, {
@@ -77,7 +77,7 @@ export class DatabaseSeeder extends Seeder {
       category: ProductCategories.BEER,
       quantity: 1000,
       image_url:
-        'https://static.independent.co.uk/2022/09/13/09/Augustiner%20lagerbier%20hell.png?quality=75&width=320&auto=webp 320w, https://static.independent.co.uk/2022/09/13/09/Augustiner%20lagerbier%20hell.png?quality=75&width=640&auto=webp 640w',
+        'https://www.cru.ru/upload/resize_cache/webp/ram.watermark/40d/9b1/f5d/967521/pivo_avgustiner_myunkhen_lagerbir_khell_5_2_0_5l_st_b_svetloe_filtrovannoe_pasterizovannoe_germaniya.webp',
     });
 
     const beer = em.create(BeerEntity, {
