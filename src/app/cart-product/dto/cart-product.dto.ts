@@ -1,6 +1,6 @@
 import { Collection } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsString, IsUrl } from 'class-validator';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
@@ -16,6 +16,10 @@ export class CartProductDto extends UUIDDto {
   @IsString()
   @ApiProperty()
   description: string;
+
+  @IsUrl()
+  @ApiProperty()
+  imageUrl: string;
 
   @IsEnum(ProductCategories)
   @ApiProperty()
@@ -42,6 +46,7 @@ export class CartProductDto extends UUIDDto {
     it.created = entity.created.valueOf();
     it.updated = entity.updated.valueOf();
     it.name = entity.name;
+    it.imageUrl = entity.product.image_url;
     it.description = entity.description;
     it.category = entity.category;
     it.quantity = entity.quantity;
