@@ -31,6 +31,6 @@ export class OrderProductEntity extends UUIDEntity {
   @ManyToOne(() => OrderEntity)
   order?: OrderEntity;
 
-  @Property({ name: 'productId' })
+  @Property({ name: 'product_id' })
   productId: string;
 }
