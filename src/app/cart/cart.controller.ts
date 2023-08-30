@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
@@ -22,6 +23,7 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
+import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { CartService } from './cart.service';
 import { CartDto } from './dto/cart.dto';
 
@@ -41,7 +43,10 @@ export class CartController {
   @ApiResponse({ type: CartProductDto, isArray: true })
   @Get('/products')
   @RestrictRequest(UserPermissions.GetOtherCarts)
-  findCartProducts(@CurrentUser() user: UserSessionDto) {
+  findCartProducts(
+    @CurrentUser() user: UserSessionDto,
+    @I18n() i18n: I18nContext,
+  ) {
     return this.cartService.getUserCartProducts(user.id);
   }
 
@@ -51,6 +56,7 @@ export class CartController {
     @Param('productId', ParseUUIDPipe) productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
+    @I18n() i18n: I18nContext,
   ) {
     return this.cartService.addProductToCart(user.id, productId, quantity);
   }
@@ -61,6 +67,7 @@ export class CartController {
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
+    @I18n() i18n: I18nContext,
   ) {
     return this.cartService.updateProductInCart(
       user.id,

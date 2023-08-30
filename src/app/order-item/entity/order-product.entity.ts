@@ -18,5 +18,5 @@ export class OrderProductEntity extends UUIDEntity {
   description!: string;
 
   @ManyToOne(() => OrderEntity)
-  order: OrderEntity;
+  order?: OrderEntity;
 }

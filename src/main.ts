@@ -1,6 +1,7 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { I18nValidationPipe, i18nValidationErrorFactory } from 'nestjs-i18n';
 
 import { AppModule } from './app.module';
 
@@ -14,6 +15,7 @@ async function bootstrap() {
     .setTitle('E-commerce')
     .build();
 
+  app.useGlobalPipes(new I18nValidationPipe());
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: 2, persistAuthorization: true },

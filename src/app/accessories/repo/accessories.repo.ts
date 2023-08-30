@@ -1,17 +1,21 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
+import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
 import { AccessoryDTO } from '../dto/accessory.dto';
 import { CreateAccessoryForm } from '../dto/create-accessory.form';
 import { AccessoryPaginationResponse } from '../dto/pagination-response.dto';
 import { AccessoryEntity } from '../entities/accessory.entity';
-import { AccessorySortFields } from '../enums/accessory-sort-fields.enum';
 import { AccessorySorting } from '../enums/accessory-sorting.enum';
 
 @Injectable()
 export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
+  constructor(em: EntityManager, private readonly i18n: I18nService) {
+    super(em, AccessoryEntity);
+  }
   async getAccessoriesList(
     page: number,
     size: number,
@@ -19,11 +23,6 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
     sortOption: AccessorySorting,
   ) {
     const [field, direction] = sortOption.split(':');
-    if (
-      !Object.values(AccessorySortFields).includes(field as AccessorySortFields)
-    ) {
-      throw new Error(`Недопустимое поле сортировки "${field}"`);
-    }
     const archived = includeArchived ? { $in: [true, false] } : false;
 
     const [total, pageItems] = await Promise.all([
@@ -53,7 +52,9 @@ export class AccessoryRepo extends EntityRepository<AccessoryEntity> {
       const product = await this.findOneOrFail({ id });
       return product;
     } catch (err) {
-      throw new BadRequestException('Product does not exist');
+      throw new BadRequestException(
+        this.i18n.translate(ErrorCodes.NotExists_Product),
+      );
     }
   }
 

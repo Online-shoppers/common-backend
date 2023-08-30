@@ -1,0 +1,18 @@
+{
+  "invalidType": "Неверный тип",
+  "errors.invalid-form": "Неверная форма",
+  "errors.field-invalid.should-be-string": "Поле должно быть строкой",
+  "errors.field-invalid.should-be-number": "Поле должно быть числом",
+  "errors.field-invalid.should-be-enum": "Неверный тип",
+  "errors.field-invalid.should-be-email": "Неверный email",
+  "errors.not-authorized.request": "Не авторизированный пользователь.",
+  "errors.not-exists.user": "Пользователь не существует.",
+  "errors.not-exists.product": "Продукт не существует.",
+  "errors.already-exists.user": "Пользователь уже существует",
+  "errors.invalid-creds": "Пользователь не найден.",
+  "errors.not-enough.product": "Не достаточно продуктов на складе",
+  "errors.not-such-item.cart": "Такого продукта нет в корзине",
+  "errors.not_allowed_delete.reviews": "Невозможно удалить чужой коментарий",
+  "errors.invalid-tokens": "Не валидные токены",
+  "errors.not_allowed_action.permission": "У Вас нет прав для этого действия"
+}

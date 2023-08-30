@@ -1,5 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 import { CartProductRepo } from 'app/cart-product/repo/cart-product.repo';

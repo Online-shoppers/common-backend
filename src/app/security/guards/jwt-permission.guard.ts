@@ -9,7 +9,9 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { difference, includes, isEmpty } from 'lodash';
+import { I18nService } from 'nestjs-i18n';
 
+import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
 import { UserPermissions } from '../../user-roles/enums/user-permissions.enum';
 import { UserSessionDto } from '../dto/user-session.dto';
 
@@ -25,7 +27,10 @@ export class JwtPermissionsGuard
 
   protected permissions: UserPermissions[];
 
-  constructor(private readonly reflector: Reflector) {
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly i18nSerivce: I18nService,
+  ) {
     super();
   }
 
@@ -60,7 +65,7 @@ export class JwtPermissionsGuard
     }
     if (difference(this.permissions, user.permissions).length) {
       throw new UnauthorizedException(
-        'User does not have neccessary permissions',
+        this.i18nSerivce.translate(ErrorCodes.Invalid_Permission),
       );
     }
 
