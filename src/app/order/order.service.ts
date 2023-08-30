@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
+import { OrderProductRepo } from 'app/order-item/repo/order-product.repo';
+
 import { CartProductRepo } from '../cart-product/repo/cart-product.repo';
-import { CartRepo } from '../cart/repo/cart.repo';
-import { OrderProductRepo } from '../order-item/repo/order-product.repo';
 import { UserService } from '../user/user.service';
 import { NewOrderForm } from './dto/new-order.form';
-import { OrderDTO } from './dto/order.dto';
-import { OrderEntity } from './entities/order.entity';
 import { OrderStatuses } from './enums/order-statuses.enum';
 import { OrderRepo } from './repo/order.repo';
 
@@ -19,8 +17,8 @@ export class OrderService {
     private readonly orderProductRepo: OrderProductRepo,
   ) {}
 
-  async createOrder(orderForm: NewOrderForm) {
-    const userEntity = await this.userService.getUserById(orderForm.buyerId);
+  async createOrder(userId: string, orderForm: NewOrderForm) {
+    const userEntity = await this.userService.getUserById(userId);
     const cartProducts = await this.cartProductRepo.find(
       {
         cart: userEntity.cart,
@@ -29,7 +27,8 @@ export class OrderService {
     );
 
     const em = this.orderRepo.getEntityManager();
-    const orderProd = cartProducts.map(cartProduct =>
+
+    const orderProducts = cartProducts.map(cartProduct =>
       this.orderProductRepo.create({
         name: cartProduct.name,
         description: cartProduct.description,
@@ -38,7 +37,7 @@ export class OrderService {
     );
 
     const order = this.orderRepo.create({
-      status: orderForm.status,
+      status: OrderStatuses.PENDING,
       country: orderForm.country,
       city: orderForm.city,
       zipCode: orderForm.zipCode,
@@ -47,20 +46,20 @@ export class OrderService {
       buyer: userEntity,
       orderProducts: [],
     });
-    order.orderProducts.add(orderProd);
+    order.orderProducts.add(orderProducts);
     await em.persistAndFlush(order);
 
     await this.cartProductRepo.nativeDelete(cartProducts);
-    console.log(await this.cartProductRepo.find({ cart: userEntity.cart }));
+
     return order;
   }
 
-  findAll() {
-    return this.orderRepo.findAll();
+  findUserOrders(userId: string) {
+    return this.orderRepo.find({ buyer: { id: userId } });
   }
 
-  findOne(id: string) {
-    return this.orderRepo.findOne({ id });
+  findOne(orderId: string) {
+    return this.orderRepo.findOne({ id: orderId });
   }
 
   async update(id: string, status: OrderStatuses) {

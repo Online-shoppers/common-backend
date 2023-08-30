@@ -1,14 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, validate } from 'class-validator';
+import { IsString, validate } from 'class-validator';
 
 import { ErrorCodes } from 'shared/enums/error-codes.enum';
 
-import { OrderStatuses } from '../enums/order-statuses.enum';
-
 export class NewOrderForm {
   @ApiProperty()
-  @IsEnum(OrderStatuses, { message: ErrorCodes.FieldShouldBeEnum })
-  status: OrderStatuses;
+  @IsString()
+  firstName: string;
+
+  @ApiProperty()
+  @IsString()
+  lastName: string;
 
   @ApiProperty()
   @IsString()
@@ -30,18 +32,14 @@ export class NewOrderForm {
   @IsString({ message: ErrorCodes.FieldShouldBeString })
   phone: string;
 
-  @ApiProperty()
-  @IsString()
-  buyerId: string;
   static from(form: NewOrderForm) {
     const it = new NewOrderForm();
-    it.status = form.status;
     it.country = form.country;
     it.city = form.city;
     it.zipCode = form.zipCode;
     it.address = form.address;
     it.phone = form.phone;
-    it.buyerId = form.buyerId;
+
     return it;
   }
 

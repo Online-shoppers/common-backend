@@ -1,11 +1,11 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
-import { CartProductEntity } from '../cart-product/entities/cart-product.entity';
+import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
+import { UserRoleEntity } from 'app/user-roles/entities/user-role.entity';
+
 import { OrderProductEntity } from '../order-item/entity/order-product.entity';
 import { ProductEntity } from '../products/entities/product.entity';
-import { ProductRepo } from '../products/repo/product.repo';
-import { UserRoleEntity } from '../user-roles/entities/user-role.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { OrderEntity } from './entities/order.entity';
