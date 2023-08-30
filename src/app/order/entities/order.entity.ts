@@ -1,4 +1,11 @@
-import { Entity, Enum, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  Enum,
+  ManyToOne,
+  OneToMany,
+  Property,
+} from '@mikro-orm/core';
 
 import { UserEntity } from 'app/user/entities/user.entity';
 
@@ -35,5 +42,5 @@ export class OrderEntity extends UUIDEntity {
     entity: () => OrderProductEntity,
     mappedBy: product => product.order,
   })
-  orderProducts: OrderProductEntity[];
+  orderProducts = new Collection<OrderProductEntity>(this);
 }

@@ -1,4 +1,3 @@
-import { Enum } from '@mikro-orm/core';
 import {
   Body,
   Controller,
@@ -22,7 +21,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
 
 import {
   JwtPermissionsGuard,
@@ -34,8 +32,6 @@ import { CreateSnackForm } from './dto/create-snack.form';
 import { SnacksPaginationResponse } from './dto/pagination-response.dto';
 import { SnacksDTO } from './dto/snack.dto';
 import { UpdateSnackForm } from './dto/update-snack.form';
-import { SnacksEntity } from './entities/snack.entity';
-import { SnackSortFields } from './enums/snack-sort-fields.enum';
 import { SnackSorting } from './enums/snack-sorting.enum';
 import { SnacksService } from './snacks.service';
 

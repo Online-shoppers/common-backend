@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
+
+import { OrderProductDTO } from 'app/order-item/dto/order-product.dto';
 
 import { UUIDDto } from 'shared/dtos/uuid.dto';
 
@@ -30,13 +32,23 @@ export class OrderDTO extends UUIDDto {
   @IsString()
   phone: string;
 
+  @ApiProperty({ type: OrderProductDTO, isArray: true })
+  @IsArray({ context: OrderProductDTO })
+  products: OrderProductDTO[];
+
   @ApiProperty()
   @IsString()
   buyerId: string;
-  static fromEntity(entity?: OrderEntity) {
+
+  static async fromEntity(entity?: OrderEntity) {
     if (!entity) {
       return;
     }
+
+    if (!entity.orderProducts.isInitialized()) {
+      await entity.orderProducts.init();
+    }
+
     const it = new OrderDTO();
     it.id = entity.id;
     it.created = entity.created.valueOf();
@@ -48,13 +60,16 @@ export class OrderDTO extends UUIDDto {
     it.address = entity.address;
     it.phone = entity.phone;
     it.buyerId = entity.buyer.id;
+    it.products = OrderProductDTO.fromEntities(entity.orderProducts.getItems());
+
     return it;
   }
 
-  static fromEntities(entities?: OrderEntity[]) {
+  static async fromEntities(entities?: OrderEntity[]) {
     if (!Array.isArray(entities)) {
       return;
     }
-    return entities.map(entity => this.fromEntity(entity));
+
+    return Promise.all(entities.map(entity => this.fromEntity(entity)));
   }
 }
