@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
@@ -23,7 +23,6 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { CartService } from './cart.service';
 import { CartDto } from './dto/cart.dto';
 

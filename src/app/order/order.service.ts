@@ -28,14 +28,6 @@ export class OrderService {
 
     const em = this.orderRepo.getEntityManager();
 
-    const orderProducts = cartProducts.map(cartProduct =>
-      this.orderProductRepo.create({
-        name: cartProduct.name,
-        description: cartProduct.description,
-        price: cartProduct.product.price,
-      }),
-    );
-
     const order = this.orderRepo.create({
       status: OrderStatuses.PENDING,
       country: orderForm.country,
@@ -46,6 +38,20 @@ export class OrderService {
       buyer: userEntity,
       orderProducts: [],
     });
+
+    const orderProducts = cartProducts.map(cartProduct =>
+      this.orderProductRepo.create({
+        name: cartProduct.name,
+        description: cartProduct.description,
+        category: cartProduct.category,
+        price: cartProduct.product.price,
+        imageUrl: cartProduct.product.image_url,
+        quantity: cartProduct.quantity,
+        productId: cartProduct.product.id,
+        order,
+      }),
+    );
+
     order.orderProducts.add(orderProducts);
     await em.persistAndFlush(order);
 

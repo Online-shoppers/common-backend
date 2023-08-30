@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 import { OrderProductDTO } from 'app/order-item/dto/order-product.dto';
 
@@ -32,6 +32,10 @@ export class OrderDTO extends UUIDDto {
   @IsString()
   phone: string;
 
+  @ApiProperty()
+  @IsNumber()
+  total: number;
+
   @ApiProperty({ type: OrderProductDTO, isArray: true })
   @IsArray({ context: OrderProductDTO })
   products: OrderProductDTO[];
@@ -58,6 +62,7 @@ export class OrderDTO extends UUIDDto {
     it.city = entity.city;
     it.zipCode = entity.zipCode;
     it.address = entity.address;
+    it.total = await entity.getTotal();
     it.phone = entity.phone;
     it.buyerId = entity.buyer.id;
     it.products = OrderProductDTO.fromEntities(entity.orderProducts.getItems());
