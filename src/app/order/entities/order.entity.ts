@@ -35,6 +35,19 @@ export class OrderEntity extends UUIDEntity {
   @Property()
   phone!: string;
 
+  @Property({ persist: false })
+  async getTotal() {
+    if (!this.orderProducts.isInitialized()) {
+      await this.orderProducts.init();
+    }
+
+    const items = this.orderProducts.getItems();
+
+    return items
+      .map(product => product.price * product.quantity)
+      .reduce((acc, price) => acc + price, 0);
+  }
+
   @ManyToOne(() => UserEntity)
   buyer: UserEntity;
 
