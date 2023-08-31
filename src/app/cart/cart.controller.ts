@@ -19,6 +19,7 @@ import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
 
 import { CartService } from './cart.service';
+import { CartInfoDto } from './dto/cart-info.dto';
 import { CartDto } from './dto/cart.dto';
 
 @ApiTags('Cart')
@@ -43,7 +44,13 @@ export class CartController {
     return this.cartService.getUserCartProducts(user.id);
   }
 
-  @ApiResponse({ type: CartDto })
+  @ApiResponse({ type: CartInfoDto })
+  @Get('/info')
+  getCartInfo(@CurrentUser() user: UserSessionDto, @I18n() i18n: I18nContext) {
+    return this.cartService.getUserCartInfo(user.id);
+  }
+
+  @ApiResponse({ type: CartProductDto })
   @Post('/products/:productId')
   addProductToCart(
     @Param('productId', ParseUUIDPipe) productId: string,
@@ -54,7 +61,7 @@ export class CartController {
     return this.cartService.addProductToCart(user.id, productId, quantity);
   }
 
-  @ApiResponse({ type: CartDto })
+  @ApiResponse({ type: CartProductDto })
   @Put('/products/:cartProductId')
   updateProductInCart(
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,

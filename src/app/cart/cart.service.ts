@@ -15,6 +15,7 @@ import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity
 import { ProductEntity } from 'app/products/entities/product.entity';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
+import { CartInfoDto } from './dto/cart-info.dto';
 import { CartDto } from './dto/cart.dto';
 import { CartEntity } from './entities/cart.entity';
 import { CartRepo } from './repo/cart.repo';
@@ -42,10 +43,27 @@ export class CartService {
   }
 
   async getUserCartProducts(userId: string) {
-    const entities = await this.cartProductsRepo.find({
-      cart: { user: { id: userId } },
-    });
+    const entities = await this.cartProductsRepo.find(
+      {
+        cart: { user: { id: userId } },
+      },
+      {
+        populate: ['unitPrice', 'quantity', 'product.image_url'],
+        orderBy: {
+          quantity: 'desc',
+        },
+      },
+    );
+
     return CartProductDto.fromEntities(entities);
+  }
+
+  async getUserCartInfo(userId: string) {
+    const cart = await this.cartRepo.findOne(
+      { user: { id: userId } },
+      { populate: ['products.product.price', 'products.quantity'] },
+    );
+    return CartInfoDto.fromEntity(cart);
   }
 
   async addProductToCart(userId: string, productId: string, quantity: number) {
@@ -56,7 +74,7 @@ export class CartService {
     const em = this.cartRepo.getEntityManager();
 
     const [cart, product] = await Promise.all([
-      this.cartRepo.findOne({ user: { id: userId } }, { populate: true }),
+      this.cartRepo.findOne({ user: { id: userId } }),
       this.productsRepo.findOne({ id: productId }),
     ]);
 
@@ -75,10 +93,8 @@ export class CartService {
 
     if (cartProduct) {
       cartProduct.quantity += quantity;
-      cart.updated = now;
 
       await em.persistAndFlush(cartProduct);
-      await em.persistAndFlush(cart);
     } else {
       const newCartProduct = this.cartProductsRepo.create({
         name: product.name,
@@ -89,13 +105,13 @@ export class CartService {
         product,
       });
 
-      cart.updated = now;
-
       cart.products.add(newCartProduct);
-      await em.persistAndFlush(cart);
     }
+    cart.updated = now;
 
-    return CartDto.fromEntity(cart);
+    await em.persistAndFlush(cart);
+
+    return CartProductDto.fromEntity(cartProduct);
   }
 
   async updateProductInCart(
@@ -106,7 +122,7 @@ export class CartService {
     const em = this.cartRepo.getEntityManager();
 
     const [cart, cartProduct] = await Promise.all([
-      this.cartRepo.findOne({ user: { id: userId } }, { populate: true }),
+      this.cartRepo.findOne({ user: { id: userId } }),
       this.cartProductsRepo.findOne({
         id: cartProductId,
       }),
@@ -128,41 +144,26 @@ export class CartService {
 
     const now = new Date();
 
-    if (cartProduct) {
-      if (quantity <= 0) {
-        cart.products.remove(cartProduct);
-        em.remove(cartProduct);
-
-        cart.updated = now;
-
-        await em.persistAndFlush(cart);
-
-        return CartDto.fromEntity(cart);
-      }
-
-      cartProduct.quantity = quantity;
-      cart.updated = now;
-
-      await em.persistAndFlush(cartProduct);
-    } else {
+    if (!cartProduct) {
       throw new BadRequestException('No cart product');
-      // const updatedCartProduct = this.cartProductsRepo.create({
-      //   name: cartProduct.name,
-      //   category: cartProduct.category,
-      //   quantity,
-      //   description: cartProduct.description,
-      //   cart: { id: cart.id },
-      //   product: cartProduct.product,
-      // });
-      //
-      // cart.updated = now;
-      //
-      // await em.persistAndFlush(updatedCartProduct);
+    }
+
+    cart.updated = now;
+
+    if (quantity <= 0) {
+      cart.products.remove(cartProduct);
+      em.remove(cartProduct);
+      await em.persistAndFlush(cart);
+
+      return CartProductDto.fromEntity(cartProduct);
+    } else {
+      cartProduct.quantity = quantity;
+      await em.persistAndFlush(cartProduct);
     }
 
     await em.persistAndFlush(cart);
 
-    return CartDto.fromEntity(cart);
+    return CartProductDto.fromEntity(cartProduct);
   }
 
   async deleteProductFromCart(userId: string, cartProductId: string) {
