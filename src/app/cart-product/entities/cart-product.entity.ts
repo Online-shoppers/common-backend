@@ -30,6 +30,6 @@ export class CartProductEntity extends UUIDEntity {
   @ManyToOne(() => CartEntity, { onDelete: 'cascade' })
   cart!: CartEntity;
 
-  @OneToOne(() => ProductEntity)
+  @ManyToOne(() => ProductEntity)
   product!: ProductEntity;
 }
