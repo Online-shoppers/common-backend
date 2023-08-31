@@ -17,18 +17,13 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
-import {
-  JwtPermissionsGuard,
-  RestrictRequest,
-} from 'app/security/guards/jwt-permission.guard';
-import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
 import { CartService } from './cart.service';
 import { CartDto } from './dto/cart.dto';
 
 @ApiTags('Cart')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'), JwtPermissionsGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
@@ -41,7 +36,6 @@ export class CartController {
 
   @ApiResponse({ type: CartProductDto, isArray: true })
   @Get('/products')
-  @RestrictRequest(UserPermissions.GetOtherCarts)
   findCartProducts(
     @CurrentUser() user: UserSessionDto,
     @I18n() i18n: I18nContext,

@@ -11,6 +11,7 @@ export default (): ConfigCallback => ({
     dbName: process.env.DATABASE_DATABASE as string,
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
+    migrations: { disableForeignKeys: false },
     // driverOptions: {
     //   connection: {
     //     ssl: true,

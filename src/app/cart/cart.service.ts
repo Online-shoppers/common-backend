@@ -80,18 +80,18 @@ export class CartService {
       await em.persistAndFlush(cartProduct);
       await em.persistAndFlush(cart);
     } else {
-      const cartProduct = this.cartProductsRepo.create({
+      const newCartProduct = this.cartProductsRepo.create({
         name: product.name,
         category: product.category,
         quantity,
         description: product.description,
-        cart: { id: cart.id },
-        product: { id: product.id },
+        cart,
+        product,
       });
 
       cart.updated = now;
 
-      await em.persistAndFlush(cartProduct);
+      cart.products.add(newCartProduct);
       await em.persistAndFlush(cart);
     }
 
@@ -105,16 +105,12 @@ export class CartService {
   ) {
     const em = this.cartRepo.getEntityManager();
 
-    const [cart, product] = await Promise.all([
+    const [cart, cartProduct] = await Promise.all([
       this.cartRepo.findOne({ user: { id: userId } }, { populate: true }),
-      this.productsRepo.findOne({
-        cartProduct: { id: cartProductId },
+      this.cartProductsRepo.findOne({
+        id: cartProductId,
       }),
     ]);
-
-    const cartProduct = await this.cartProductsRepo.findOne({
-      id: cartProductId,
-    });
 
     await cart.products.init();
 
@@ -124,7 +120,7 @@ export class CartService {
       );
     }
 
-    if (product.quantity < quantity) {
+    if (cartProduct.product.quantity < quantity) {
       throw new NotAcceptableException(
         this.i18nService.translate(ErrorCodes.NotEnough_Product),
       );
@@ -149,18 +145,19 @@ export class CartService {
 
       await em.persistAndFlush(cartProduct);
     } else {
-      const cartProduct = this.cartProductsRepo.create({
-        name: product.name,
-        category: product.category,
-        quantity,
-        description: product.description,
-        cart: { id: cart.id },
-        product: { id: product.id },
-      });
-
-      cart.updated = now;
-
-      await em.persistAndFlush(cartProduct);
+      throw new BadRequestException('No cart product');
+      // const updatedCartProduct = this.cartProductsRepo.create({
+      //   name: cartProduct.name,
+      //   category: cartProduct.category,
+      //   quantity,
+      //   description: cartProduct.description,
+      //   cart: { id: cart.id },
+      //   product: cartProduct.product,
+      // });
+      //
+      // cart.updated = now;
+      //
+      // await em.persistAndFlush(updatedCartProduct);
     }
 
     await em.persistAndFlush(cart);
@@ -190,7 +187,7 @@ export class CartService {
 
       return CartDto.fromEntity(cart);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new BadRequestException('No such product in the cart');
     }
   }

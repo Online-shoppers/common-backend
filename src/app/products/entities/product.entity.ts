@@ -76,10 +76,8 @@ export class ProductEntity extends UUIDEntity {
   @Property({ name: 'archived', default: false })
   archived!: boolean;
 
-  @OneToOne(() => CartProductEntity, {
-    mappedBy: cartProduct => cartProduct.product,
-  })
-  cartProduct: CartProductEntity;
+  @OneToMany(() => CartProductEntity, cartProduct => cartProduct.product)
+  cartProducts = new Collection<CartProductEntity>(this);
 
   @OneToMany(() => ReviewEntity, review => review.product)
   reviews = new Collection<ReviewEntity>(this);
