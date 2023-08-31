@@ -10,6 +10,7 @@ const MikroOrmConfig: Options = {
   dbName: process.env.DATABASE_DATABASE as string,
   entities: ['dist/**/*.entity.js'],
   baseDir: resolve(__dirname, '../..'),
+  migrations: { disableForeignKeys: false },
   // driverOptions: {
   //   connection: {
   //     ssl: true,
