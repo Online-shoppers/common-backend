@@ -58,3 +58,12 @@ DATABASE_PORT=5432
 DATABASE_USER=postgres
 DATABASE_PASSWORD=postgres
 DATABASE_DATABASE=postgres_test
+
+## Setup
+
+```bash
+# create schema on db
+$ yarn mikro-orm schema:create --fk-checks -r
+```
+
+and after that run migrations and seeders

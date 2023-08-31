@@ -10,6 +10,11 @@ const MikroOrmConfig: Options = {
   dbName: process.env.DATABASE_DATABASE as string,
   entities: ['dist/**/*.entity.js'],
   baseDir: resolve(__dirname, '../..'),
+  // driverOptions: {
+  //   connection: {
+  //     ssl: true,
+  //   },
+  // },
   seeder: {
     path: 'dist/seeders',
   },

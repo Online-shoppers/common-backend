@@ -1,7 +1,7 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { I18nValidationPipe, i18nValidationErrorFactory } from 'nestjs-i18n';
+import { I18nValidationPipe } from 'nestjs-i18n';
 
 import { AppModule } from './app.module';
 

@@ -11,6 +11,11 @@ export default (): ConfigCallback => ({
     dbName: process.env.DATABASE_DATABASE as string,
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
+    // driverOptions: {
+    //   connection: {
+    //     ssl: true,
+    //   },
+    // },
     seeder: {
       path: 'dist/seeders',
       pathTs: 'src/seeders',

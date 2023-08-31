@@ -4,14 +4,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
-import { join } from 'lodash';
 import {
   AcceptLanguageResolver,
-  CookieResolver,
   HeaderResolver,
   I18nModule,
   QueryResolver,
 } from 'nestjs-i18n';
+import * as path from 'path';
 
 import { AccessoriesModule } from 'app/accessories/accessories.module';
 import { AuthModule } from 'app/auth/auth.module';
@@ -44,7 +43,7 @@ import database_config from './config/database.config';
       ...I18nModule.forRoot({
         fallbackLanguage: 'en',
         loaderOptions: {
-          path: 'src/resources/i18n/',
+          path: path.join(__dirname, '/resources/i18n'),
           watch: true,
         },
         resolvers: [
