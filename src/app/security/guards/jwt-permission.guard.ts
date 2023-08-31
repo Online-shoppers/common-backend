@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { difference, includes, isEmpty } from 'lodash';
 import { I18nService } from 'nestjs-i18n';
 
 import { ErrorCodes } from '../../../shared/enums/error-codes.enum';
@@ -56,19 +55,16 @@ export class JwtPermissionsGuard
       );
     }
 
-    if (isEmpty(this.permissions)) {
+    if (
+      user.permissions.some(userPermission =>
+        this.permissions.includes(userPermission),
+      )
+    ) {
       return user as TUser;
     }
 
-    if (includes(user.permissions, UserPermissions.All)) {
-      return user as TUser;
-    }
-    if (difference(this.permissions, user.permissions).length) {
-      throw new UnauthorizedException(
-        this.i18nSerivce.translate(ErrorCodes.Invalid_Permission),
-      );
-    }
-
-    return user as TUser;
+    throw new UnauthorizedException(
+      this.i18nSerivce.translate(ErrorCodes.Invalid_Permission),
+    );
   }
 }
