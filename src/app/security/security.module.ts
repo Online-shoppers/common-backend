@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
+import { UserModule } from 'app/user/user.module';
+
 import { RefreshTokenEntity } from '../refresh-token/entity/refresh-token.entity';
 import { UserRoleEntity } from '../user-roles/entities/user-role.entity';
 import { UserEntity } from '../user/entities/user.entity';
@@ -17,8 +19,9 @@ import { SecurityService } from './security.service';
       entities: [UserEntity, RefreshTokenEntity, UserRoleEntity],
     }),
     PassportModule.register({ defaultStrategy: AtStrategyService.name }),
+    UserModule,
   ],
-  providers: [SecurityService, AtStrategyService, UserRepo],
+  providers: [SecurityService, AtStrategyService],
   exports: [SecurityService],
 })
 export class SecurityModule {}

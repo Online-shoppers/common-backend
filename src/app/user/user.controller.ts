@@ -15,11 +15,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
-import { JwtPermissionsGuard } from 'app/security/guards/jwt-permission.guard';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { UserDto } from './dtos/user.dto';
@@ -28,22 +27,7 @@ import { UserService } from './user.service';
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly i18nService: I18nService,
-  ) {}
-
-  @ApiOperation({ summary: 'Get all users list' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: UserDto,
-    isArray: true,
-  })
-  @Get()
-  async getUsers() {
-    const entities = await this.userService.getUsers();
-    return UserDto.fromEntities(entities);
-  }
+  constructor(private readonly userService: UserService) {}
 
   @ApiOperation({ summary: 'Get user info' })
   @ApiResponse({

@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { TokensDto } from '../security/dto/tokens.dto';
@@ -16,7 +16,6 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly securityService: SecurityService,
-    private readonly i18nService: I18nService,
   ) {}
 
   @ApiBody({ type: UserSignUpForm })

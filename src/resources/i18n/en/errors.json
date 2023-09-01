@@ -1,18 +1,24 @@
 {
   "invalidType": "Invalid type",
-  "errors.invalid-form": "Invalid form",
-  "errors.field-invalid.should-be-string": "Invalid text field.",
-  "errors.field-invalid.should-be-number": "Invalid number field.",
-  "errors.field-invalid.should-be-enum": "Invalid type.",
-  "errors.field-invalid.should-be-email": "Invalid email.",
-  "errors.not-authorized.request": "Not authorized.",
-  "errors.not-exists.user": "User does not exist.",
-  "errors.not-exists.product": "Product does not exist.",
-  "errors.already-exists.user": "User already exists",
-  "errors.invalid-creds": "User have not been found",
-  "errors.not-enough.product": "Not enough products in stock",
-  "errors.not-such-item.cart": "No such item in cart",
-  "errors.not_allowed_delete.reviews": "You cannot delete other reviews",
-  "errors.invalid-tokens": "Invalid Tokens",
-  "errors.not_allowed_action.permission": "You do not have permission"
+  "invalid-form": "Invalid form",
+
+  "field-invalid.should-be-string": "Invalid text field.",
+  "field-invalid.should-be-number": "Invalid number field.",
+  "field-invalid.should-be-enum": "Invalid type.",
+  "field-invalid.should-be-email": "Invalid email.",
+  "field-invalid.quantity-should-be-positive": "Quantity should be positive",
+
+  "not-authorized.request": "Not authorized.",
+  "not-exists.user": "User does not exist.",
+  "errors.not-exists.review": "Review does not exist",
+  "not-exists.product": "Product does not exist.",
+  "already-exists.user": "User already exists",
+  "invalid-creds": "User have not been found",
+
+  "not-enough.product": "Not enough products in stock",
+  "not-such-item.cart": "No such item in cart",
+  "not_allowed_delete.reviews": "You cannot delete other reviews",
+
+  "invalid-tokens": "Invalid Tokens",
+  "not_allowed_action.permission": "You do not have permission"
 }

@@ -76,7 +76,7 @@ export class AccessoriesController {
   @ApiResponse({ type: AccessoryDTO })
   @Get(':id')
   async getAccessoryById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.accessoriesService.getAccessoryInfo(id);
+    const entity = await this.accessoriesService.getAccessoryById(id);
     return AccessoryDTO.fromEntity(entity);
   }
 
@@ -88,7 +88,8 @@ export class AccessoriesController {
   @Post()
   async createAccessory(@Body() accessoryData: CreateAccessoryForm) {
     const dto = CreateAccessoryForm.from(accessoryData);
-    return this.accessoriesService.createAccessory(dto);
+    const entity = await this.accessoriesService.createAccessory(dto);
+    return AccessoryDTO.fromEntity(entity);
   }
 
   @ApiBearerAuth()

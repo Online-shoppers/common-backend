@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 import { UserRoleEntity } from 'app/user-roles/entities/user-role.entity';
+import { UserRolesModule } from 'app/user-roles/user-roles.module';
+import { UserRolesService } from 'app/user-roles/user-roles.service';
 
 import { OrderProductEntity } from '../order-item/entity/order-product.entity';
 import { ProductEntity } from '../products/entities/product.entity';
@@ -15,18 +17,17 @@ import { OrderGateway } from './orderGateway';
 
 @Module({
   imports: [
-    MikroOrmModule.forFeature({
-      entities: [
-        OrderEntity,
-        OrderProductEntity,
-        UserEntity,
-        UserRoleEntity,
-        ProductEntity,
-        CartProductEntity,
-      ],
-    }),
+    MikroOrmModule.forFeature([
+      UserEntity,
+      UserRoleEntity,
+      OrderEntity,
+      OrderProductEntity,
+      ProductEntity,
+      CartProductEntity,
+    ]),
+    UserRolesModule,
   ],
   controllers: [OrderController],
-  providers: [OrderService, UserService, OrderGateway],
+  providers: [OrderService, UserService, UserRolesService, OrderGateway],
 })
 export class OrderModule {}
