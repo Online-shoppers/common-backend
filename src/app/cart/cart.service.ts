@@ -68,7 +68,9 @@ export class CartService {
 
   async addProductToCart(userId: string, productId: string, quantity: number) {
     if (quantity <= 0) {
-      throw new BadRequestException('Quantity should be positive');
+      throw new BadRequestException(
+        this.i18nService.t(ErrorCodes.FieldQuantityShouldBePositive),
+      );
     }
 
     const em = this.cartRepo.getEntityManager();
@@ -145,7 +147,9 @@ export class CartService {
     const now = new Date();
 
     if (!cartProduct) {
-      throw new BadRequestException('No cart product');
+      throw new BadRequestException(
+        this.i18nService.t(ErrorCodes.NoSuchItem_Cart),
+      );
     }
 
     cart.updated = now;
@@ -188,8 +192,9 @@ export class CartService {
 
       return CartDto.fromEntity(cart);
     } catch (err) {
-      console.error(err);
-      throw new BadRequestException('No such product in the cart');
+      throw new BadRequestException(
+        this.i18nService.t(ErrorCodes.NoSuchItem_Cart),
+      );
     }
   }
 

@@ -1,15 +1,24 @@
 import { wrap } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { I18nContext, I18nService } from 'nestjs-i18n';
+
+import { ProductCategories } from 'app/products/enums/product-categories.enum';
+
+import { ErrorCodes } from 'shared/enums/error-codes.enum';
 
 import { AccessoryDTO } from './dto/accessory.dto';
 import { CreateAccessoryForm } from './dto/create-accessory.form';
+import { AccessoryPaginationResponse } from './dto/pagination-response.dto';
 import { UpdateAccessoryForm } from './dto/update-accessory.form';
 import { AccessorySorting } from './enums/accessory-sorting.enum';
 import { AccessoryRepo } from './repo/accessories.repo';
 
 @Injectable()
 export class AccessoriesService {
-  constructor(private readonly repo_accessory: AccessoryRepo) {}
+  constructor(
+    private readonly repo_accessory: AccessoryRepo,
+    private readonly i18n: I18nService,
+  ) {}
 
   async getPageAccessories(
     page: number,
@@ -17,33 +26,75 @@ export class AccessoriesService {
     includeArchived: boolean,
     sortOption: AccessorySorting,
   ) {
-    return this.repo_accessory.getAccessoriesList(
-      page,
-      size,
-      includeArchived,
-      sortOption,
-    );
+    const [field, direction] = sortOption.split(':');
+    const archived = includeArchived ? { $in: [true, false] } : false;
+
+    const [total, pageItems] = await Promise.all([
+      this.repo_accessory.count({ archived }),
+      this.repo_accessory.find(
+        { archived },
+        {
+          offset: size * page - size,
+          limit: size,
+          orderBy: {
+            [field]: direction,
+          },
+        },
+      ),
+    ]);
+
+    const response: AccessoryPaginationResponse = {
+      info: { total },
+      items: await AccessoryDTO.fromEntities(pageItems),
+    };
+
+    return response;
   }
 
-  async getAccessoryInfo(id: string) {
-    return this.repo_accessory.getAccessoryById(id);
+  async getAccessoryById(id: string) {
+    try {
+      const accessory = await this.repo_accessory.findOneOrFail({ id });
+      return accessory;
+    } catch (err) {
+      throw new BadRequestException(
+        this.i18n.t(ErrorCodes.NotExists_Product, {
+          lang: I18nContext.current().lang,
+        }),
+      );
+    }
   }
 
   async createAccessory(accessoryData: CreateAccessoryForm) {
-    const created = await this.repo_accessory.createAccessory(accessoryData);
-    return AccessoryDTO.fromEntity(created);
+    const em = this.repo_accessory.getEntityManager();
+
+    const accessory = this.repo_accessory.create({
+      ...accessoryData,
+      category: ProductCategories.ACCESSORIES,
+    });
+    await em.persistAndFlush(accessory);
+
+    return accessory;
   }
 
   async updateAccessory(id: string, updateData: UpdateAccessoryForm) {
-    const existing = await this.repo_accessory.getAccessoryById(id);
+    const em = this.repo_accessory.getEntityManager();
+
+    const existing = await this.getAccessoryById(id);
 
     const data = wrap(existing).assign(updateData, { merge: true });
-    const updated = await this.repo_accessory.updateAccessory(data);
+    await em.persistAndFlush(data);
 
-    return AccessoryDTO.fromEntity(updated);
+    return AccessoryDTO.fromEntity(data);
   }
 
   async archiveAccessory(accessoryId: string) {
-    return this.repo_accessory.archiveAccessory(accessoryId);
+    const em = this.repo_accessory.getEntityManager();
+
+    const accessory = await this.getAccessoryById(accessoryId);
+    accessory.archived = true;
+
+    await em.persistAndFlush(accessory);
+
+    return AccessoryDTO.fromEntity(accessory);
   }
 }

@@ -4,6 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { I18nService } from 'nestjs-i18n';
 
+import { UserService } from 'app/user/user.service';
+
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { RefreshTokenRepo } from '../refresh-token/repo/refresh-token.repo';
 import { UserEntity } from '../user/entities/user.entity';
@@ -14,7 +16,7 @@ import { Tokens } from './type/token.type';
 @Injectable()
 export class SecurityService {
   constructor(
-    private readonly repo_user: UserRepo,
+    private readonly userService: UserService,
     private readonly repo_refresh_token: RefreshTokenRepo,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
@@ -22,7 +24,7 @@ export class SecurityService {
   ) {}
 
   public async getUserById(userId: string) {
-    return this.repo_user.getById(userId);
+    return this.userService.getUserById(userId);
   }
 
   hashPassword(password: string) {
@@ -34,9 +36,9 @@ export class SecurityService {
   }
 
   async generateTokens(entity: UserEntity): Promise<Tokens> {
-    const permissions = await this.repo_user.getUserRoles(entity.id);
+    const permissions = await this.userService.getUserPermissions(entity.id);
     const payload = UserSessionDto.fromEntity(entity, permissions);
-    const user = await this.repo_user.findOne({ id: entity.id });
+    const user = await this.userService.getUserById(entity.id);
 
     const at = await this.jwtService.signAsync(payload, {
       secret: this.config.get<string>('app.AT_SECRET'),
@@ -68,7 +70,7 @@ export class SecurityService {
 
     const accessPayload = this.jwtService.decode(accessToken) as UserSessionDto;
 
-    const user = await this.repo_user.findOne({ id: accessPayload.id });
+    const user = await this.userService.getUserById(accessPayload.id);
     return this.generateTokens(user);
   }
 

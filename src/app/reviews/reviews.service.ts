@@ -1,5 +1,13 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { wrap } from '@mikro-orm/core';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
+
+import { ProductsService } from 'app/products/products.service';
+import { UserService } from 'app/user/user.service';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { EditReviewForm } from './dto/edit-review.form';
@@ -10,11 +18,25 @@ import { ReviewRepo } from './repo/review.repo';
 export class ReviewsService {
   constructor(
     private readonly reviewsRepo: ReviewRepo,
+    private readonly userService: UserService,
+    private readonly productService: ProductsService,
     private readonly i18nService: I18nService,
   ) {}
 
   async getProductReviews(productId: string) {
-    return this.reviewsRepo.getProductReviews(productId);
+    return this.reviewsRepo.find(
+      { product: { id: productId } },
+      { populate: ['user'] },
+    );
+  }
+
+  async getProductReviewById(id: string) {
+    try {
+      const review = await this.reviewsRepo.findOneOrFail({ id });
+      return review;
+    } catch (err) {
+      throw new BadRequestException(ErrorCodes.NotExists_Review);
+    }
   }
 
   async addProductReview(
@@ -22,22 +44,51 @@ export class ReviewsService {
     productId: string,
     data: NewReviewForm,
   ) {
-    return this.reviewsRepo.addProductReview(userId, productId, data);
+    const em = this.reviewsRepo.getEntityManager();
+
+    const [user, product] = await Promise.all([
+      this.userService.getUserById(userId),
+      this.productService.getProductById(productId),
+    ]);
+
+    const created = this.reviewsRepo.create({
+      ...data,
+      archived: false,
+      edited: false,
+      user,
+      product,
+    });
+
+    await em.persistAndFlush(created);
+
+    return created;
   }
 
   async editProductReview(id: string, data: EditReviewForm) {
-    return this.reviewsRepo.editProductReview(id, data);
+    const em = this.reviewsRepo.getEntityManager();
+
+    const product = await this.getProductReviewById(id);
+    const edited = wrap(product).assign({ ...data, edited: true });
+
+    await em.persistAndFlush(edited);
+
+    return edited;
   }
 
   async archiveProductReview(reviewId: string, userId: string) {
-    const exists = await this.reviewsRepo.getProductReviewById(reviewId);
+    const em = this.reviewsRepo.getEntityManager();
 
-    if (exists.user.id !== userId) {
+    const review = await this.getProductReviewById(reviewId);
+    const edited = wrap(review).assign({ archived: true });
+
+    await em.persistAndFlush(edited);
+
+    if (review.user.id !== userId) {
       throw new ForbiddenException(
         this.i18nService.translate(ErrorCodes.Delete_Reviews),
       );
     }
 
-    return this.reviewsRepo.archiveProductReview(reviewId);
+    return edited;
   }
 }
