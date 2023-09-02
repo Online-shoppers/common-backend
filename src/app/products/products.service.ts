@@ -1,6 +1,6 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { I18nService } from 'nestjs-i18n';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 import { ErrorCodes } from 'shared/enums/error-codes.enum';
 
@@ -23,7 +23,9 @@ export class ProductsService {
       return product;
     } catch (err) {
       throw new BadRequestException(
-        this.i18nService.translate(ErrorCodes.NotExists_Product),
+        this.i18nService.translate(ErrorCodes.NotExists_Product, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
   }

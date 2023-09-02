@@ -4,7 +4,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { I18nService } from 'nestjs-i18n';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 import { ProductsService } from 'app/products/products.service';
 import { UserService } from 'app/user/user.service';
@@ -85,7 +85,9 @@ export class ReviewsService {
 
     if (review.user.id !== userId) {
       throw new ForbiddenException(
-        this.i18nService.translate(ErrorCodes.Delete_Reviews),
+        this.i18nService.translate(ErrorCodes.Delete_Reviews, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
 

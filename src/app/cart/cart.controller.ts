@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { I18n, I18nContext } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
@@ -37,16 +36,13 @@ export class CartController {
 
   @ApiResponse({ type: CartProductDto, isArray: true })
   @Get('/products')
-  findCartProducts(
-    @CurrentUser() user: UserSessionDto,
-    @I18n() i18n: I18nContext,
-  ) {
+  findCartProducts(@CurrentUser() user: UserSessionDto) {
     return this.cartService.getUserCartProducts(user.id);
   }
 
   @ApiResponse({ type: CartInfoDto })
   @Get('/info')
-  getCartInfo(@CurrentUser() user: UserSessionDto, @I18n() i18n: I18nContext) {
+  getCartInfo(@CurrentUser() user: UserSessionDto) {
     return this.cartService.getUserCartInfo(user.id);
   }
 
@@ -56,7 +52,6 @@ export class CartController {
     @Param('productId', ParseUUIDPipe) productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
-    @I18n() i18n: I18nContext,
   ) {
     return this.cartService.addProductToCart(user.id, productId, quantity);
   }
@@ -67,7 +62,6 @@ export class CartController {
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
-    @I18n() i18n: I18nContext,
   ) {
     return this.cartService.updateProductInCart(
       user.id,
