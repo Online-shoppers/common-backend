@@ -22,7 +22,16 @@ export class UserService {
   ) {}
 
   async getUserByEmail(email: string) {
-    return this.repo_user.findOneOrFail({ email });
+    try {
+      const user = await this.repo_user.findOneOrFail({ email });
+      return user;
+    } catch (err) {
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.NotExists_User, {
+          lang: I18nContext.current().lang,
+        }),
+      );
+    }
   }
 
   async getUserById(userId: string) {
