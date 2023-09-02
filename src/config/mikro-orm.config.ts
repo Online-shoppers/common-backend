@@ -11,6 +11,7 @@ const MikroOrmConfig: Options = {
   entities: ['dist/**/*.entity.js'],
   baseDir: resolve(__dirname, '../..'),
   migrations: { disableForeignKeys: false },
+  // multipleStatements: true,
   // driverOptions: {
   //   connection: {
   //     ssl: true,

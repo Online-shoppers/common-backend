@@ -12,6 +12,7 @@ export default (): ConfigCallback => ({
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
     migrations: { disableForeignKeys: false },
+    // multipleStatements: true,
     // driverOptions: {
     //   connection: {
     //     ssl: true,
