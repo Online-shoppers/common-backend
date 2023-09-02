@@ -43,7 +43,7 @@ export class AuthService {
 
     if (!user)
       throw new ForbiddenException(
-        this.i18nService.translate(ErrorCodes.Invalid_Creds, {
+        this.i18nService.translate(ErrorCodes.NotExists_User, {
           lang: I18nContext.current().lang,
         }),
       );
