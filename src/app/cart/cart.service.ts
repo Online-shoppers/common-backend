@@ -8,11 +8,11 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { I18nService } from 'nestjs-i18n';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
-import { ProductEntity } from 'app/products/entities/product.entity';
+import { ProductsService } from 'app/products/products.service';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { CartInfoDto } from './dto/cart-info.dto';
@@ -26,8 +26,7 @@ export class CartService {
 
   constructor(
     private readonly cartRepo: CartRepo,
-    @InjectRepository(ProductEntity)
-    private readonly productsRepo: EntityRepository<ProductEntity>,
+    private readonly productsService: ProductsService,
     @InjectRepository(CartProductEntity)
     private readonly cartProductsRepo: EntityRepository<CartProductEntity>,
     private readonly i18nService: I18nService,
@@ -69,7 +68,9 @@ export class CartService {
   async addProductToCart(userId: string, productId: string, quantity: number) {
     if (quantity <= 0) {
       throw new BadRequestException(
-        this.i18nService.t(ErrorCodes.FieldQuantityShouldBePositive),
+        this.i18nService.translate(ErrorCodes.FieldQuantityShouldBePositive, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
 
@@ -77,7 +78,7 @@ export class CartService {
 
     const [cart, product] = await Promise.all([
       this.cartRepo.findOne({ user: { id: userId } }),
-      this.productsRepo.findOne({ id: productId }),
+      this.productsService.getProductById(productId),
     ]);
 
     const cartProduct = await this.cartProductsRepo.findOne({
@@ -87,7 +88,9 @@ export class CartService {
 
     if (product.quantity < (cartProduct?.quantity || 0) + quantity) {
       throw new NotAcceptableException(
-        this.i18nService.translate(ErrorCodes.NotEnough_Product),
+        this.i18nService.translate(ErrorCodes.NotEnough_Product, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
 
@@ -134,13 +137,17 @@ export class CartService {
 
     if (!cartProduct) {
       throw new BadRequestException(
-        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart),
+        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
 
     if (cartProduct.product.quantity < quantity) {
       throw new NotAcceptableException(
-        this.i18nService.translate(ErrorCodes.NotEnough_Product),
+        this.i18nService.translate(ErrorCodes.NotEnough_Product, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
 
@@ -148,7 +155,9 @@ export class CartService {
 
     if (!cartProduct) {
       throw new BadRequestException(
-        this.i18nService.t(ErrorCodes.NoSuchItem_Cart),
+        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
 
@@ -193,7 +202,9 @@ export class CartService {
       return CartDto.fromEntity(cart);
     } catch (err) {
       throw new BadRequestException(
-        this.i18nService.t(ErrorCodes.NoSuchItem_Cart),
+        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
   }

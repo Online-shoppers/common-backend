@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { I18nService } from 'nestjs-i18n';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 import { UserRolesService } from 'app/user-roles/user-roles.service';
 
@@ -35,7 +35,9 @@ export class UserService {
       return user;
     } catch (err) {
       throw new BadRequestException(
-        this.i18nService.translate(ErrorCodes.NotExists_User),
+        this.i18nService.translate(ErrorCodes.NotExists_User, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
   }

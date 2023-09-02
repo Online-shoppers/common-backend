@@ -3,7 +3,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { I18nService } from 'nestjs-i18n';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { SecurityService } from '../security/security.service';
@@ -23,7 +23,9 @@ export class AuthService {
     const existing = await this.userService.getUserByEmail(dto.email);
     if (existing) {
       throw new BadRequestException(
-        this.i18nService.translate(ErrorCodes.Exists_User),
+        this.i18nService.translate(ErrorCodes.Exists_User, {
+          lang: I18nContext.current().lang,
+        }),
       );
     }
 
@@ -41,7 +43,9 @@ export class AuthService {
 
     if (!user)
       throw new ForbiddenException(
-        this.i18nService.translate(ErrorCodes.Invalid_Creds),
+        this.i18nService.translate(ErrorCodes.Invalid_Creds, {
+          lang: I18nContext.current().lang,
+        }),
       );
 
     const passwordMatches = await this.securityService.comparePassword(
@@ -50,7 +54,9 @@ export class AuthService {
     );
     if (!passwordMatches)
       throw new ForbiddenException(
-        this.i18nService.translate(ErrorCodes.Invalid_Creds),
+        this.i18nService.translate(ErrorCodes.Invalid_Creds, {
+          lang: I18nContext.current().lang,
+        }),
       );
 
     return this.securityService.generateTokens(user);
