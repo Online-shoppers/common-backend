@@ -22,16 +22,8 @@ export class UserService {
   ) {}
 
   async getUserByEmail(email: string) {
-    try {
-      const user = await this.repo_user.findOneOrFail({ email });
-      return user;
-    } catch (err) {
-      throw new BadRequestException(
-        this.i18nService.translate(ErrorCodes.NotExists_User, {
-          lang: I18nContext.current().lang,
-        }),
-      );
-    }
+    const user = await this.repo_user.findOne({ email });
+    return user;
   }
 
   async getUserById(userId: string) {
@@ -88,6 +80,7 @@ export class UserService {
       role: { id: defaultRole.id, type: defaultRole.type },
       cart: { products: [] },
     });
+    this.eventEmitter.emit('new.user', new UserEvent(newUser.email));
 
     await em.persistAndFlush(newUser);
 
