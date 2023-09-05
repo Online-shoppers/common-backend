@@ -78,7 +78,7 @@ export class BeerController {
   @ApiResponse({ type: BeerDTO })
   @Get(':id')
   async getBeerById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.beerService.getBeerInfo(id);
+    const entity = await this.beerService.getBeerById(id);
     return BeerDTO.fromEntity(entity);
   }
 

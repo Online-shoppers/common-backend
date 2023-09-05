@@ -74,7 +74,7 @@ export class SnacksController {
   @Get(':id')
   @ApiResponse({ type: SnacksDTO })
   async getSnacksById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.snacksService.getSnackInfo(id);
+    const entity = await this.snacksService.getSnackById(id);
     return SnacksDTO.fromEntity(entity);
   }
 

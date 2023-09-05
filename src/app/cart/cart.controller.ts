@@ -12,13 +12,13 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { I18n, I18nContext } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
 
 import { CartService } from './cart.service';
+import { CartInfoDto } from './dto/cart-info.dto';
 import { CartDto } from './dto/cart.dto';
 
 @ApiTags('Cart')
@@ -36,31 +36,32 @@ export class CartController {
 
   @ApiResponse({ type: CartProductDto, isArray: true })
   @Get('/products')
-  findCartProducts(
-    @CurrentUser() user: UserSessionDto,
-    @I18n() i18n: I18nContext,
-  ) {
+  findCartProducts(@CurrentUser() user: UserSessionDto) {
     return this.cartService.getUserCartProducts(user.id);
   }
 
-  @ApiResponse({ type: CartDto })
+  @ApiResponse({ type: CartInfoDto })
+  @Get('/info')
+  getCartInfo(@CurrentUser() user: UserSessionDto) {
+    return this.cartService.getUserCartInfo(user.id);
+  }
+
+  @ApiResponse({ type: CartProductDto })
   @Post('/products/:productId')
   addProductToCart(
     @Param('productId', ParseUUIDPipe) productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
-    @I18n() i18n: I18nContext,
   ) {
     return this.cartService.addProductToCart(user.id, productId, quantity);
   }
 
-  @ApiResponse({ type: CartDto })
+  @ApiResponse({ type: CartProductDto })
   @Put('/products/:cartProductId')
   updateProductInCart(
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
-    @I18n() i18n: I18nContext,
   ) {
     return this.cartService.updateProductInCart(
       user.id,

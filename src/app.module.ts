@@ -39,21 +39,18 @@ import database_config from './config/database.config';
       load: [app_config, database_config],
       isGlobal: true,
     }),
-    {
-      ...I18nModule.forRoot({
-        fallbackLanguage: 'en',
-        loaderOptions: {
-          path: path.join(__dirname, '/resources/i18n'),
-          watch: true,
-        },
-        resolvers: [
-          { use: QueryResolver, options: ['lang'] },
-          AcceptLanguageResolver,
-          new HeaderResolver(['x-lang']),
-        ],
-      }),
-      global: true,
-    },
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '/resources/i18n'),
+        watch: true,
+      },
+      resolvers: [
+        new HeaderResolver(['x-lang']),
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+      ],
+    }),
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => config.get('database'),

@@ -20,8 +20,6 @@ export class CartEntity extends UUIDEntity {
 
   @Property({ persist: false })
   async total() {
-    await this.products.init();
-
     return this.products
       .getItems()
       .reduce(
