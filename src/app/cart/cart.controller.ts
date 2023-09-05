@@ -50,10 +50,16 @@ export class CartController {
   @Post('/products/:productId')
   addProductToCart(
     @Param('productId', ParseUUIDPipe) productId: string,
+    @Param('productId', ParseUUIDPipe) lang: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
   ) {
-    return this.cartService.addProductToCart(user.id, productId, quantity);
+    return this.cartService.addProductToCart(
+      user.id,
+      productId,
+      quantity,
+      lang,
+    );
   }
 
   @ApiResponse({ type: CartProductDto })
