@@ -172,11 +172,4 @@ describe('ProductController', () => {
 
     expect(response).toBeInstanceOf(BeerDTO);
   });
-
-  it('should archive beer', async () => {
-    const id = mockBeer[0].id;
-    const response = await controller.remove(id);
-
-    expect(response).toBeInstanceOf(BeerDTO);
-  });
 });

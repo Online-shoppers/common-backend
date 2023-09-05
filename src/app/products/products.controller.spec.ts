@@ -9,7 +9,6 @@ import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity
 import { ReviewEntity } from 'app/reviews/entities/review.entity';
 
 import { FilterProductsForm } from './dtos/filter-products.form';
-import { ProductDTO } from './dtos/product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { ProductCategories } from './enums/product-categories.enum';
 import { ProductTypes } from './enums/product-types.enum';
@@ -70,56 +69,56 @@ const mockProducts: ProductEntity[] = [
   },
 ];
 
+const productsServiceMock = {
+  getProductById: jest.fn((id: string) => {
+    const result = mockProducts.find(product => product.id === id);
+    if (!result) {
+      throw new BadRequestException('Not found');
+    }
+    return result;
+  }),
+  getProductsList: jest.fn(
+    (
+      page: number,
+      size: number,
+      includeArchived?: boolean,
+      filters: FilterProductsForm = { name: '' },
+    ) => {
+      const { name } = filters;
+
+      const allProducts = mockProducts.filter(product => {
+        let isValid = true;
+
+        if (name) {
+          const matches = product.name.toLowerCase().includes(name);
+          isValid = isValid && matches;
+        }
+
+        if (!isBoolean(includeArchived)) {
+          isValid = isValid && !product.archived;
+        }
+
+        return isValid;
+      });
+
+      const count = allProducts.length;
+      const offset = size * page - size;
+      const limit = size;
+
+      const pageProducts = allProducts.slice(offset, offset + limit - 1);
+
+      return {
+        info: {
+          total: count,
+        },
+        items: pageProducts,
+      };
+    },
+  ),
+};
+
 describe('ProductsController', () => {
   let controller: ProductsController;
-
-  const productsServiceMock = {
-    getProductById: jest.fn((id: string) => {
-      const result = mockProducts.find(product => product.id === id);
-      if (!result) {
-        throw new BadRequestException('Not found');
-      }
-      return result;
-    }),
-    getProductsList: jest.fn(
-      (
-        page: number,
-        size: number,
-        includeArchived?: boolean,
-        filters: FilterProductsForm = { name: '' },
-      ) => {
-        const { name } = filters;
-
-        const allProducts = mockProducts.filter(product => {
-          let isValid = true;
-
-          if (name) {
-            const matches = product.name.toLowerCase().includes(name);
-            isValid = isValid && matches;
-          }
-
-          if (!isBoolean(includeArchived)) {
-            isValid = isValid && !product.archived;
-          }
-
-          return isValid;
-        });
-
-        const count = allProducts.length;
-        const offset = size * page - size;
-        const limit = size;
-
-        const pageProducts = allProducts.slice(offset, offset + limit - 1);
-
-        return {
-          info: {
-            total: count,
-          },
-          items: pageProducts,
-        };
-      },
-    ),
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

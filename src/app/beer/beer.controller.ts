@@ -1,4 +1,3 @@
-import { Enum } from '@mikro-orm/core';
 import {
   Body,
   Controller,
@@ -22,7 +21,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 import {
   JwtPermissionsGuard,
@@ -30,7 +28,6 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
 import { CreateBeerForm } from './dto/create-beer.form';
@@ -65,7 +62,6 @@ export class BeerController {
     includeArchived = false,
     @Query('sortOption', new ParseEnumPipe(BeerSorting))
     sortOption: BeerSorting,
-    @I18n() i18n: I18nContext,
   ) {
     return this.beerService.getPageBeer(
       page,

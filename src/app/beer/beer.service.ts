@@ -1,4 +1,3 @@
-import { wrap } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
@@ -73,7 +72,7 @@ export class BeerService {
 
     const existing = await this.getBeerById(id);
 
-    const data = wrap(existing).assign(updateData, { merge: true });
+    const data = em.assign(existing, updateData, { merge: true });
     await em.persistAndFlush(data);
 
     return BeerDTO.fromEntity(data);
