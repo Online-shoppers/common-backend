@@ -1,64 +1,63 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { getRepositoryToken } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  AcceptLanguageResolver,
-  HeaderResolver,
-  I18nModule,
-  QueryResolver,
-} from 'nestjs-i18n';
-import * as path from 'path';
+import { I18nService } from 'nestjs-i18n';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
-import { ProductEntity } from 'app/products/entities/product.entity';
-import { ProductsModule } from 'app/products/products.module';
 import { ProductsService } from 'app/products/products.service';
 
 import { CartService } from './cart.service';
-import { CartEntity } from './entities/cart.entity';
+import { CartRepo } from './repo/cart.repo';
 
 describe('CartService', () => {
   let service: CartService;
 
+  const cartRepositoryMock = {
+    findOne: jest.fn(() => ({})),
+    getEntityManager: jest.fn(() => ({})),
+  };
+
+  const cartProductRepositoryMock = {
+    findOne: jest.fn(),
+    create: jest.fn(),
+  };
+
+  const productsServiceMock = {
+    getProductById: jest.fn(),
+  };
+
+  const i18nMock = {
+    translate: jest.fn().mockResolvedValue('hello'),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        MikroOrmModule.forRootAsync({
-          imports: [ConfigModule],
-          useFactory: (config: ConfigService) => config.get('database'),
-          inject: [ConfigService],
-        }),
-        I18nModule.forRoot({
-          fallbackLanguage: 'en',
-          loaderOptions: {
-            path: path.join(__dirname, '/resources/i18n'),
-            watch: true,
-          },
-          resolvers: [
-            new HeaderResolver(['x-lang']),
-            { use: QueryResolver, options: ['lang'] },
-            AcceptLanguageResolver,
-          ],
-        }),
-
-        MikroOrmModule.forFeature([
-          CartEntity,
-          CartProductEntity,
-          ProductEntity,
-        ]),
-        ProductsModule,
+      providers: [
+        CartService,
+        {
+          provide: CartRepo,
+          useValue: cartRepositoryMock,
+        },
+        {
+          provide: ProductsService,
+          useValue: productsServiceMock,
+        },
+        {
+          provide: getRepositoryToken(CartProductEntity),
+          useValue: cartProductRepositoryMock,
+        },
+        {
+          provide: I18nService,
+          useValue: i18nMock,
+        },
       ],
-      providers: [CartService, ProductsService],
     }).compile();
 
     service = module.get<CartService>(CartService);
   });
 
+  afterEach(() => jest.clearAllMocks());
+
   it('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  it('test', () => {
-    expect(2 + 2).toEqual(4);
   });
 });
