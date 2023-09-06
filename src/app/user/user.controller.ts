@@ -35,8 +35,8 @@ export class UserController {
     type: UserDto,
   })
   @Get(':userId')
-  async getUserById(@Param('userId') userId: string) {
-    const entity = await this.userService.getUserInfo(userId);
+  async getUserById(@Param('userId') userId: string, @I18nLang() lang: string) {
+    const entity = await this.userService.getUserInfo(userId, lang);
     return UserDto.fromEntity(entity);
   }
 
@@ -52,7 +52,6 @@ export class UserController {
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: UserSessionDto,
     @I18n() i18n: I18nContext,
-    @I18nLang() lang: string,
   ) {
     if (!user) {
       throw new ForbiddenException(i18n.t(ErrorCodes.NotExists_User));

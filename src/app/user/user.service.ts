@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 import { UserRolesService } from 'app/user-roles/user-roles.service';
 
@@ -30,14 +30,14 @@ export class UserService {
     return this.repo_user.findOneOrFail({ id: userId });
   }
 
-  async getUserInfo(userId: string) {
+  async getUserInfo(userId: string, lang: string) {
     try {
       const user = await this.getUserById(userId);
       return user;
     } catch (err) {
       throw new BadRequestException(
         this.i18nService.translate(ErrorCodes.NotExists_User, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }

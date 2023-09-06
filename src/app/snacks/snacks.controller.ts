@@ -102,9 +102,10 @@ export class SnacksController {
   async updateSnack(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateSnackForm,
+    @I18nLang() lang: string,
   ) {
     const dto = UpdateSnackForm.from(updateData);
-    return this.snacksService.updateSnack(id, dto);
+    return this.snacksService.updateSnack(id, dto, lang);
   }
 
   @ApiBearerAuth()
@@ -112,7 +113,10 @@ export class SnacksController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: SnacksDTO })
   @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.snacksService.archiveSnack(id);
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    return this.snacksService.archiveSnack(id, lang);
   }
 }

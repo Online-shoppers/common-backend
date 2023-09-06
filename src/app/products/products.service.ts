@@ -17,7 +17,7 @@ export class ProductsService {
     private readonly i18nService: I18nService,
   ) {}
 
-  async getProductById(id: string, lang?: string) {
+  async getProductById(id: string, lang: string) {
     try {
       const product = await this.productsRepo.findOneOrFail({ id });
       return product;

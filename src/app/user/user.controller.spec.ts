@@ -138,7 +138,7 @@ describe('UserController', () => {
       try {
         await mockUserService.getUserInfo('fake-id');
       } catch (e) {
-        expect(controller.getUserById('fake-id')).toBeInstanceOf(
+        expect(await controller.getUserById('fake-id', 'en')).toBeInstanceOf(
           BadRequestException,
         );
       }
@@ -146,28 +146,25 @@ describe('UserController', () => {
 
     it('should return user by id', async () => {
       await expect(
-        controller.getUserById('95457c20-4bca-11ee-a338-6b770323fd2d'),
+        controller.getUserById('95457c20-4bca-11ee-a338-6b770323fd2d', 'en'),
       ).resolves.toEqual(await mockUserService.getUserInfo());
     });
 
     it('should archive the user', async () => {
       mockUserService.archiveUser.mockResolvedValue(user);
 
-      await expect(
-        controller.remove('1', userSession, i18n, 'ru'),
-      ).resolves.toEqual(user);
+      expect(controller.remove('1', userSession, i18n)).resolves.toEqual(user);
     });
 
     it('should return error', async () => {
       try {
         await mockUserService.archiveUser();
       } catch (e) {
-        await expect(
-          controller.remove(
+        expect(
+          await controller.remove(
             '95457c20-4bca-11ee-a338-6b770323fd2d',
             userSession,
             i18n,
-            'en',
           ),
         ).toBeInstanceOf(ForbiddenException);
       }
@@ -176,7 +173,7 @@ describe('UserController', () => {
       try {
         await mockUserService.archiveUser();
       } catch (e) {
-        await expect(controller.remove('', null, i18n, 'en')).toBeInstanceOf(
+        expect(await controller.remove('', null, i18n)).toBeInstanceOf(
           ForbiddenException,
         );
       }

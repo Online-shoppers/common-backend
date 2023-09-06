@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { I18nLang } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
@@ -52,8 +53,14 @@ export class CartController {
     @Param('productId', ParseUUIDPipe) productId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
-    return this.cartService.addProductToCart(user.id, productId, quantity);
+    return this.cartService.addProductToCart(
+      user.id,
+      productId,
+      quantity,
+      lang,
+    );
   }
 
   @ApiResponse({ type: CartProductDto })
@@ -62,11 +69,13 @@ export class CartController {
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
     return this.cartService.updateProductInCart(
       user.id,
       cartProductId,
       quantity,
+      lang,
     );
   }
 
@@ -74,8 +83,9 @@ export class CartController {
   async deleteProductFromCart(
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
-    return this.cartService.deleteProductFromCart(user.id, cartProductId);
+    return this.cartService.deleteProductFromCart(user.id, cartProductId, lang);
   }
 
   @ApiResponse({ type: CartDto })

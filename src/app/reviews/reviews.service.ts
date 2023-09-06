@@ -4,7 +4,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 import { ProductsService } from 'app/products/products.service';
 import { UserService } from 'app/user/user.service';
@@ -30,12 +30,14 @@ export class ReviewsService {
     );
   }
 
-  async getProductReviewById(id: string) {
+  async getProductReviewById(id: string, lang: string) {
     try {
       const review = await this.reviewsRepo.findOneOrFail({ id });
       return review;
     } catch (err) {
-      throw new BadRequestException(ErrorCodes.NotExists_Review);
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.NotExists_Review, { lang }),
+      );
     }
   }
 
@@ -43,12 +45,13 @@ export class ReviewsService {
     userId: string,
     productId: string,
     data: NewReviewForm,
+    lang: string,
   ) {
     const em = this.reviewsRepo.getEntityManager();
 
     const [user, product] = await Promise.all([
       this.userService.getUserById(userId),
-      this.productService.getProductById(productId),
+      this.productService.getProductById(productId, lang),
     ]);
 
     const created = this.reviewsRepo.create({
@@ -64,10 +67,10 @@ export class ReviewsService {
     return created;
   }
 
-  async editProductReview(id: string, data: EditReviewForm) {
+  async editProductReview(id: string, data: EditReviewForm, lang: string) {
     const em = this.reviewsRepo.getEntityManager();
 
-    const product = await this.getProductReviewById(id);
+    const product = await this.getProductReviewById(id, lang);
     const edited = wrap(product).assign({ ...data, edited: true });
 
     await em.persistAndFlush(edited);
@@ -75,10 +78,10 @@ export class ReviewsService {
     return edited;
   }
 
-  async archiveProductReview(reviewId: string, userId: string) {
+  async archiveProductReview(reviewId: string, userId: string, lang: string) {
     const em = this.reviewsRepo.getEntityManager();
 
-    const review = await this.getProductReviewById(reviewId);
+    const review = await this.getProductReviewById(reviewId, lang);
     const edited = wrap(review).assign({ archived: true });
 
     await em.persistAndFlush(edited);
@@ -86,7 +89,7 @@ export class ReviewsService {
     if (review.user.id !== userId) {
       throw new ForbiddenException(
         this.i18nService.translate(ErrorCodes.Delete_Reviews, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }

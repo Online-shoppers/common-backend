@@ -21,6 +21,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { I18nLang } from 'nestjs-i18n';
 
 import {
   JwtPermissionsGuard,
@@ -73,8 +74,11 @@ export class BeerController {
 
   @ApiResponse({ type: BeerDTO })
   @Get(':id')
-  async getBeerById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.beerService.getBeerById(id);
+  async getBeerById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    const entity = await this.beerService.getBeerById(id, lang);
     return BeerDTO.fromEntity(entity);
   }
 
@@ -98,9 +102,10 @@ export class BeerController {
   async updateBeer(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateBeerForm,
+    @I18nLang() lang: string,
   ) {
     const dto = UpdateBeerForm.from(updateData);
-    return this.beerService.updateBeer(id, dto);
+    return this.beerService.updateBeer(id, dto, lang);
   }
 
   @ApiBearerAuth()
@@ -108,7 +113,10 @@ export class BeerController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: BeerDTO })
   @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.beerService.archiveBeer(id);
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    return this.beerService.archiveBeer(id, lang);
   }
 }

@@ -193,7 +193,7 @@ describe('ProductsService', () => {
   });
 
   it('should return product by id', async () => {
-    const product = await service.getProductById(mockProducts[0].id);
+    const product = await service.getProductById(mockProducts[0].id, 'en');
     expect(product).toStrictEqual(mockProducts[0]);
     expect(product.id).toEqual(mockProducts[0].id);
   });

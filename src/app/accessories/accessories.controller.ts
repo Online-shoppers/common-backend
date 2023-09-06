@@ -104,9 +104,10 @@ export class AccessoriesController {
   async updateAccessory(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateAccessoryForm,
+    @I18nLang() lang: string,
   ) {
     const dto = UpdateAccessoryForm.from(updateData);
-    return this.accessoriesService.updateAccessory(id, dto);
+    return this.accessoriesService.updateAccessory(id, dto, lang);
   }
 
   @ApiBearerAuth()
@@ -114,7 +115,10 @@ export class AccessoriesController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: AccessoryDTO })
   @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.accessoriesService.archiveAccessory(id);
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    return this.accessoriesService.archiveAccessory(id, lang);
   }
 }

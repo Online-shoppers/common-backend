@@ -5,7 +5,6 @@ import { UserSessionDto } from '../security/dto/user-session.dto';
 import { JwtPermissionsGuard } from '../security/guards/jwt-permission.guard';
 import { UserPermissions } from '../user-roles/enums/user-permissions.enum';
 import { UserRoles } from '../user-roles/enums/user-roles.enum';
-import { UserService } from '../user/user.service';
 import { EditReviewForm } from './dto/edit-review.form';
 import { NewReviewForm } from './dto/new-review.form';
 import { ReviewDto } from './dto/review.dto';
@@ -132,6 +131,7 @@ describe('ReviewsController', () => {
         productId,
         reviewForm,
         user,
+        'en',
       );
 
       expect(result).toEqual(ReviewDto.fromEntity(createdReview));
@@ -174,7 +174,7 @@ describe('ReviewsController', () => {
 
       mockReviewsService.editProductReview.mockResolvedValue(createdReview);
 
-      const result = await controller.editProductReview('1', editRev);
+      const result = await controller.editProductReview('1', editRev, 'en');
 
       expect(result).toEqual(ReviewDto.fromEntity(createdReview));
     });
@@ -218,7 +218,7 @@ describe('ReviewsController', () => {
 
       mockReviewsService.archiveProductReview.mockResolvedValue(createdReview);
 
-      const result = await controller.deleteProductReview('1', user);
+      const result = await controller.deleteProductReview('1', user, 'en');
 
       expect(result).toEqual(ReviewDto.fromEntity(createdReview));
     });
