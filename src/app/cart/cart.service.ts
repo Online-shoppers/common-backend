@@ -1,4 +1,4 @@
-import { wrap } from '@mikro-orm/core';
+import { ArrayCollection, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
@@ -114,7 +114,6 @@ export class CartService {
         cart,
         product,
       });
-
       cart.products.add(newCartProduct);
     }
     cart.updated = now;
