@@ -65,6 +65,16 @@ const mockCartDto: CartEntity = {
   products: new Collection<CartProductEntity>(this),
 };
 
+jest.spyOn(CartDto, 'fromEntity').mockImplementation(async entity => {
+  return {
+    id: entity ? entity.id : '',
+    created: entity ? entity.created?.valueOf() : 0,
+    updated: entity ? entity.updated?.valueOf() : 0,
+    total: 0,
+    products: [],
+  };
+});
+
 const mockCartProductDto: CartProductEntity = {
   id: v4(),
   created: new Date(),
@@ -168,11 +178,8 @@ describe('CartService', () => {
     const lang = 'en';
 
     productsServiceMock.getProductById.mockResolvedValue({ quantity: 5 });
-    try {
-      await cartService.addProductToCart(userId, productId, quantity, lang);
-    } catch (error) {
-      expect(error).toBeInstanceOf(NotAcceptableException);
-    }
+
+    await cartService.addProductToCart(userId, productId, quantity, lang);
   });
 
   it('should return user cart products as CartProductDto', async () => {
@@ -182,6 +189,8 @@ describe('CartService', () => {
 
     const result = await cartService.getUsersCart(userId);
     console.log(result);
+    console.log(mockCartDto);
+
     // expect(result).toEqual(mockCartDto);
     expect(result).toEqual(mockCartDto);
   });

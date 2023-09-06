@@ -49,10 +49,11 @@ export class AuthController {
   @ApiResponse({ type: TokensDto })
   @ApiOperation({ summary: 'Refresh tokens' })
   @Post('/refresh')
-  async refreshTokens(@Body() body: TokensDto): Promise<Tokens> {
+  async refreshTokens(@Body() body: TokensDto, lang: string): Promise<Tokens> {
     return this.securityService.refreshTokens(
       body.access_token,
       body.refresh_token,
+      lang,
     );
   }
 }

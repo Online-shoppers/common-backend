@@ -58,13 +58,13 @@ export class SecurityService {
     };
   }
 
-  async refreshTokens(accessToken: string, refreshToken: string) {
+  async refreshTokens(accessToken: string, refreshToken: string, lang: string) {
     const validTokens =
       this.validateAccessToken(accessToken) &&
       (await this.validateRefreshToken(refreshToken));
     if (!validTokens) {
       throw new NotAcceptableException(
-        this.i18nSerivce.translate(ErrorCodes.InvalidTokens),
+        this.i18nSerivce.translate(ErrorCodes.InvalidTokens, { lang }),
       );
     }
 
