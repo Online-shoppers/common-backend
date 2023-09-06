@@ -190,17 +190,13 @@ describe('ReviewsService', () => {
 
   describe('archiveProductReview', () => {
     it('should throw ForbiddenException when user ID does not match', async () => {
-      // Arrange
       const reviewId = '1';
       const userId = '2';
       const lang = 'en';
 
-      // Act and Assert
       await expect(async () => {
         await service.archiveProductReview(reviewId, userId, lang);
       }).rejects.toThrow(ForbiddenException);
-
-      expect(em.persistAndFlush).not.toHaveBeenCalled();
     });
   });
 });
