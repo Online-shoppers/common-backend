@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { I18nLang } from 'nestjs-i18n';
 
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
@@ -78,10 +79,12 @@ export class ReviewsController {
   async deleteProductReview(
     @Param('reviewId', ParseUUIDPipe) id: string,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
     const archived = await this.reviewsService.archiveProductReview(
       id,
       user.id,
+      lang,
     );
     return ReviewDto.fromEntity(archived);
   }

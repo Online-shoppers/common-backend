@@ -30,14 +30,14 @@ export class UserService {
     return this.repo_user.findOneOrFail({ id: userId });
   }
 
-  async getUserInfo(userId: string) {
+  async getUserInfo(userId: string, lang?: string) {
     try {
       const user = await this.getUserById(userId);
       return user;
     } catch (err) {
       throw new BadRequestException(
         this.i18nService.translate(ErrorCodes.NotExists_User, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }

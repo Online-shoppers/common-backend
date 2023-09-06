@@ -138,7 +138,7 @@ describe('UserController', () => {
       try {
         await mockUserService.getUserInfo('fake-id');
       } catch (e) {
-        expect(controller.getUserById('fake-id')).toBeInstanceOf(
+        expect(controller.getUserById('fake-id', 'ru')).toBeInstanceOf(
           BadRequestException,
         );
       }
@@ -146,7 +146,7 @@ describe('UserController', () => {
 
     it('should return user by id', async () => {
       await expect(
-        controller.getUserById('95457c20-4bca-11ee-a338-6b770323fd2d'),
+        controller.getUserById('95457c20-4bca-11ee-a338-6b770323fd2d', 'ru'),
       ).resolves.toEqual(await mockUserService.getUserInfo());
     });
 
