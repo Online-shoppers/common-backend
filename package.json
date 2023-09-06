@@ -100,7 +100,11 @@
       "**/*.(t|j)s"
     ],
     "coveragePathIgnorePatterns": [
-      "<rootDir>/app/.*\\.module\\.ts$"
+      "<rootDir>/app/.*\\.module\\.ts$",
+      "<rootDir>/app/.*\\.dto\\.ts$",
+      "<rootDir>/app/.*\\.form\\.ts$",
+      "<rootDir>/app/.*\\.enum\\.ts$",
+      "<rootDir>/app/.*\\.entity\\.ts$"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",

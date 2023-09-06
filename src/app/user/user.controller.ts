@@ -35,8 +35,8 @@ export class UserController {
     type: UserDto,
   })
   @Get(':userId')
-  async getUserById(@Param('userId') userId: string) {
-    const entity = await this.userService.getUserInfo(userId);
+  async getUserById(@Param('userId') userId: string, @I18nLang() lang: string) {
+    const entity = await this.userService.getUserInfo(userId, lang);
     return UserDto.fromEntity(entity);
   }
 

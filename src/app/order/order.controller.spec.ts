@@ -1,16 +1,12 @@
-import { Collection } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { I18nService } from 'nestjs-i18n';
 
-import { OrderProductEntity } from '../order-item/entity/order-product.entity';
-import { ProductCategories } from '../products/enums/product-categories.enum';
 import { UserSessionDto } from '../security/dto/user-session.dto';
 import { JwtPermissionsGuard } from '../security/guards/jwt-permission.guard';
 import { UserPermissions } from '../user-roles/enums/user-permissions.enum';
 import { UserRoles } from '../user-roles/enums/user-roles.enum';
-import { UserEntity } from '../user/entities/user.entity';
+import { NewOrderForm } from './dto/new-order.form';
 import { OrderDTO } from './dto/order.dto';
-import { OrderEntity } from './entities/order.entity';
 // Import your OrderProductEntity class
 import { OrderStatuses } from './enums/order-statuses.enum';
 import { OrderController } from './order.controller';
@@ -35,6 +31,22 @@ const mockOrderService = {
   findOne: jest.fn(),
   update: jest.fn(),
 };
+jest.spyOn(OrderDTO, 'fromEntity').mockImplementation(async entity => {
+  return {
+    id: entity ? entity.id : '',
+    created: entity ? entity.created?.valueOf() : 0,
+    updated: entity ? entity.updated?.valueOf() : 0,
+    status: entity ? entity.status : '',
+    country: entity ? entity.country : '',
+    city: entity ? entity.city : '',
+    zipCode: entity ? entity.zipCode : '',
+    address: entity ? entity.address : '',
+    total: 0,
+    phone: entity ? entity.phone : '',
+    buyerId: entity && entity.buyer ? entity.buyer.id : '',
+    products: [],
+  };
+});
 describe('OrderController', () => {
   let controller: OrderController;
 
@@ -70,7 +82,6 @@ describe('OrderController', () => {
 
   describe('findUserOrders', () => {
     it('should return user orders', async () => {
-      // Create a mock user object with the required properties
       const user: UserSessionDto = {
         id: '1',
         email: 'y.y.37@mail.ru',
@@ -94,28 +105,98 @@ describe('OrderController', () => {
           total: 0,
         },
       ];
-      // Mock the OrderDTO.fromEntity method to handle the case where entity.orderProducts is not initialized
-      jest.spyOn(OrderDTO, 'fromEntity').mockImplementation(async entity => {
-        return {
-          // Define your default values here.
-          id: entity ? entity.id : '',
-          created: entity ? entity.created?.valueOf() : 0,
-          updated: entity ? entity.updated?.valueOf() : 0,
-          status: entity ? entity.status : '',
-          country: entity ? entity.country : '',
-          city: entity ? entity.city : '',
-          zipCode: entity ? entity.zipCode : '',
-          address: entity ? entity.address : '',
-          total: 0,
-          phone: entity ? entity.phone : '',
-          buyerId: entity && entity.buyer ? entity.buyer.id : '',
-          products: [], // Empty array or default value for products
-        };
-      });
+
       mockOrderService.findUserOrders.mockResolvedValue(orders);
       const result = await controller.findUserOrders(user);
 
       expect(result).toEqual(orders);
+    });
+  });
+
+  describe('create', () => {
+    it('should return user orders', async () => {
+      const newOrderForm: NewOrderForm = {
+        firstName: 'Ivan',
+        lastName: 'John',
+        country: 'USA',
+        city: 'DWwrq',
+        zipCode: '2131',
+        address: 'weqweq',
+        phone: '1321',
+      };
+
+      const user: UserSessionDto = {
+        id: '1',
+        email: 'y.y.37@mail.ru',
+        role_id: '95457c20-4bca-11ee-a338-6b770323fd2d',
+        role_type: UserRoles.Client,
+        permissions: [UserPermissions.All],
+      };
+
+      const order: OrderDTO = {
+        id: '',
+        created: 0,
+        updated: 0,
+        status: '',
+        country: '',
+        city: '',
+        zipCode: '',
+        address: '',
+        phone: '',
+        buyerId: '',
+        products: [],
+        total: 0,
+      };
+
+      mockOrderService.findUserOrders.mockResolvedValue(order);
+      const result = await controller.create(newOrderForm, user);
+      expect(result).toEqual(order);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return user orders', async () => {
+      const order: OrderDTO = {
+        id: '',
+        created: 0,
+        updated: 0,
+        status: '',
+        country: '',
+        city: '',
+        zipCode: '',
+        address: '',
+        phone: '',
+        buyerId: '',
+        products: [],
+        total: 0,
+      };
+
+      mockOrderService.findOne.mockResolvedValue(order);
+      const result = await controller.findOne('1');
+      expect(result).toEqual(order);
+    });
+  });
+
+  describe('update', () => {
+    it('should return user orders', async () => {
+      const order: OrderDTO = {
+        id: '',
+        created: 0,
+        updated: 0,
+        status: '',
+        country: '',
+        city: '',
+        zipCode: '',
+        address: '',
+        phone: '',
+        buyerId: '',
+        products: [],
+        total: 0,
+      };
+
+      mockOrderService.update.mockResolvedValue(order);
+      const result = await controller.update('1', OrderStatuses.PENDING);
+      expect(result).toEqual(order);
     });
   });
 });

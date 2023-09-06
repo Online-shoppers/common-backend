@@ -218,7 +218,7 @@ describe('ReviewsController', () => {
 
       mockReviewsService.archiveProductReview.mockResolvedValue(createdReview);
 
-      const result = await controller.deleteProductReview('1', user);
+      const result = await controller.deleteProductReview('1', user, 'ru');
 
       expect(result).toEqual(ReviewDto.fromEntity(createdReview));
     });
