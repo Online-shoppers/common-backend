@@ -1,4 +1,4 @@
-import { wrap } from '@mikro-orm/core';
+import { ArrayCollection, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
@@ -65,11 +65,16 @@ export class CartService {
     return CartInfoDto.fromEntity(cart);
   }
 
-  async addProductToCart(userId: string, productId: string, quantity: number) {
+  async addProductToCart(
+    userId: string,
+    productId: string,
+    quantity: number,
+    lang: string,
+  ) {
     if (quantity <= 0) {
       throw new BadRequestException(
         this.i18nService.translate(ErrorCodes.FieldQuantityShouldBePositive, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }
@@ -89,7 +94,7 @@ export class CartService {
     if (product.quantity < (cartProduct?.quantity || 0) + quantity) {
       throw new NotAcceptableException(
         this.i18nService.translate(ErrorCodes.NotEnough_Product, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }
@@ -109,7 +114,6 @@ export class CartService {
         cart,
         product,
       });
-
       cart.products.add(newCartProduct);
     }
     cart.updated = now;
