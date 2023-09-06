@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { I18n, I18nContext } from 'nestjs-i18n';
+import { I18n, I18nContext, I18nLang } from 'nestjs-i18n';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { TokensDto } from '../security/dto/tokens.dto';
@@ -50,7 +50,10 @@ export class AuthController {
   @ApiResponse({ type: TokensDto })
   @ApiOperation({ summary: 'Refresh tokens' })
   @Post('/refresh')
-  async refreshTokens(@Body() body: TokensDto, lang: string): Promise<Tokens> {
+  async refreshTokens(
+    @Body() body: TokensDto,
+    @I18nLang() lang: string,
+  ): Promise<Tokens> {
     return this.securityService.refreshTokens(
       body.access_token,
       body.refresh_token,

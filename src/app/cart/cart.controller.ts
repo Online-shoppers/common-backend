@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { I18nLang } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
@@ -50,7 +51,7 @@ export class CartController {
   @Post('/products/:productId')
   addProductToCart(
     @Param('productId', ParseUUIDPipe) productId: string,
-    @Param('productId', ParseUUIDPipe) lang: string,
+    @I18nLang() lang: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
   ) {
