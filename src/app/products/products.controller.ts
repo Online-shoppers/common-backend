@@ -1,13 +1,17 @@
 import {
   Controller,
   Get,
+  Param,
   ParseBoolPipe,
   ParseIntPipe,
+  ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { I18nLang } from 'nestjs-i18n';
 
 import { FilterProductsForm } from './dtos/filter-products.form';
+import { ProductDTO } from './dtos/product.dto';
 import { ProductsService } from './products.service';
 
 @ApiTags('Products')
@@ -36,5 +40,14 @@ export class ProductsController {
       includeArchived,
       productFilters,
     );
+  }
+
+  @Get(':id')
+  async getProductById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    const product = await this.productsService.getProductById(id, lang);
+    return ProductDTO.fromEntity(product);
   }
 }
