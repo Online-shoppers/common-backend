@@ -1,3 +1,4 @@
+import { Collection } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
 import { BadRequestException, NotAcceptableException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,74 +7,75 @@ import { v4 } from 'uuid';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
+import { OrderProductEntity } from 'app/order-item/entity/order-product.entity';
+import { OrderEntity } from 'app/order/entities/order.entity';
+import { ProductEntity } from 'app/products/entities/product.entity';
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 import { ProductTypes } from 'app/products/enums/product-types.enum';
 import { ProductsService } from 'app/products/products.service';
+import { ReviewEntity } from 'app/reviews/entities/review.entity';
+import { UserRoleEntity } from 'app/user-roles/entities/user-role.entity';
+import { UserRoles } from 'app/user-roles/enums/user-roles.enum';
+import { UserEntity } from 'app/user/entities/user.entity';
 
 import { CartService } from './cart.service';
 import { CartInfoDto } from './dto/cart-info.dto';
 import { CartDto } from './dto/cart.dto';
+import { CartEntity } from './entities/cart.entity';
 import { CartRepo } from './repo/cart.repo';
 
-const mockCartDto: any = {
-  id: 'mock-cart-id',
-  created: new Date().valueOf(),
-  updated: new Date().valueOf(),
-  total: 100,
-  products: [
-    {
-      id: 'mock-cart-product-id-1',
-      created: new Date().valueOf(),
-      updated: new Date().valueOf(),
-      name: 'Product 1',
-      description: 'Product Description 1',
-      imageUrl: 'https://example.com/product1.jpg',
-      category: 'Accessories',
-      quantity: 3,
-      unitPrice: 10.99,
-      productId: 'product123',
-    },
-    {
-      id: 'mock-cart-product-id-2',
-      created: new Date().valueOf(),
-      updated: new Date().valueOf(),
-      name: 'Product 2',
-      description: 'Product Description 2',
-      imageUrl: 'https://example.com/product2.jpg',
-      category: 'Electronics',
-      quantity: 2,
-      unitPrice: 49.99,
-      productId: 'product456',
-    },
-  ],
+const mockUser: UserEntity = {
+  id: v4(),
+  created: new Date(),
+  updated: new Date(),
+  email: 'user@example.com',
+  firstName: 'John',
+  lastName: 'Doe',
+  password: 'password123',
+  archived: false,
+  cart: new CartEntity(),
+  orders: new Collection<OrderProductEntity>(this),
+  reviews: new Collection<ReviewEntity>(this),
 };
 
-const mockProduct3: any = [
-  {
-    id: v4(),
-    name: 'Product 3',
-    price: 39.99,
-    description: 'Description for Product 3',
-    image_url: 'https://example.com/product3.jpg',
-    quantity: 20,
-    category: ProductCategories.ACCESSORIES, // Use the category specific to AccessoryEntity
-    type: ProductTypes.BEER_COASTERS, // Replace with the actual type enum value
-    archived: false,
-    weight: 0.5, // Include the specific property for AccessoryEntity
-  },
-];
-
-const mockCartProductDto = {
+const mockProduct: ProductEntity = {
   id: v4(),
-  created: Date.now(),
-  updated: Date.now(),
+  name: 'Product 3',
+  price: 39.99,
+  description: 'Description for Product 3',
+  image_url: 'https://example.com/product.jpg',
+  quantity: 20,
+  category: ProductCategories.ACCESSORIES,
+  type: ProductTypes.BEER_COASTERS,
+  archived: false,
+  rating: async () => 100,
+  reviewsAmount: async () => 100,
+  cartProducts: new Collection<CartProductEntity>(this),
+  reviews: new Collection<ReviewEntity>(this),
+  created: new Date(),
+  updated: new Date(),
+};
+
+const mockCartDto: CartEntity = {
+  id: 'mock-cart-id',
+  created: new Date(),
+  updated: new Date(),
+  user: mockUser,
+  total: async () => 100,
+  products: new Collection<CartProductEntity>(this),
+};
+
+const mockCartProductDto: CartProductEntity = {
+  id: v4(),
+  created: new Date(),
+  updated: new Date(),
   name: 'Product Name',
   description: 'Product Description',
-  imageUrl: 'https://example.com/product.jpg',
   category: ProductCategories.ACCESSORIES,
   quantity: 5,
-  unitPrice: 10.99,
-  productId: 'product123',
+  unitPrice: () => 10.99,
+  cart: mockCartDto,
+  product: mockProduct,
 };
 
 const mockEntityManager = {
@@ -86,10 +88,11 @@ const cartRepoMock = {
 };
 
 const productsServiceMock = {
-  getProductById: jest.fn().mockReturnValue(mockProduct3[0].id),
+  getProductById: jest.fn().mockReturnValue(mockProduct.id),
 };
 
 const cartProductsRepoMock = {
+  find: jest.fn().mockResolvedValue(mockCartProductDto),
   findOne: jest.fn().mockResolvedValue(mockCartProductDto),
   create: jest.fn().mockResolvedValue(mockCartProductDto),
 };
@@ -160,7 +163,7 @@ describe('CartService', () => {
 
   it('should throw NotAcceptableException when adding a product with insufficient quantity', async () => {
     const userId = v4();
-    const productId = mockProduct3[0].id;
+    const productId = mockProduct.id;
     const quantity = 10;
     const lang = 'en';
 
@@ -172,17 +175,29 @@ describe('CartService', () => {
     }
   });
 
-  it('should get user cart as a CartDto', async () => {
+  it('should return user cart products as CartProductDto', async () => {
     const userId = 'user123';
 
-    cartRepoMock.findOne.mockResolvedValue(mockCartDto);
+    // Mock the behavior of cartProductsRepoMock.findOne to return the mockCartProductDto object
+    cartProductsRepoMock.findOne.mockResolvedValue(mockCartProductDto);
 
-    const cartDto = await cartService.getUsersCart(userId);
+    // Call the getUserCartProducts method
+    const result = await cartService.getUserCartProducts(userId);
 
-    expect(CartDto).toBeInstanceOf(CartDto);
+    // Ensure that the result is equal to the mockCartProductDto object
+    expect(result).toEqual(mockCartProductDto);
 
-    expect(cartDto.id).toEqual(mockCartDto.id);
-    expect(cartDto.created).toEqual(mockCartDto.created);
-    expect(cartDto.updated).toEqual(mockCartDto.updated);
+    // Verify that cartProductsRepo.findOne was called with the correct arguments
+    expect(cartProductsRepoMock.findOne).toHaveBeenCalledWith(
+      {
+        cart: { user: { id: userId } },
+      },
+      {
+        populate: ['unitPrice', 'quantity', 'product.image_url'],
+        orderBy: {
+          quantity: 'desc',
+        },
+      },
+    );
   });
 });
