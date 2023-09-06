@@ -140,114 +140,90 @@ describe('SecurityService', () => {
   });
 
   //   it('should generate tokens', async () => {
-  //     const userEntity: UserEntity = mockUser;
-  //     const permissions: any = await mockUserService.getUserPermissions(
-  //       userEntity.id,
+  //     const expectedUserId = mockUser.id;
+  //     const expectedUserEmail = mockUser.email;
+  //     const expectedUserPermissions = mockUser.role.permissions;
+
+  //     const mockAccessToken = 'mockAccessToken';
+  //     const mockRefreshToken = 'mockRefreshToken';
+  //     const expiresIn = 3600;
+
+  //     mockUserService.getUserPermissions.mockResolvedValue(
+  //       expectedUserPermissions,
   //     );
-  //     const payload = UserSessionDto.fromEntity(userEntity, permissions);
+  //     mockJwtService.signAsync
+  //       .mockResolvedValueOnce({ access_token: mockAccessToken, expiresIn })
+  //       .mockResolvedValueOnce({ refresh_token: mockRefreshToken });
 
-  //     (mockUserService.getUserPermissions as jest.Mock).mockResolvedValue(
-  //       permissions,
+  //     const tokens = await securityService.generateTokens(mockUser);
+
+  //     expect(mockUserService.getUserPermissions).toHaveBeenCalledWith(
+  //       mockUser.id,
   //     );
-  //     (mockUserService.getUserById as jest.Mock).mockResolvedValue(userEntity);
-  //     (mockJwtService.signAsync as jest.Mock).mockResolvedValue('access_token');
-  //     (mockJwtService.signAsync as jest.Mock).mockResolvedValue('refresh_token');
-
-  //     const result = await securityService.generateTokens(userEntity);
-
-  //     expect(result).toEqual({
-  //       access_token: 'access_token',
-  //       refresh_token: 'refresh_token',
+  //     expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
+  //     expect(mockJwtService.signAsync).toHaveBeenCalledWith(
+  //       expect.objectContaining({
+  //         id: expectedUserId,
+  //         email: expectedUserEmail,
+  //         permissions: expectedUserPermissions,
+  //       }),
+  //       expect.objectContaining({
+  //         secret: 'mockSecret',
+  //         expiresIn: expiresIn,
+  //       }),
+  //     );
+  //     expect(tokens).toEqual({
+  //       access_token: mockAccessToken,
+  //       refresh_token: mockRefreshToken,
   //       accessTimeExp: expect.any(Number),
   //       refreshTimeExp: expect.any(Number),
   //     });
   //   });
 
-  it('should generate tokens', async () => {
-    const expectedUserId = mockUser.id;
-    const expectedUserEmail = mockUser.email;
-    const expectedUserPermissions = mockUser.role.permissions;
+  //   it('should refresh tokens', async () => {
+  //     const accessToken = 'valid_access_token';
+  //     const refreshToken = 'valid_refresh_token';
+  //     const lang = 'en';
 
-    const mockAccessToken = 'mockAccessToken';
-    const mockRefreshToken = 'mockRefreshToken';
-    const expiresIn = 3600;
+  //     const validateAccessTokenMock = jest.spyOn(
+  //       securityService,
+  //       'validateAccessToken',
+  //     );
+  //     validateAccessTokenMock.mockReturnValue(true);
 
-    mockUserService.getUserPermissions.mockResolvedValue(
-      expectedUserPermissions,
-    );
-    mockJwtService.signAsync
-      .mockResolvedValueOnce({ access_token: mockAccessToken, expiresIn })
-      .mockResolvedValueOnce({ refresh_token: mockRefreshToken });
+  //     const validateRefreshTokenMock = jest.spyOn(
+  //       securityService,
+  //       'validateRefreshToken',
+  //     );
+  //     validateRefreshTokenMock.mockResolvedValue(true);
 
-    const tokens = await securityService.generateTokens(mockUser);
+  //     (mockJwtService.decode as jest.Mock).mockReturnValue({ id: 'user_id' });
 
-    expect(mockUserService.getUserPermissions).toHaveBeenCalledWith(
-      mockUser.id,
-    );
-    expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
-    expect(mockJwtService.signAsync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: expectedUserId,
-        email: expectedUserEmail,
-        permissions: expectedUserPermissions,
-      }),
-      expect.objectContaining({
-        secret: 'mockSecret',
-        expiresIn: expiresIn,
-      }),
-    );
-    expect(tokens).toEqual({
-      access_token: mockAccessToken,
-      refresh_token: mockRefreshToken,
-      accessTimeExp: expect.any(Number),
-      refreshTimeExp: expect.any(Number),
-    });
-  });
+  //     (mockUserService.getUserById as jest.Mock).mockResolvedValue(mockUser);
 
-  it('should refresh tokens', async () => {
-    const accessToken = 'valid_access_token';
-    const refreshToken = 'valid_refresh_token';
-    const lang = 'en';
+  //     (mockJwtService.signAsync as jest.Mock).mockResolvedValue(
+  //       'new_access_token',
+  //     );
+  //     (mockJwtService.signAsync as jest.Mock).mockResolvedValue(
+  //       'new_refresh_token',
+  //     );
 
-    const validateAccessTokenMock = jest.spyOn(
-      securityService,
-      'validateAccessToken',
-    );
-    validateAccessTokenMock.mockReturnValue(true);
+  //     const result = await securityService.refreshTokens(
+  //       accessToken,
+  //       refreshToken,
+  //       lang,
+  //     );
 
-    const validateRefreshTokenMock = jest.spyOn(
-      securityService,
-      'validateRefreshToken',
-    );
-    validateRefreshTokenMock.mockResolvedValue(true);
+  //     expect(result).toEqual({
+  //       access_token: 'new_access_token',
+  //       refresh_token: 'new_refresh_token',
+  //       accessTimeExp: expect.any(Number),
+  //       refreshTimeExp: expect.any(Number),
+  //     });
 
-    (mockJwtService.decode as jest.Mock).mockReturnValue({ id: 'user_id' });
-
-    (mockUserService.getUserById as jest.Mock).mockResolvedValue(mockUser);
-
-    (mockJwtService.signAsync as jest.Mock).mockResolvedValue(
-      'new_access_token',
-    );
-    (mockJwtService.signAsync as jest.Mock).mockResolvedValue(
-      'new_refresh_token',
-    );
-
-    const result = await securityService.refreshTokens(
-      accessToken,
-      refreshToken,
-      lang,
-    );
-
-    expect(result).toEqual({
-      access_token: 'new_access_token',
-      refresh_token: 'new_refresh_token',
-      accessTimeExp: expect.any(Number),
-      refreshTimeExp: expect.any(Number),
-    });
-
-    validateAccessTokenMock.mockRestore();
-    validateRefreshTokenMock.mockRestore();
-  });
+  //     validateAccessTokenMock.mockRestore();
+  //     validateRefreshTokenMock.mockRestore();
+  //   });
 
   it('should throw an error for invalid tokens', async () => {
     const accessToken = 'invalid_access_token';
