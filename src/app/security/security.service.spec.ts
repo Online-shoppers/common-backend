@@ -10,6 +10,7 @@ import { v4 } from 'uuid';
 import { CartEntity } from 'app/cart/entities/cart.entity';
 import { OrderProductEntity } from 'app/order-item/entity/order-product.entity';
 import { ReviewEntity } from 'app/reviews/entities/review.entity';
+import { UserRoleEntity } from 'app/user-roles/entities/user-role.entity';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 import { UserRoles } from 'app/user-roles/enums/user-roles.enum';
 import { UserService } from 'app/user/user.service';
@@ -18,6 +19,16 @@ import { RefreshTokenRepo } from '../refresh-token/repo/refresh-token.repo';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserSessionDto } from './dto/user-session.dto';
 import { SecurityService } from './security.service';
+
+const mockUserRole: UserRoleEntity = {
+  id: v4(),
+  name: 'UserRoleName',
+  permissions: [UserPermissions.GetUsers, UserPermissions.CanLeaveReviews],
+  isDefault: false,
+  created: new Date(),
+  updated: new Date(),
+  type: UserRoles.Client,
+};
 
 const mockUser: UserEntity = {
   id: v4(),
@@ -31,9 +42,10 @@ const mockUser: UserEntity = {
   cart: new CartEntity(),
   orders: new Collection<OrderProductEntity>(this),
   reviews: new Collection<ReviewEntity>(this),
+  role: mockUserRole,
 };
 
-const mockUserSession: UserSessionDto = {
+const mockUserSessionDto: UserSessionDto = {
   id: v4(),
   email: 'user@example.com',
   role_id: v4(),
@@ -74,7 +86,7 @@ describe('SecurityService', () => {
         SecurityService,
         {
           provide: UserService,
-          useValue: forwardRef(() => mockUserService),
+          useValue: mockUserService,
         },
         {
           provide: RefreshTokenRepo,
@@ -151,9 +163,50 @@ describe('SecurityService', () => {
   //     });
   //   });
 
+  it('should generate tokens', async () => {
+    const expectedUserId = mockUser.id;
+    const expectedUserEmail = mockUser.email;
+    const expectedUserPermissions = mockUser.role.permissions;
+
+    const mockAccessToken = 'mockAccessToken';
+    const mockRefreshToken = 'mockRefreshToken';
+    const expiresIn = 3600;
+
+    mockUserService.getUserPermissions.mockResolvedValue(
+      expectedUserPermissions,
+    );
+    mockJwtService.signAsync
+      .mockResolvedValueOnce({ access_token: mockAccessToken, expiresIn })
+      .mockResolvedValueOnce({ refresh_token: mockRefreshToken });
+
+    const tokens = await securityService.generateTokens(mockUser);
+
+    expect(mockUserService.getUserPermissions).toHaveBeenCalledWith(
+      mockUser.id,
+    );
+    expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
+    expect(mockJwtService.signAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: expectedUserId,
+        email: expectedUserEmail,
+        permissions: expectedUserPermissions,
+      }),
+      expect.objectContaining({
+        secret: 'mockSecret',
+        expiresIn: expiresIn,
+      }),
+    );
+    expect(tokens).toEqual({
+      access_token: mockAccessToken,
+      refresh_token: mockRefreshToken,
+      accessTimeExp: expect.any(Number),
+      refreshTimeExp: expect.any(Number),
+    });
+  });
+
   it('should refresh tokens', async () => {
-    const accessToken = 'access_token';
-    const refreshToken = 'refresh_token';
+    const accessToken = 'valid_access_token';
+    const refreshToken = 'valid_refresh_token';
     const lang = 'en';
 
     const validateAccessTokenMock = jest.spyOn(
@@ -162,8 +215,14 @@ describe('SecurityService', () => {
     );
     validateAccessTokenMock.mockReturnValue(true);
 
-    (securityService.validateRefreshToken as jest.Mock).mockResolvedValue(true);
+    const validateRefreshTokenMock = jest.spyOn(
+      securityService,
+      'validateRefreshToken',
+    );
+    validateRefreshTokenMock.mockResolvedValue(true);
+
     (mockJwtService.decode as jest.Mock).mockReturnValue({ id: 'user_id' });
+
     (mockUserService.getUserById as jest.Mock).mockResolvedValue(mockUser);
 
     (mockJwtService.signAsync as jest.Mock).mockResolvedValue(
@@ -187,6 +246,32 @@ describe('SecurityService', () => {
     });
 
     validateAccessTokenMock.mockRestore();
+    validateRefreshTokenMock.mockRestore();
+  });
+
+  it('should throw an error for invalid tokens', async () => {
+    const accessToken = 'invalid_access_token';
+    const refreshToken = 'invalid_refresh_token';
+    const lang = 'en';
+
+    const validateAccessTokenMock = jest.spyOn(
+      securityService,
+      'validateAccessToken',
+    );
+    validateAccessTokenMock.mockReturnValue(false);
+
+    const validateRefreshTokenMock = jest.spyOn(
+      securityService,
+      'validateRefreshToken',
+    );
+    validateRefreshTokenMock.mockResolvedValue(false);
+
+    await expect(
+      securityService.refreshTokens(accessToken, refreshToken, lang),
+    ).rejects.toThrowError(NotAcceptableException);
+
+    validateAccessTokenMock.mockRestore();
+    validateRefreshTokenMock.mockRestore();
   });
 
   it('should validate refresh token', async () => {
