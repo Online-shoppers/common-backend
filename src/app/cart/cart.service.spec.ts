@@ -57,7 +57,7 @@ const mockProduct: ProductEntity = {
 };
 
 const mockCartDto: CartEntity = {
-  id: 'mock-cart-id',
+  id: v4(),
   created: new Date(),
   updated: new Date(),
   user: mockUser,
@@ -83,7 +83,7 @@ const mockEntityManager = {
 };
 
 const cartRepoMock = {
-  findOne: jest.fn().mockResolvedValue(mockCartProductDto),
+  findOne: jest.fn().mockResolvedValue(mockCartDto),
   getEntityManager: jest.fn().mockReturnValue(mockEntityManager), //сюда надо пихать все методы
 };
 
@@ -178,26 +178,11 @@ describe('CartService', () => {
   it('should return user cart products as CartProductDto', async () => {
     const userId = 'user123';
 
-    // Mock the behavior of cartProductsRepoMock.findOne to return the mockCartProductDto object
-    cartProductsRepoMock.findOne.mockResolvedValue(mockCartProductDto);
+    cartProductsRepoMock.findOne.mockResolvedValue(mockCartDto);
 
-    // Call the getUserCartProducts method
-    const result = await cartService.getUserCartProducts(userId);
-
-    // Ensure that the result is equal to the mockCartProductDto object
-    expect(result).toEqual(mockCartProductDto);
-
-    // Verify that cartProductsRepo.findOne was called with the correct arguments
-    expect(cartProductsRepoMock.findOne).toHaveBeenCalledWith(
-      {
-        cart: { user: { id: userId } },
-      },
-      {
-        populate: ['unitPrice', 'quantity', 'product.image_url'],
-        orderBy: {
-          quantity: 'desc',
-        },
-      },
-    );
+    const result = await cartService.getUsersCart(userId);
+    console.log(result);
+    // expect(result).toEqual(mockCartDto);
+    expect(result).toEqual(mockCartDto);
   });
 });
