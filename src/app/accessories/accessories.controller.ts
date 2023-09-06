@@ -1,4 +1,3 @@
-import { Enum } from '@mikro-orm/core';
 import {
   Body,
   Controller,
@@ -22,6 +21,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { I18nLang } from 'nestjs-i18n';
 
 import {
   JwtPermissionsGuard,
@@ -75,8 +75,11 @@ export class AccessoriesController {
 
   @ApiResponse({ type: AccessoryDTO })
   @Get(':id')
-  async getAccessoryById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.accessoriesService.getAccessoryById(id);
+  async getAccessoryById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    const entity = await this.accessoriesService.getAccessoryById(id, lang);
     return AccessoryDTO.fromEntity(entity);
   }
 
@@ -101,9 +104,10 @@ export class AccessoriesController {
   async updateAccessory(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateAccessoryForm,
+    @I18nLang() lang: string,
   ) {
     const dto = UpdateAccessoryForm.from(updateData);
-    return this.accessoriesService.updateAccessory(id, dto);
+    return this.accessoriesService.updateAccessory(id, dto, lang);
   }
 
   @ApiBearerAuth()
@@ -111,7 +115,10 @@ export class AccessoriesController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: AccessoryDTO })
   @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.accessoriesService.archiveAccessory(id);
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    return this.accessoriesService.archiveAccessory(id, lang);
   }
 }

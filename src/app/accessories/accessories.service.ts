@@ -1,6 +1,5 @@
-import { wrap } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
@@ -51,14 +50,14 @@ export class AccessoriesService {
     return response;
   }
 
-  async getAccessoryById(id: string) {
+  async getAccessoryById(id: string, lang: string) {
     try {
       const accessory = await this.repo_accessory.findOneOrFail({ id });
       return accessory;
     } catch (err) {
       throw new BadRequestException(
-        this.i18n.t(ErrorCodes.NotExists_Product, {
-          lang: I18nContext.current().lang,
+        this.i18n.translate(ErrorCodes.NotExists_Product, {
+          lang,
         }),
       );
     }
@@ -76,21 +75,25 @@ export class AccessoriesService {
     return accessory;
   }
 
-  async updateAccessory(id: string, updateData: UpdateAccessoryForm) {
+  async updateAccessory(
+    id: string,
+    updateData: UpdateAccessoryForm,
+    lang: string,
+  ) {
     const em = this.repo_accessory.getEntityManager();
 
-    const existing = await this.getAccessoryById(id);
+    const existing = await this.getAccessoryById(id, lang);
 
-    const data = wrap(existing).assign(updateData, { merge: true });
+    const data = em.assign(existing, updateData, { merge: true });
     await em.persistAndFlush(data);
 
     return AccessoryDTO.fromEntity(data);
   }
 
-  async archiveAccessory(accessoryId: string) {
+  async archiveAccessory(accessoryId: string, lang: string) {
     const em = this.repo_accessory.getEntityManager();
 
-    const accessory = await this.getAccessoryById(accessoryId);
+    const accessory = await this.getAccessoryById(accessoryId, lang);
     accessory.archived = true;
 
     await em.persistAndFlush(accessory);

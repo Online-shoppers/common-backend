@@ -163,7 +163,7 @@ describe('ReviewsService', () => {
         rating: 4,
       };
 
-      const result = await service.addProductReview('1', '1', reviewForm);
+      const result = await service.addProductReview('1', '1', reviewForm, 'en');
 
       expect(result).toEqual(reviews[0]);
 
@@ -180,13 +180,14 @@ describe('ReviewsService', () => {
         archived: false,
       };
 
-      const result = await service.editProductReview(reviewId, data);
+      const result = await service.editProductReview(reviewId, data, 'en');
 
       expect(result).toEqual(reviews[0]);
 
       expect(reviewRepo.getEntityManager).toHaveBeenCalled();
     });
   });
+
 
   describe('archiveProductReview', () => {
     it('should throw ForbiddenException when user ID does not match', async () => {
@@ -199,4 +200,5 @@ describe('ReviewsService', () => {
       }).rejects.toThrow(ForbiddenException);
     });
   });
+
 });

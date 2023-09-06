@@ -1,4 +1,3 @@
-import { Enum } from '@mikro-orm/core';
 import {
   Body,
   Controller,
@@ -22,7 +21,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nLang } from 'nestjs-i18n';
 
 import {
   JwtPermissionsGuard,
@@ -30,7 +29,6 @@ import {
 } from 'app/security/guards/jwt-permission.guard';
 import { UserPermissions } from 'app/user-roles/enums/user-permissions.enum';
 
-import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { BeerService } from './beer.service';
 import { BeerDTO } from './dto/beer.dto';
 import { CreateBeerForm } from './dto/create-beer.form';
@@ -65,7 +63,6 @@ export class BeerController {
     includeArchived = false,
     @Query('sortOption', new ParseEnumPipe(BeerSorting))
     sortOption: BeerSorting,
-    @I18n() i18n: I18nContext,
   ) {
     return this.beerService.getPageBeer(
       page,
@@ -77,8 +74,11 @@ export class BeerController {
 
   @ApiResponse({ type: BeerDTO })
   @Get(':id')
-  async getBeerById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.beerService.getBeerById(id);
+  async getBeerById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    const entity = await this.beerService.getBeerById(id, lang);
     return BeerDTO.fromEntity(entity);
   }
 
@@ -102,9 +102,10 @@ export class BeerController {
   async updateBeer(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateBeerForm,
+    @I18nLang() lang: string,
   ) {
     const dto = UpdateBeerForm.from(updateData);
-    return this.beerService.updateBeer(id, dto);
+    return this.beerService.updateBeer(id, dto, lang);
   }
 
   @ApiBearerAuth()
@@ -112,7 +113,10 @@ export class BeerController {
   @RestrictRequest(UserPermissions.CanManageProducts)
   @ApiResponse({ type: BeerDTO })
   @Delete(':id')
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.beerService.archiveBeer(id);
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    return this.beerService.archiveBeer(id, lang);
   }
 }

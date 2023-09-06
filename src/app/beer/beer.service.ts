@@ -1,5 +1,5 @@
-import { wrap } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
@@ -14,7 +14,10 @@ import { BeerRepo } from './repo/beer.repo';
 
 @Injectable()
 export class BeerService {
-  constructor(private readonly repo_beer: BeerRepo) {}
+  constructor(
+    private readonly i18nService: I18nService,
+    private readonly repo_beer: BeerRepo,
+  ) {}
 
   async getPageBeer(
     page: number,
@@ -47,12 +50,14 @@ export class BeerService {
     return response;
   }
 
-  async getBeerById(id: string) {
+  async getBeerById(id: string, lang: string) {
     try {
       const product = await this.repo_beer.findOneOrFail({ id });
       return product;
     } catch (err) {
-      throw new BadRequestException(ErrorCodes.NotExists_Product);
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.NotExists_Product, { lang }),
+      );
     }
   }
 
@@ -68,21 +73,21 @@ export class BeerService {
     return BeerDTO.fromEntity(beer);
   }
 
-  async updateBeer(id: string, updateData: UpdateBeerForm) {
+  async updateBeer(id: string, updateData: UpdateBeerForm, lang: string) {
     const em = this.repo_beer.getEntityManager();
 
-    const existing = await this.getBeerById(id);
+    const existing = await this.getBeerById(id, lang);
 
-    const data = wrap(existing).assign(updateData, { merge: true });
+    const data = em.assign(existing, updateData, { merge: true });
     await em.persistAndFlush(data);
 
     return BeerDTO.fromEntity(data);
   }
 
-  async archiveBeer(beerId: string) {
+  async archiveBeer(beerId: string, lang: string) {
     const em = this.repo_beer.getEntityManager();
 
-    const beer = await this.getBeerById(beerId);
+    const beer = await this.getBeerById(beerId, lang);
     beer.archived = true;
 
     await em.persistAndFlush(beer);
