@@ -1,6 +1,7 @@
 import { Collection } from '@mikro-orm/core';
 import { faker } from '@mikro-orm/seeder';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from 'class-validator';
 import { I18nService } from 'nestjs-i18n';
 import { v4 } from 'uuid';
 
@@ -157,6 +158,23 @@ describe('ProductController', () => {
     expect(response.info.total).toBeGreaterThanOrEqual(0);
   });
 
+  it('should get paginated beer', async () => {
+    const page = 2;
+    const pageSize = 10;
+    const includeArchived = false;
+    const sorting = BeerSorting.price_asc;
+
+    const response = await controller.getPageBeer(
+      page,
+      pageSize,
+      includeArchived,
+      sorting,
+    );
+
+    expect(response.items.length).toBeGreaterThanOrEqual(0);
+    expect(response.info.total).toBeGreaterThanOrEqual(0);
+  });
+
   it('should get beer by id', async () => {
     const id = v4();
 
@@ -173,10 +191,55 @@ describe('ProductController', () => {
     expect(response).toBeInstanceOf(BeerDTO);
   });
 
+  it('should updated beer', async () => {
+    const id = mockBeer[0].id;
+
+    const updateForm = UpdateBeerForm.from(mockBeer[0]);
+
+    const response = await controller.updateBeer(id, updateForm);
+
+    expect(response).toBeInstanceOf(BeerDTO);
+  });
+
   it('should archive beer', async () => {
     const id = mockBeer[0].id;
     const response = await controller.remove(id);
 
     expect(response).toBeInstanceOf(BeerDTO);
+  });
+
+  it('should throw an error on invalid params for get requests', async () => {
+    try {
+      await controller.getPageBeer(
+        '1' as any,
+        20,
+        false,
+        BeerSorting.price_asc,
+      );
+    } catch (e) {
+      expect(e).toBeInstanceOf(ValidationError);
+    }
+
+    try {
+      await controller.getPageBeer(
+        1,
+        '20' as any,
+        false,
+        BeerSorting.price_asc,
+      );
+    } catch (e) {
+      expect(e).toBeInstanceOf(ValidationError);
+    }
+
+    try {
+      await controller.getPageBeer(
+        1,
+        20,
+        'false' as any,
+        BeerSorting.price_asc,
+      );
+    } catch (e) {
+      expect(e).toBeInstanceOf(ValidationError);
+    }
   });
 });
