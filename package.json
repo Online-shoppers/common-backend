@@ -97,7 +97,17 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/entities/**",
+      "!**/entity/**",
+      "!**/enums/**",
+      "!**/dtos/**",
+      "!**/dto/**",
+      "!**/repos/**",
+      "!**/repo/**",
+      "!**/decorators/**",
+      "!**/guards/**",
+      "!**/config/**"
     ],
     "coveragePathIgnorePatterns": [
       "<rootDir>/app/.*\\.module\\.ts$"
@@ -110,6 +120,11 @@
     "moduleDirectories": [
       "node_modules",
       "src"
+    ],
+    "modulePathIgnorePatterns": [
+      "module",
+      "migrations",
+      "seeders"
     ]
   },
   "mikro-orm": {

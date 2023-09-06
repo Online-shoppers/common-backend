@@ -1,6 +1,5 @@
-import { wrap } from '@mikro-orm/core';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 
@@ -17,7 +16,7 @@ import { SnacksRepo } from './repo/snack.repo';
 export class SnacksService {
   constructor(
     private readonly repo_snacks: SnacksRepo,
-    private readonly i18nSerivice: I18nService,
+    private readonly i18nService: I18nService,
   ) {}
 
   async getPageSnacks(
@@ -51,14 +50,14 @@ export class SnacksService {
     return response;
   }
 
-  async getSnackById(id: string) {
+  async getSnackById(id: string, lang?: string) {
     try {
       const snack = await this.repo_snacks.findOneOrFail({ id });
       return snack;
     } catch (err) {
       throw new BadRequestException(
-        this.i18nSerivice.t(ErrorCodes.NotExists_Product, {
-          lang: I18nContext.current().lang,
+        this.i18nService.translate(ErrorCodes.NotExists_Product, {
+          lang,
         }),
       );
     }
@@ -81,7 +80,7 @@ export class SnacksService {
 
     const existing = await this.getSnackById(id);
 
-    const data = wrap(existing).assign(updateData, { merge: true });
+    const data = em.assign(existing, updateData, { merge: true });
     await em.persistAndFlush(data);
 
     return SnacksDTO.fromEntity(data);
