@@ -21,6 +21,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { I18nLang } from 'nestjs-i18n';
 
 import {
   JwtPermissionsGuard,
@@ -73,8 +74,11 @@ export class SnacksController {
 
   @Get(':id')
   @ApiResponse({ type: SnacksDTO })
-  async getSnacksById(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = await this.snacksService.getSnackById(id);
+  async getSnacksById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @I18nLang() lang: string,
+  ) {
+    const entity = await this.snacksService.getSnackById(id, lang);
     return SnacksDTO.fromEntity(entity);
   }
 
@@ -84,7 +88,7 @@ export class SnacksController {
   @ApiBody({ type: CreateSnackForm })
   @ApiResponse({ type: SnacksDTO })
   @Post()
-  async createSnacks(@Body() snacksData: CreateSnackForm) {
+  async createSnack(@Body() snacksData: CreateSnackForm) {
     const dto = CreateSnackForm.from(snacksData);
     return this.snacksService.createSnack(dto);
   }
@@ -95,7 +99,7 @@ export class SnacksController {
   @ApiBody({ type: UpdateSnackForm })
   @ApiResponse({ type: SnacksDTO })
   @Put(':id')
-  async updatedSnacks(
+  async updateSnack(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateSnackForm,
   ) {

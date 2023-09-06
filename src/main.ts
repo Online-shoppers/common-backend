@@ -16,6 +16,7 @@ async function bootstrap() {
     .build();
 
   app.useGlobalPipes(new I18nValidationPipe());
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: 2, persistAuthorization: true },

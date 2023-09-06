@@ -76,7 +76,6 @@ export class CartController {
     );
   }
 
-  @ApiResponse({ type: CartDto })
   @Delete('/products/:cartProductId')
   async deleteProductFromCart(
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,

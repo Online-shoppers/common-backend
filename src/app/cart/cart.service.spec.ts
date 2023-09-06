@@ -1,3 +1,4 @@
+
 import { Collection } from '@mikro-orm/core';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
 import { BadRequestException, NotAcceptableException } from '@nestjs/common';
@@ -5,13 +6,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { I18nService } from 'nestjs-i18n';
 import { v4 } from 'uuid';
 
+import { getRepositoryToken } from '@mikro-orm/nestjs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { I18nService } from 'nestjs-i18n';
+
+
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
+
 import { OrderProductEntity } from 'app/order-item/entity/order-product.entity';
 import { OrderEntity } from 'app/order/entities/order.entity';
 import { ProductEntity } from 'app/products/entities/product.entity';
 import { ProductCategories } from 'app/products/enums/product-categories.enum';
 import { ProductTypes } from 'app/products/enums/product-types.enum';
+
 import { ProductsService } from 'app/products/products.service';
 import { ReviewEntity } from 'app/reviews/entities/review.entity';
 import { UserRoleEntity } from 'app/user-roles/entities/user-role.entity';
@@ -19,6 +27,7 @@ import { UserRoles } from 'app/user-roles/enums/user-roles.enum';
 import { UserEntity } from 'app/user/entities/user.entity';
 
 import { CartService } from './cart.service';
+
 import { CartInfoDto } from './dto/cart-info.dto';
 import { CartDto } from './dto/cart.dto';
 import { CartEntity } from './entities/cart.entity';
@@ -94,7 +103,7 @@ const mockEntityManager = {
 
 const cartRepoMock = {
   findOne: jest.fn().mockResolvedValue(mockCartDto),
-  getEntityManager: jest.fn().mockReturnValue(mockEntityManager), //сюда надо пихать все методы
+  getEntityManager: jest.fn().mockReturnValue(mockEntityManager),
 };
 
 const productsServiceMock = {
@@ -111,8 +120,29 @@ const i18nServiceMock = {
   translate: jest.fn(),
 };
 
+import { CartRepo } from './repo/cart.repo';
+
+
 describe('CartService', () => {
   let cartService: CartService;
+
+  const cartRepositoryMock = {
+    findOne: jest.fn(() => ({})),
+    getEntityManager: jest.fn(() => ({})),
+  };
+
+  const cartProductRepositoryMock = {
+    findOne: jest.fn(),
+    create: jest.fn(),
+  };
+
+  const productsServiceMock = {
+    getProductById: jest.fn(),
+  };
+
+  const i18nMock = {
+    translate: jest.fn().mockResolvedValue('hello'),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -120,7 +150,11 @@ describe('CartService', () => {
         CartService,
         {
           provide: CartRepo,
+
           useValue: cartRepoMock,
+
+          useValue: cartRepositoryMock,
+
         },
         {
           provide: ProductsService,
@@ -128,11 +162,19 @@ describe('CartService', () => {
         },
         {
           provide: getRepositoryToken(CartProductEntity),
+
           useValue: cartProductsRepoMock,
         },
         {
           provide: I18nService,
           useValue: i18nServiceMock,
+
+          useValue: cartProductRepositoryMock,
+        },
+        {
+          provide: I18nService,
+          useValue: i18nMock,
+
         },
       ],
     }).compile();
@@ -145,6 +187,7 @@ describe('CartService', () => {
   it('should be defined', () => {
     expect(cartService).toBeDefined();
   });
+
 
   it('should throw BadRequestException when adding a product with quantity <= 0', async () => {
     const userId = 'user123';
@@ -194,4 +237,5 @@ describe('CartService', () => {
     // expect(result).toEqual(mockCartDto);
     expect(result).toEqual(mockCartDto);
   });
+
 });
