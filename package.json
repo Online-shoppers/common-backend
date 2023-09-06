@@ -109,6 +109,9 @@
       "!**/guards/**",
       "!**/config/**"
     ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/app/.*\\.module\\.ts$"
+    ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
