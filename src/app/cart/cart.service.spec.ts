@@ -94,7 +94,7 @@ const mockEntityManager = {
 
 const cartRepoMock = {
   findOne: jest.fn().mockResolvedValue(mockCartDto),
-  getEntityManager: jest.fn().mockReturnValue(mockEntityManager), //сюда надо пихать все методы
+  getEntityManager: jest.fn().mockReturnValue(mockEntityManager),
 };
 
 const productsServiceMock = {
@@ -114,12 +114,31 @@ const i18nServiceMock = {
 describe('CartService', () => {
   let cartService: CartService;
 
+  const cartRepositoryMock = {
+    findOne: jest.fn(() => ({})),
+    getEntityManager: jest.fn(() => ({})),
+  };
+
+  const cartProductRepositoryMock = {
+    findOne: jest.fn(),
+    create: jest.fn(),
+  };
+
+  const productsServiceMock = {
+    getProductById: jest.fn(),
+  };
+
+  const i18nMock = {
+    translate: jest.fn().mockResolvedValue('hello'),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CartService,
         {
           provide: CartRepo,
+
           useValue: cartRepoMock,
         },
         {
@@ -128,11 +147,16 @@ describe('CartService', () => {
         },
         {
           provide: getRepositoryToken(CartProductEntity),
+
           useValue: cartProductsRepoMock,
         },
         {
           provide: I18nService,
           useValue: i18nServiceMock,
+        },
+        {
+          provide: I18nService,
+          useValue: i18nMock,
         },
       ],
     }).compile();

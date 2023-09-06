@@ -68,28 +68,31 @@ export class ReviewsService {
     const em = this.reviewsRepo.getEntityManager();
 
     const product = await this.getProductReviewById(id);
-    const edited = wrap(product).assign({ ...data, edited: true });
+    product.text = data.text;
+    product.rating = data.rating;
+    product.archived = data.archived;
+    product.edited = true;
 
-    await em.persistAndFlush(edited);
+    await em.persistAndFlush(product);
 
-    return edited;
+    return product;
   }
 
-  async archiveProductReview(reviewId: string, userId: string) {
+  async archiveProductReview(reviewId: string, userId: string, lang?: string) {
     const em = this.reviewsRepo.getEntityManager();
 
     const review = await this.getProductReviewById(reviewId);
-    const edited = wrap(review).assign({ archived: true });
-
-    await em.persistAndFlush(edited);
 
     if (review.user.id !== userId) {
       throw new ForbiddenException(
         this.i18nService.translate(ErrorCodes.Delete_Reviews, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }
+    const edited = wrap(review).assign({ archived: true });
+
+    await em.persistAndFlush(edited);
 
     return edited;
   }
