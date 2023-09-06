@@ -51,9 +51,9 @@ export class CartController {
   @Post('/products/:productId')
   addProductToCart(
     @Param('productId', ParseUUIDPipe) productId: string,
-    @I18nLang() lang: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
     return this.cartService.addProductToCart(
       user.id,
@@ -69,11 +69,13 @@ export class CartController {
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
     @Query('quantity', ParseIntPipe) quantity: number,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
     return this.cartService.updateProductInCart(
       user.id,
       cartProductId,
       quantity,
+      lang,
     );
   }
 
@@ -81,8 +83,9 @@ export class CartController {
   async deleteProductFromCart(
     @Param('cartProductId', ParseUUIDPipe) cartProductId: string,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
-    return this.cartService.deleteProductFromCart(user.id, cartProductId);
+    return this.cartService.deleteProductFromCart(user.id, cartProductId, lang);
   }
 
   @ApiResponse({ type: CartDto })

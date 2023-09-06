@@ -149,14 +149,14 @@ describe('AccessoriesService', () => {
 
   it('should throw an error on getting not existing product', async () => {
     try {
-      await service.getAccessoryById('1234');
+      await service.getAccessoryById('1234', 'en');
     } catch (e) {
       expect(e).toBeInstanceOf(BadRequestException);
     }
   });
 
   it('should return product by id', async () => {
-    const product = await service.getAccessoryById(mockAccessories[0].id);
+    const product = await service.getAccessoryById(mockAccessories[0].id, 'en');
     expect(product).toStrictEqual(mockAccessories[0]);
     expect(product.id).toEqual(mockAccessories[0].id);
   });
@@ -268,7 +268,7 @@ describe('AccessoriesService', () => {
     const item = mockAccessories[0];
 
     const updateForm = UpdateAccessoryForm.from(item);
-    const updated = await service.updateAccessory(item.id, updateForm);
+    const updated = await service.updateAccessory(item.id, updateForm, 'en');
 
     expect(updated).toBeInstanceOf(AccessoryDTO);
   });
@@ -276,7 +276,7 @@ describe('AccessoriesService', () => {
   it('should archive Accessory', async () => {
     const item = mockAccessories[0];
 
-    const updated = await service.archiveAccessory(item.id);
+    const updated = await service.archiveAccessory(item.id, 'en');
 
     expect(updated.archived).toBe(true);
     expect(updated).toBeInstanceOf(AccessoryDTO);

@@ -3,6 +3,7 @@ import { faker } from '@mikro-orm/seeder';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { isBoolean } from 'lodash';
+import { I18nService } from 'nestjs-i18n';
 import { v4 } from 'uuid';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
@@ -205,6 +206,10 @@ const beerRepoMock = {
   }),
 };
 
+const i18nServiceMock = {
+  translate: jest.fn().mockResolvedValue('hello'),
+};
+
 describe('BeerService', () => {
   let service: BeerService;
 
@@ -212,6 +217,11 @@ describe('BeerService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BeerService,
+        {
+          provide: I18nService,
+          useValue: i18nServiceMock,
+        },
+
         {
           provide: BeerRepo,
           useValue: beerRepoMock,
@@ -228,14 +238,14 @@ describe('BeerService', () => {
 
   it('should throw an error on getting not existing product', async () => {
     try {
-      await service.getBeerById('1234');
+      await service.getBeerById('1234', 'en');
     } catch (e) {
       expect(e).toBeInstanceOf(BadRequestException);
     }
   });
 
   it('should return product by id', async () => {
-    const product = await service.getBeerById(mockBeer[0].id);
+    const product = await service.getBeerById(mockBeer[0].id, 'en');
     expect(product).toStrictEqual(mockBeer[0]);
     expect(product.id).toEqual(mockBeer[0].id);
   });
@@ -378,7 +388,7 @@ describe('BeerService', () => {
     const item = mockBeer[0];
 
     const updateForm = UpdateBeerForm.from(item);
-    const updated = await service.updateBeer(item.id, updateForm);
+    const updated = await service.updateBeer(item.id, updateForm, 'en');
 
     expect(updated).toBeInstanceOf(BeerDTO);
   });
@@ -386,7 +396,7 @@ describe('BeerService', () => {
   it('should archive Beer', async () => {
     const item = mockBeer[0];
 
-    const updated = await service.archiveBeer(item.id);
+    const updated = await service.archiveBeer(item.id, 'en');
 
     expect(updated.archived).toBe(true);
     expect(updated).toBeInstanceOf(BeerDTO);

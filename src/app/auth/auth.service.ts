@@ -3,7 +3,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { SecurityService } from '../security/security.service';

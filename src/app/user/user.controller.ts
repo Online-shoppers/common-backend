@@ -52,7 +52,6 @@ export class UserController {
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: UserSessionDto,
     @I18n() i18n: I18nContext,
-    @I18nLang() lang: string,
   ) {
     if (!user) {
       throw new ForbiddenException(i18n.t(ErrorCodes.NotExists_User));

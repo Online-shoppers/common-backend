@@ -147,14 +147,14 @@ describe('SnacksService', () => {
 
   it('should throw an error on getting not existing snack', async () => {
     try {
-      await service.getSnackById('1234');
+      await service.getSnackById('1234', 'en');
     } catch (e) {
       expect(e).toBeInstanceOf(BadRequestException);
     }
   });
 
   it('should return snack by id', async () => {
-    const product = await service.getSnackById(mockSnacks[0].id);
+    const product = await service.getSnackById(mockSnacks[0].id, 'en');
 
     expect(product).toStrictEqual(mockSnacks[0]);
     expect(product.id).toEqual(mockSnacks[0].id);
@@ -286,7 +286,7 @@ describe('SnacksService', () => {
     const item = mockSnacks[0];
 
     const updateForm = UpdateSnackForm.from(item);
-    const updated = await service.updateSnack(item.id, updateForm);
+    const updated = await service.updateSnack(item.id, updateForm, 'en');
 
     expect(updated).toBeInstanceOf(SnacksDTO);
   });
@@ -294,7 +294,7 @@ describe('SnacksService', () => {
   it('should archive Snack', async () => {
     const item = mockSnacks[0];
 
-    const updated = await service.archiveSnack(item.id);
+    const updated = await service.archiveSnack(item.id, 'en');
 
     expect(updated.archived).toBe(true);
     expect(updated).toBeInstanceOf(SnacksDTO);

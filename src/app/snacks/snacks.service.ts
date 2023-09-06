@@ -50,7 +50,7 @@ export class SnacksService {
     return response;
   }
 
-  async getSnackById(id: string, lang?: string) {
+  async getSnackById(id: string, lang: string) {
     try {
       const snack = await this.repo_snacks.findOneOrFail({ id });
       return snack;
@@ -75,10 +75,10 @@ export class SnacksService {
     return SnacksDTO.fromEntity(snack);
   }
 
-  async updateSnack(id: string, updateData: UpdateSnackForm) {
+  async updateSnack(id: string, updateData: UpdateSnackForm, lang: string) {
     const em = this.repo_snacks.getEntityManager();
 
-    const existing = await this.getSnackById(id);
+    const existing = await this.getSnackById(id, lang);
 
     const data = em.assign(existing, updateData, { merge: true });
     await em.persistAndFlush(data);
@@ -86,10 +86,10 @@ export class SnacksService {
     return SnacksDTO.fromEntity(data);
   }
 
-  async archiveSnack(snacksId: string) {
+  async archiveSnack(snacksId: string, lang: string) {
     const em = this.repo_snacks.getEntityManager();
 
-    const snack = await this.getSnackById(snacksId);
+    const snack = await this.getSnackById(snacksId, lang);
     snack.archived = true;
 
     await em.persistAndFlush(snack);

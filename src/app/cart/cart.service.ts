@@ -8,7 +8,7 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
@@ -83,7 +83,7 @@ export class CartService {
 
     const [cart, product] = await Promise.all([
       this.cartRepo.findOne({ user: { id: userId } }),
-      this.productsService.getProductById(productId),
+      this.productsService.getProductById(productId, lang),
     ]);
 
     const cartProduct = await this.cartProductsRepo.findOne({
@@ -127,6 +127,7 @@ export class CartService {
     userId: string,
     cartProductId: string,
     quantity: number,
+    lang: string,
   ) {
     const em = this.cartRepo.getEntityManager();
 
@@ -142,7 +143,7 @@ export class CartService {
     if (!cartProduct) {
       throw new BadRequestException(
         this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }
@@ -150,7 +151,7 @@ export class CartService {
     if (cartProduct.product.quantity < quantity) {
       throw new NotAcceptableException(
         this.i18nService.translate(ErrorCodes.NotEnough_Product, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }
@@ -160,7 +161,7 @@ export class CartService {
     if (!cartProduct) {
       throw new BadRequestException(
         this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }
@@ -183,7 +184,11 @@ export class CartService {
     return CartProductDto.fromEntity(cartProduct);
   }
 
-  async deleteProductFromCart(userId: string, cartProductId: string) {
+  async deleteProductFromCart(
+    userId: string,
+    cartProductId: string,
+    lang: string,
+  ) {
     const cart = await this.cartRepo.findOne(
       { user: { id: userId } },
       { populate: true },
@@ -207,7 +212,7 @@ export class CartService {
     } catch (err) {
       throw new BadRequestException(
         this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
-          lang: I18nContext.current().lang,
+          lang,
         }),
       );
     }

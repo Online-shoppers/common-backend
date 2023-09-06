@@ -100,8 +100,8 @@ describe('OrderController', () => {
           zipCode: '12314',
           address: '12312',
           phone: '123131',
-          buyerId: '123',
-          products: null,
+          buyerId: '',
+          products: [],
           total: 0,
         },
       ];

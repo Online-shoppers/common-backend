@@ -179,14 +179,14 @@ describe('SnacksController', () => {
 
     const updateForm = UpdateSnackForm.from(mockSnacks[0]);
 
-    const response = await controller.updateSnack(id, updateForm);
+    const response = await controller.updateSnack(id, updateForm, 'en');
 
     expect(response).toBeInstanceOf(SnacksDTO);
   });
 
   it('should archive snack', async () => {
     const id = mockSnacks[0].id;
-    const response = await controller.remove(id);
+    const response = await controller.remove(id, 'en');
 
     expect(response).toBeInstanceOf(SnacksDTO);
   });

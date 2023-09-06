@@ -46,12 +46,14 @@ export class ReviewsController {
     @Param('productId', ParseUUIDPipe) productId: string,
     @Body() reviewForm: NewReviewForm,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
     const dto = NewReviewForm.from(reviewForm);
     const created = await this.reviewsService.addProductReview(
       user.id,
       productId,
       dto,
+      lang,
     );
 
     return ReviewDto.fromEntity(created);
@@ -65,9 +67,10 @@ export class ReviewsController {
   async editProductReview(
     @Param('reviewId', ParseUUIDPipe) id: string,
     @Body() reviewForm: EditReviewForm,
+    @I18nLang() lang: string,
   ) {
     const dto = EditReviewForm.from(reviewForm);
-    const edited = await this.reviewsService.editProductReview(id, dto);
+    const edited = await this.reviewsService.editProductReview(id, dto, lang);
 
     return ReviewDto.fromEntity(edited);
   }

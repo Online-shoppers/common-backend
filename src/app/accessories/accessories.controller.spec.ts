@@ -183,14 +183,14 @@ describe('AccessoriesController', () => {
 
     const updateForm = UpdateAccessoryForm.from(mockAccessories[0]);
 
-    const response = await controller.updateAccessory(id, updateForm);
+    const response = await controller.updateAccessory(id, updateForm, 'en');
 
     expect(response).toBeInstanceOf(AccessoryDTO);
   });
 
   it('should archive accessory', async () => {
     const id = mockAccessories[0].id;
-    const response = await controller.remove(id);
+    const response = await controller.remove(id, 'en');
 
     expect(response).toBeInstanceOf(AccessoryDTO);
   });
@@ -204,7 +204,6 @@ describe('AccessoriesController', () => {
         AccessorySorting.price_asc,
       );
     } catch (e) {
-      console.log(e);
       expect(e).toBeInstanceOf(ValidationError);
     }
 

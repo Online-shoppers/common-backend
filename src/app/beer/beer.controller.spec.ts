@@ -178,7 +178,7 @@ describe('ProductController', () => {
   it('should get beer by id', async () => {
     const id = v4();
 
-    const response = await controller.getBeerById(id);
+    const response = await controller.getBeerById(id, 'en');
 
     expect(response).toBeInstanceOf(BeerDTO);
   });
@@ -196,14 +196,14 @@ describe('ProductController', () => {
 
     const updateForm = UpdateBeerForm.from(mockBeer[0]);
 
-    const response = await controller.updateBeer(id, updateForm);
+    const response = await controller.updateBeer(id, updateForm, 'en');
 
     expect(response).toBeInstanceOf(BeerDTO);
   });
 
   it('should archive beer', async () => {
     const id = mockBeer[0].id;
-    const response = await controller.remove(id);
+    const response = await controller.remove(id, 'en');
 
     expect(response).toBeInstanceOf(BeerDTO);
   });

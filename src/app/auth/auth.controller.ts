@@ -24,7 +24,6 @@ export class AuthController {
   async signUp(
     @Body() body: UserSignUpForm,
     @I18n() i18n: I18nContext,
-    lang: string,
   ): Promise<Tokens> {
     const dto = UserSignUpForm.from(body);
     const errors = await UserSignUpForm.validate(dto);
@@ -34,14 +33,17 @@ export class AuthController {
         errors,
       });
     }
-    return this.authService.signUp(dto, lang);
+    return this.authService.signUp(dto, i18n.lang);
   }
 
   @ApiBody({ type: UserSignInForm })
   @ApiResponse({ type: TokensDto })
   @ApiOperation({ summary: 'Sign in for user' })
   @Post('/sign-in')
-  async signIn(@Body() body: UserSignInForm, lang: string): Promise<Tokens> {
+  async signIn(
+    @Body() body: UserSignInForm,
+    @I18nLang() lang: string,
+  ): Promise<Tokens> {
     const dto = UserSignInForm.from(body);
     return this.authService.signIn(dto, lang);
   }
