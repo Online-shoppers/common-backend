@@ -1,0 +1,257 @@
+[33mcommit 232960e9bff02a2a94067468fa572b1c5425c9c3[m[33m ([m[1;36mHEAD -> [m[1;32mtest[m[33m)[m
+Merge: 3e2d6db 17388b3
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Thu Sep 7 03:02:18 2023 +0300
+
+    Merge branch 'test' of https://github.com/Online-shoppers/common-backend into test
+
+[33mcommit 3e2d6db57fbdecdd8dc40b7cd1ef9bf7acf51401[m
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Thu Sep 7 03:02:05 2023 +0300
+
+    feat: fixed tests
+
+[33mcommit 17388b3bb1511331c70493c69a927a414c841d01[m[33m ([m[1;31morigin/test[m[33m)[m
+Merge: a27afe9 2f7497a
+Author: Ivan <83706325+ivannnos@users.noreply.github.com>
+Date:   Wed Sep 6 21:21:54 2023 +0300
+
+    Merge branch 'develop' into test
+
+[33mcommit a27afe9bfd0b0f9a06be11fdb19d54f87bb6aa6c[m[33m ([m[1;32mtestsController[m[33m)[m
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Wed Sep 6 21:18:13 2023 +0300
+
+    feat: fixed tests
+
+[33mcommit 2f7497a87227f5addab1831f2239d12481f5fe45[m
+Merge: 68b4356 123a069
+Author: Aleksey Likhodievski <lesha.liho@gmail.com>
+Date:   Wed Sep 6 21:17:50 2023 +0300
+
+    Merge pull request #77 from Online-shoppers/setup-tests
+    
+    Setup tests
+
+[33mcommit 123a06959478c9001a7b87d7d16062bc45a435ef[m
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Wed Sep 6 21:14:05 2023 +0300
+
+    fix: added some empty mock services
+
+[33mcommit 34ac2fcfecc020152d059cfc633976182c1a6715[m
+Merge: 1bbc80f 68b4356
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Wed Sep 6 21:06:36 2023 +0300
+
+    Merge branch develop into setup-tests
+
+[33mcommit 68b435627e6bede6e0d99d69e15c16ba071b4235[m
+Merge: 370a5fb d6af2ae
+Author: Vlad <94391054+Vladzlaf@users.noreply.github.com>
+Date:   Wed Sep 6 20:11:24 2023 +0300
+
+    Merge pull request #79 from Online-shoppers/test-cart-service
+    
+    Test auth, strategy and security service
+
+[33mcommit d6af2ae3fa92894b700ecfeb470a14e089d009a9[m
+Merge: 549d526 3a3861e
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Wed Sep 6 20:10:40 2023 +0300
+
+    feat: added @I18nLan
+
+[33mcommit 549d526ec08446db2698e5c89783d3760f8c9957[m
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Wed Sep 6 20:07:57 2023 +0300
+
+    feat: added @I18nLan
+
+[33mcommit 3a3861e3fc51711119b5c34a5ba103fd089987e7[m
+Merge: 3035b1e 370a5fb
+Author: Vlad <94391054+Vladzlaf@users.noreply.github.com>
+Date:   Wed Sep 6 20:02:49 2023 +0300
+
+    Merge branch 'develop' into test-cart-service
+
+[33mcommit 3035b1ee9069b676e7fc35df01626cfc6f413a05[m
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Wed Sep 6 19:56:25 2023 +0300
+
+    feat: added test for strategy.service
+
+[33mcommit 15195ba55282e92ce16db5f89f2c2afe1d837808[m
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Wed Sep 6 19:01:24 2023 +0300
+
+    feat: added test for auth.service for 100 %
+
+[33mcommit 735da586f4f23b12adc0d76cb26094e51b964b85[m
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Wed Sep 6 18:34:24 2023 +0300
+
+    feat: added test for security.service for 80+ %
+
+[33mcommit 370a5fbab8057948ad85841a6d12d7ce73262686[m
+Merge: 5f0b590 466d26a
+Author: Ivan <83706325+ivannnos@users.noreply.github.com>
+Date:   Wed Sep 6 18:03:37 2023 +0300
+
+    Merge pull request #78 from Online-shoppers/testsController
+    
+    Tests controller
+
+[33mcommit 466d26abbee74f204b67de4f816e9f3337087f1e[m
+Merge: b497c9f 5f0b590
+Author: Ivan <83706325+ivannnos@users.noreply.github.com>
+Date:   Wed Sep 6 18:03:30 2023 +0300
+
+    Merge branch 'develop' into testsController
+
+[33mcommit b497c9f1724d6cbb281cdd86f5369f85716bdd2b[m[33m ([m[1;31morigin/testsController[m[33m)[m
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Wed Sep 6 18:00:10 2023 +0300
+
+    feat 4 modules tested
+
+[33mcommit 1bbc80f8bf50ba8cabb13099d549bbf3e7a99b22[m
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Wed Sep 6 17:31:56 2023 +0300
+
+    fix: changed the way i18n used in the app
+
+[33mcommit 75db66e3a59ac8dfc36051ef5f8ba42144aadef4[m
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Wed Sep 6 15:16:07 2023 +0300
+
+    feat: added test for security.service for 60+ %
+
+[33mcommit 5f0b5904f4f500dfca074cf8dc10820113827b30[m
+Merge: 2ea398f cf0895c
+Author: Aleksey Likhodievski <lesha.liho@gmail.com>
+Date:   Wed Sep 6 12:54:22 2023 +0300
+
+    Merge pull request #75 from Online-shoppers/setup-tests
+    
+    Tests
+
+[33mcommit 0a7b668687a9d360ec9a276eda27c6466b49d0f4[m
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Wed Sep 6 12:32:27 2023 +0300
+
+    feat: updated mock data in cart service test
+
+[33mcommit 5e2ad092eeb269d51365e81fd442e42c85e580f3[m
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Wed Sep 6 12:01:51 2023 +0300
+
+    feat: updated mock data in cart service test
+
+[33mcommit cf0895c6d21a5630e7b11ffe9f00d31dc059259f[m
+Merge: 8a71c8b 2ea398f
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Wed Sep 6 11:56:25 2023 +0300
+
+    Merge branch develop into setup-tests
+
+[33mcommit 8a71c8bcfa101eaa2332a8bdefa5642febc7e605[m
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Wed Sep 6 11:55:20 2023 +0300
+
+    feat: added tests for accessory service and controller
+
+[33mcommit 7e26cfafee6bd70de21537daef1b1fe67693e162[m
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Wed Sep 6 11:06:44 2023 +0300
+
+    feat: added tests for snacks service and controller
+
+[33mcommit 911dbd9206ac9c026b08c73c7ea3ad26a5ce424c[m
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Wed Sep 6 01:42:40 2023 +0300
+
+    feat: order controller test
+
+[33mcommit 58fec54f6ea58aa09be9cdc69813f2ee7f745294[m
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Tue Sep 5 23:23:47 2023 +0300
+
+    feat: added beer unit tests for service and controller
+
+[33mcommit 2ea398f21204e3509cf59d4ccdaf54552f844d39[m
+Merge: 062c41c dd59048
+Author: Ivan <83706325+ivannnos@users.noreply.github.com>
+Date:   Tue Sep 5 20:00:17 2023 +0300
+
+    Merge pull request #76 from Online-shoppers/testsController
+    
+    feat: 3 controllers test review user userrole
+
+[33mcommit dd59048a133b6d708734a283b5645a9196c7049c[m
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Tue Sep 5 19:58:22 2023 +0300
+
+    feat: 3 controllers test review user userrole
+
+[33mcommit a82cc063755225bf6863ba2d04d40a7455eee7a8[m
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Tue Sep 5 18:45:19 2023 +0300
+
+    feat: tests for products module
+
+[33mcommit aa769130125b46d57e2cf027ae857a8c4fe54189[m
+Author: Vladzlaf <vladzlafm@gmail.com>
+Date:   Tue Sep 5 18:43:26 2023 +0300
+
+    feat: added demo test of service
+
+[33mcommit 062c41cdf08d16af60e4c18f3082b1539a9f4143[m
+Merge: d45d604 800efc2
+Author: Ivan <83706325+ivannnos@users.noreply.github.com>
+Date:   Tue Sep 5 17:13:21 2023 +0300
+
+    Merge pull request #74 from Online-shoppers/testsController
+    
+    Tests controller
+
+[33mcommit 800efc2789ccd74d92fd6255154dbff5b1e02421[m
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Tue Sep 5 17:11:53 2023 +0300
+
+    feat: test user , userRoles controllers
+
+[33mcommit 2f2e925ac3e3ea8cb8e982e2027b18a295a8ed69[m
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Tue Sep 5 16:15:33 2023 +0300
+
+    feat: test user , userRoles controllers
+
+[33mcommit a907e02ee5640a3dc6d9ca09c928350b0f80e895[m[33m ([m[1;32mmain[m[33m)[m
+Merge: 8d931e8 d45d604
+Author: ivanm <ivanmatsevich1@gmail.con>
+Date:   Tue Sep 5 11:35:13 2023 +0300
+
+    Merge branch 'develop' of https://github.com/Online-shoppers/common-backend
+
+[33mcommit d45d604485487bd21b0e94c8c89c33ddfeabfff4[m
+Merge: 8048942 8421c43
+Author: Aleksey Likhodievski <lesha.liho@gmail.com>
+Date:   Mon Sep 4 12:01:26 2023 +0300
+
+    Merge pull request #73 from Online-shoppers/setup-tests
+    
+    Setup tests
+
+[33mcommit 8421c4371db8b945e6cfc48b763ef16bde8949df[m[33m ([m[1;31morigin/setup-tests[m[33m)[m
+Author: Aleksey Likhodievski <aleksey.likhodievski@gmail.com>
+Date:   Mon Sep 4 12:00:32 2023 +0300
+
+    feat: set up tests
+
+[33mcommit 8048942101677209167e9fff172d11c960588545[m
+Merge: 5952e55 9e5ab18
+Author: Aleksey Likhodievski <lesha.liho@gmail.com>
+Date:   Sun Sep 3 10:44:53 2023 +0300
+
+    Merge pull request #72 from Online-shop
