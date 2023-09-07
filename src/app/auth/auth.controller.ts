@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
+import { I18n, I18nContext, I18nLang } from 'nestjs-i18n';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { TokensDto } from '../security/dto/tokens.dto';
@@ -16,7 +16,6 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly securityService: SecurityService,
-    private readonly i18nService: I18nService,
   ) {}
 
   @ApiBody({ type: UserSignUpForm })
@@ -30,30 +29,37 @@ export class AuthController {
     const errors = await UserSignUpForm.validate(dto);
     if (errors) {
       throw new BadRequestException({
-        message: i18n.t(ErrorCodes.InvalidForm),
+        message: i18n.translate(ErrorCodes.InvalidForm, { lang: i18n.lang }),
         errors,
       });
     }
-    return this.authService.signUp(dto);
+    return this.authService.signUp(dto, i18n.lang);
   }
 
   @ApiBody({ type: UserSignInForm })
   @ApiResponse({ type: TokensDto })
   @ApiOperation({ summary: 'Sign in for user' })
   @Post('/sign-in')
-  async signIn(@Body() body: UserSignInForm): Promise<Tokens> {
+  async signIn(
+    @Body() body: UserSignInForm,
+    @I18nLang() lang: string,
+  ): Promise<Tokens> {
     const dto = UserSignInForm.from(body);
-    return this.authService.signIn(dto);
+    return this.authService.signIn(dto, lang);
   }
 
   @ApiBody({ type: TokensDto })
   @ApiResponse({ type: TokensDto })
   @ApiOperation({ summary: 'Refresh tokens' })
   @Post('/refresh')
-  async refreshTokens(@Body() body: TokensDto): Promise<Tokens> {
+  async refreshTokens(
+    @Body() body: TokensDto,
+    @I18nLang() lang: string,
+  ): Promise<Tokens> {
     return this.securityService.refreshTokens(
       body.access_token,
       body.refresh_token,
+      lang,
     );
   }
 }

@@ -1,46 +1,107 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { I18nService } from 'nestjs-i18n';
+
+import { UserRolesService } from 'app/user-roles/user-roles.service';
+
+import { ErrorCodes } from 'shared/enums/error-codes.enum';
 
 import { UserEvent } from '../../shared/notifications/user/user.event';
-import { UserRoleDto } from '../user-roles/dto/user-role.dto';
 import { UserRoles } from '../user-roles/enums/user-roles.enum';
-import { UserRolesRepo } from '../user-roles/repos/user-role.repo';
 import { NewUserForm } from './dtos/new-user.form';
+import { UserDto } from './dtos/user.dto';
 import { UserRepo } from './repos/user.repo';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly repo_user: UserRepo,
-    private readonly repo_user_roles: UserRolesRepo,
+    private readonly userRolesService: UserRolesService,
+    private readonly i18nService: I18nService,
     private eventEmitter: EventEmitter2,
   ) {}
 
   async getUserByEmail(email: string) {
-    return this.repo_user.findOne({ email: email });
+    const user = await this.repo_user.findOne({ email });
+    return user;
   }
 
   async getUserById(userId: string) {
-    return this.repo_user.findOne({ id: userId });
+    return this.repo_user.findOneOrFail({ id: userId });
   }
 
-  async getUsers() {
-    return this.repo_user.getList();
+  async getUserInfo(userId: string, lang: string) {
+    try {
+      const user = await this.getUserById(userId);
+      return user;
+    } catch (err) {
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.NotExists_User, {
+          lang,
+        }),
+      );
+    }
   }
-  async getUserInfo(userId: string) {
-    return this.repo_user.getById(userId);
+
+  async getUserPermissions(userId: string) {
+    const user = await this.repo_user.findOne({ id: userId });
+
+    const roleId = user.role.id;
+
+    const userRole = await this.userRolesService.getRoleById(roleId);
+    return userRole.permissions;
   }
 
   async archiveUser(userId: string) {
-    const user = await this.repo_user.archiveUser(userId);
+    const em = this.repo_user.getEntityManager();
+
+    const user = await this.repo_user.findOne({ id: userId });
+    user.archived = true;
+
+    await em.persistAndFlush(user);
+
     this.eventEmitter.emit('delete.user', new UserEvent(user.email));
+
+    return UserDto.fromEntity(user);
   }
 
   async addNewUser(dto: NewUserForm) {
-    const e_role = await this.repo_user_roles.getDefaultRole(UserRoles.Client);
-    const dto_role = UserRoleDto.fromEntity(e_role);
-    const user = await this.repo_user.addUser(dto, dto_role);
-    this.eventEmitter.emit('new.user', new UserEvent(user.email));
-    return user;
+    const em = this.repo_user.getEntityManager();
+
+    const defaultRole = await this.userRolesService.getDefaultRole(
+      UserRoles.Client,
+    );
+
+    const newUser = this.repo_user.create({
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      email: dto.email,
+      password: dto.password,
+      role: { id: defaultRole.id, type: defaultRole.type },
+      cart: { products: [] },
+    });
+    this.eventEmitter.emit('new.user', new UserEvent(newUser.email));
+
+    await em.persistAndFlush(newUser);
+
+    return newUser;
+  }
+
+  async updateUserPasswordByEmail(email: string, newPassword: string) {
+    const em = this.repo_user.getEntityManager();
+
+    const user = await this.getUserByEmail(email);
+    user.password = newPassword;
+
+    await em.persistAndFlush(user);
+  }
+
+  async updateUserPassword(userId: string, newPassword: string) {
+    const em = this.repo_user.getEntityManager();
+
+    const user = await this.getUserById(userId);
+    user.password = newPassword;
+
+    await em.persistAndFlush(user);
   }
 }

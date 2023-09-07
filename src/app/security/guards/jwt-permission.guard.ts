@@ -28,7 +28,7 @@ export class JwtPermissionsGuard
 
   constructor(
     private readonly reflector: Reflector,
-    private readonly i18nSerivce: I18nService,
+    private readonly i18nService: I18nService,
   ) {
     super();
   }
@@ -51,7 +51,10 @@ export class JwtPermissionsGuard
   ): TUser {
     if (err || !user) {
       throw (
-        err || new UnauthorizedException({ message: 'UnauthorizedException' })
+        err ||
+        new UnauthorizedException(
+          this.i18nService.translate(ErrorCodes.NotAuthorizedRequest),
+        )
       );
     }
 
@@ -64,7 +67,7 @@ export class JwtPermissionsGuard
     }
 
     throw new UnauthorizedException(
-      this.i18nSerivce.translate(ErrorCodes.Invalid_Permission),
+      this.i18nService.translate(ErrorCodes.Invalid_Permission),
     );
   }
 }

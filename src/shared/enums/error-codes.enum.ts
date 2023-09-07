@@ -1,23 +1,28 @@
 export enum ErrorCodes {
-  InvalidForm = 'errors.errors.invalid-form',
-  InvalidTokens = 'errors.errors.invalid-tokens',
-  FieldShouldBeString = 'errors.errors.field-invalid.should-be-string',
-  FieldShouldBeNumber = 'errors.errors.field-invalid.should-be-number',
-  FieldShouldBeEnum = 'errors.errors.field-invalid.should-be-enum',
-  FieldShouldBeEmail = 'errors.errors.field-invalid.should-be-email',
+  InvalidForm = 'errors.invalid-form',
+  InvalidTokens = 'errors.invalid-tokens',
 
-  NotAuthorizedRequest = 'errors.errors.not-authorized.request',
+  FieldShouldBeString = '.errors.field-invalid.should-be-string',
+  FieldShouldBeNumber = 'errors.field-invalid.should-be-number',
+  FieldShouldBeEnum = 'errors.field-invalid.should-be-enum',
+  FieldShouldBeEmail = 'errors.field-invalid.should-be-email',
+  FieldQuantityShouldBePositive = 'field-invalid.quantity-should-be-positive',
 
-  InvalidStatus_UserInactive = 'errors.errors.invalid-status.user-inactive',
+  NotAuthorizedRequest = 'errors.not-authorized.request',
 
-  NotExists_User = 'errors.errors.not-exists.user',
+  InvalidStatus_UserInactive = 'errors.invalid-status.user-inactive',
 
-  NotExists_Product = 'errors.errors.not-exists.product',
-  Exists_User = 'errors.errors.already-exists.user',
-  Invalid_Creds = 'errors.errors.invalid-creds',
+  NotExists_User = 'errors.not-exists.user',
+  NotExists_Review = 'errors.not-exists.review',
 
-  NotEnough_Product = 'errors.errors.not-enough.product',
-  NoSuchItem_Cart = 'errors.errors.not-such-item.cart',
-  Delete_Reviews = 'errors.errors.not_allowed_delete.reviews',
-  Invalid_Permission = 'errors.errors.not_allowed_action.permission',
+  NotExists_Product = 'errors.not-exists.product',
+  Exists_User = 'errors.already-exists.user',
+  Invalid_Creds = 'errors.invalid-creds',
+  Invalid_Password = 'errors.invalid-password',
+  ForbiddenReset_WrongUser = 'errors.reset-password.forbidden.wrong-user',
+
+  NotEnough_Product = 'errors.not-enough.product',
+  NoSuchItem_Cart = 'errors.not-such-item.cart',
+  Delete_Reviews = 'errors.not_allowed_delete.reviews',
+  Invalid_Permission = 'errors.not_allowed_action.permission',
 }

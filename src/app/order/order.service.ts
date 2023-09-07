@@ -68,9 +68,14 @@ export class OrderService {
     return this.orderRepo.findOne({ id: orderId });
   }
 
+  async getOrderById(id: string) {
+    return this.orderRepo.findOneOrFail({ id });
+  }
+
   async update(id: string, status: OrderStatuses) {
-    const existing = await this.orderRepo.getById(id);
     const em = this.orderRepo.getEntityManager();
+
+    const existing = await this.getOrderById(id);
     existing.status = status;
 
     await em.persistAndFlush(existing);

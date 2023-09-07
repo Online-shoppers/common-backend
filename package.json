@@ -48,6 +48,7 @@
     "i18n": "^0.15.1",
     "lodash": "^4.17.21",
     "mikro-orm": "^5.7.14",
+    "nest-schedule": "^0.6.4",
     "nestjs-i18n": "^10.3.1",
     "node-cron": "^3.0.2",
     "passport": "^0.6.0",
@@ -97,10 +98,39 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/entities/**",
+      "!**/entity/**",
+      "!**/enums/**",
+      "!**/dtos/**",
+      "!**/dto/**",
+      "!**/repos/**",
+      "!**/repo/**",
+      "!**/decorators/**",
+      "!**/guards/**",
+      "!**/config/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/app/.*\\.module\\.ts$",
+      "<rootDir>/app/.*\\.dto\\.ts$",
+      "<rootDir>/app/.*\\.form\\.ts$",
+      "<rootDir>/app/.*\\.enum\\.ts$",
+      "<rootDir>/app/.*\\.entity\\.ts$"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    },
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
+    "modulePathIgnorePatterns": [
+      "module",
+      "migrations",
+      "seeders"
+    ]
   },
   "mikro-orm": {
     "useTsNode": true,

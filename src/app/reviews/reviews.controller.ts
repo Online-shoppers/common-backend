@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { I18nLang } from 'nestjs-i18n';
 
 import { CurrentUser } from 'app/security/decorators/current-user.decorator';
 import { UserSessionDto } from 'app/security/dto/user-session.dto';
@@ -45,12 +46,14 @@ export class ReviewsController {
     @Param('productId', ParseUUIDPipe) productId: string,
     @Body() reviewForm: NewReviewForm,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
     const dto = NewReviewForm.from(reviewForm);
     const created = await this.reviewsService.addProductReview(
       user.id,
       productId,
       dto,
+      lang,
     );
 
     return ReviewDto.fromEntity(created);
@@ -64,9 +67,10 @@ export class ReviewsController {
   async editProductReview(
     @Param('reviewId', ParseUUIDPipe) id: string,
     @Body() reviewForm: EditReviewForm,
+    @I18nLang() lang: string,
   ) {
     const dto = EditReviewForm.from(reviewForm);
-    const edited = await this.reviewsService.editProductReview(id, dto);
+    const edited = await this.reviewsService.editProductReview(id, dto, lang);
 
     return ReviewDto.fromEntity(edited);
   }
@@ -78,10 +82,12 @@ export class ReviewsController {
   async deleteProductReview(
     @Param('reviewId', ParseUUIDPipe) id: string,
     @CurrentUser() user: UserSessionDto,
+    @I18nLang() lang: string,
   ) {
     const archived = await this.reviewsService.archiveProductReview(
       id,
       user.id,
+      lang,
     );
     return ReviewDto.fromEntity(archived);
   }

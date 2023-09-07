@@ -1,4 +1,4 @@
-import { wrap } from '@mikro-orm/core';
+import { ArrayCollection, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
@@ -12,9 +12,10 @@ import { I18nService } from 'nestjs-i18n';
 
 import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
-import { ProductEntity } from 'app/products/entities/product.entity';
+import { ProductsService } from 'app/products/products.service';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
+import { CartInfoDto } from './dto/cart-info.dto';
 import { CartDto } from './dto/cart.dto';
 import { CartEntity } from './entities/cart.entity';
 import { CartRepo } from './repo/cart.repo';
@@ -25,8 +26,7 @@ export class CartService {
 
   constructor(
     private readonly cartRepo: CartRepo,
-    @InjectRepository(ProductEntity)
-    private readonly productsRepo: EntityRepository<ProductEntity>,
+    private readonly productsService: ProductsService,
     @InjectRepository(CartProductEntity)
     private readonly cartProductsRepo: EntityRepository<CartProductEntity>,
     private readonly i18nService: I18nService,
@@ -42,22 +42,48 @@ export class CartService {
   }
 
   async getUserCartProducts(userId: string) {
-    const entities = await this.cartProductsRepo.find({
-      cart: { user: { id: userId } },
-    });
+    const entities = await this.cartProductsRepo.find(
+      {
+        cart: { user: { id: userId } },
+      },
+      {
+        populate: ['unitPrice', 'quantity', 'product.image_url'],
+        orderBy: {
+          quantity: 'desc',
+        },
+      },
+    );
+
     return CartProductDto.fromEntities(entities);
   }
 
-  async addProductToCart(userId: string, productId: string, quantity: number) {
+  async getUserCartInfo(userId: string) {
+    const cart = await this.cartRepo.findOne(
+      { user: { id: userId } },
+      { populate: ['products.product.price', 'products.quantity'] },
+    );
+    return CartInfoDto.fromEntity(cart);
+  }
+
+  async addProductToCart(
+    userId: string,
+    productId: string,
+    quantity: number,
+    lang: string,
+  ) {
     if (quantity <= 0) {
-      throw new BadRequestException('Quantity should be positive');
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.FieldQuantityShouldBePositive, {
+          lang,
+        }),
+      );
     }
 
     const em = this.cartRepo.getEntityManager();
 
     const [cart, product] = await Promise.all([
-      this.cartRepo.findOne({ user: { id: userId } }, { populate: true }),
-      this.productsRepo.findOne({ id: productId }),
+      this.cartRepo.findOne({ user: { id: userId } }),
+      this.productsService.getProductById(productId, lang),
     ]);
 
     const cartProduct = await this.cartProductsRepo.findOne({
@@ -67,7 +93,9 @@ export class CartService {
 
     if (product.quantity < (cartProduct?.quantity || 0) + quantity) {
       throw new NotAcceptableException(
-        this.i18nService.translate(ErrorCodes.NotEnough_Product),
+        this.i18nService.translate(ErrorCodes.NotEnough_Product, {
+          lang,
+        }),
       );
     }
 
@@ -75,10 +103,8 @@ export class CartService {
 
     if (cartProduct) {
       cartProduct.quantity += quantity;
-      cart.updated = now;
 
       await em.persistAndFlush(cartProduct);
-      await em.persistAndFlush(cart);
     } else {
       const newCartProduct = this.cartProductsRepo.create({
         name: product.name,
@@ -88,84 +114,82 @@ export class CartService {
         cart,
         product,
       });
-
-      cart.updated = now;
-
       cart.products.add(newCartProduct);
-      await em.persistAndFlush(cart);
     }
+    cart.updated = now;
 
-    return CartDto.fromEntity(cart);
+    await em.persistAndFlush(cart);
+
+    return CartProductDto.fromEntity(cartProduct);
   }
 
   async updateProductInCart(
     userId: string,
     cartProductId: string,
     quantity: number,
+    lang: string,
   ) {
     const em = this.cartRepo.getEntityManager();
 
     const [cart, cartProduct] = await Promise.all([
-      this.cartRepo.findOne({ user: { id: userId } }, { populate: true }),
+      this.cartRepo.findOne(
+        { user: { id: userId } },
+        { populate: ['products'] },
+      ),
       this.cartProductsRepo.findOne({
         id: cartProductId,
       }),
     ]);
 
-    await cart.products.init();
-
     if (!cartProduct) {
       throw new BadRequestException(
-        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart),
+        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
+          lang,
+        }),
       );
     }
 
     if (cartProduct.product.quantity < quantity) {
       throw new NotAcceptableException(
-        this.i18nService.translate(ErrorCodes.NotEnough_Product),
+        this.i18nService.translate(ErrorCodes.NotEnough_Product, {
+          lang,
+        }),
       );
     }
 
     const now = new Date();
 
-    if (cartProduct) {
-      if (quantity <= 0) {
-        cart.products.remove(cartProduct);
-        em.remove(cartProduct);
+    if (!cartProduct) {
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
+          lang,
+        }),
+      );
+    }
 
-        cart.updated = now;
+    cart.updated = now;
 
-        await em.persistAndFlush(cart);
+    if (quantity <= 0) {
+      cart.products.remove(cartProduct);
+      em.remove(cartProduct);
+      await em.persistAndFlush(cart);
 
-        return CartDto.fromEntity(cart);
-      }
-
-      cartProduct.quantity = quantity;
-      cart.updated = now;
-
-      await em.persistAndFlush(cartProduct);
+      return CartProductDto.fromEntity(cartProduct);
     } else {
-      throw new BadRequestException('No cart product');
-      // const updatedCartProduct = this.cartProductsRepo.create({
-      //   name: cartProduct.name,
-      //   category: cartProduct.category,
-      //   quantity,
-      //   description: cartProduct.description,
-      //   cart: { id: cart.id },
-      //   product: cartProduct.product,
-      // });
-      //
-      // cart.updated = now;
-      //
-      // await em.persistAndFlush(updatedCartProduct);
+      cartProduct.quantity = quantity;
+      await em.persistAndFlush(cartProduct);
     }
 
     await em.persistAndFlush(cart);
 
-    return CartDto.fromEntity(cart);
+    return CartProductDto.fromEntity(cartProduct);
   }
 
-  async deleteProductFromCart(userId: string, cartProductId: string) {
+  async deleteProductFromCart(
+    userId: string,
+    cartProductId: string,
+    lang: string,
+  ) {
     const cart = await this.cartRepo.findOne(
       { user: { id: userId } },
       { populate: true },
@@ -187,8 +211,11 @@ export class CartService {
 
       return CartDto.fromEntity(cart);
     } catch (err) {
-      console.error(err);
-      throw new BadRequestException('No such product in the cart');
+      throw new BadRequestException(
+        this.i18nService.translate(ErrorCodes.NoSuchItem_Cart, {
+          lang,
+        }),
+      );
     }
   }
 
@@ -197,6 +224,7 @@ export class CartService {
       { user: { id: userId } },
       { populate: true },
     );
+
     const em = this.cartRepo.getEntityManager();
 
     await cart.products.init();

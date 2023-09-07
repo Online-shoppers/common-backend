@@ -19,11 +19,13 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly i18nService: I18nService,
   ) {}
-  async signUp(dto: UserSignUpForm): Promise<Tokens> {
+  async signUp(dto: UserSignUpForm, lang: string): Promise<Tokens> {
     const existing = await this.userService.getUserByEmail(dto.email);
     if (existing) {
       throw new BadRequestException(
-        this.i18nService.translate(ErrorCodes.Exists_User),
+        this.i18nService.translate(ErrorCodes.Exists_User, {
+          lang,
+        }),
       );
     }
 
@@ -36,12 +38,14 @@ export class AuthService {
     return tokens;
   }
 
-  async signIn(dto: UserSignInForm): Promise<Tokens> {
+  async signIn(dto: UserSignInForm, lang: string): Promise<Tokens> {
     const user = await this.userService.getUserByEmail(dto.email);
 
     if (!user)
       throw new ForbiddenException(
-        this.i18nService.translate(ErrorCodes.Invalid_Creds),
+        this.i18nService.translate(ErrorCodes.NotExists_User, {
+          lang,
+        }),
       );
 
     const passwordMatches = await this.securityService.comparePassword(
@@ -50,7 +54,9 @@ export class AuthService {
     );
     if (!passwordMatches)
       throw new ForbiddenException(
-        this.i18nService.translate(ErrorCodes.Invalid_Creds),
+        this.i18nService.translate(ErrorCodes.Invalid_Password, {
+          lang,
+        }),
       );
 
     return this.securityService.generateTokens(user);

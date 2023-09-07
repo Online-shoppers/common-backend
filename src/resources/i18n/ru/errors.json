@@ -1,18 +1,27 @@
 {
   "invalidType": "Неверный тип",
-  "errors.invalid-form": "Неверная форма",
-  "errors.field-invalid.should-be-string": "Поле должно быть строкой",
-  "errors.field-invalid.should-be-number": "Поле должно быть числом",
-  "errors.field-invalid.should-be-enum": "Неверный тип",
-  "errors.field-invalid.should-be-email": "Неверный email",
-  "errors.not-authorized.request": "Не авторизированный пользователь.",
-  "errors.not-exists.user": "Пользователь не существует.",
-  "errors.not-exists.product": "Продукт не существует.",
-  "errors.already-exists.user": "Пользователь уже существует",
-  "errors.invalid-creds": "Пользователь не найден.",
-  "errors.not-enough.product": "Не достаточно продуктов на складе",
-  "errors.not-such-item.cart": "Такого продукта нет в корзине",
-  "errors.not_allowed_delete.reviews": "Невозможно удалить чужой коментарий",
-  "errors.invalid-tokens": "Не валидные токены",
-  "errors.not_allowed_action.permission": "У Вас нет прав для этого действия"
+  "invalid-form": "Неверная форма",
+
+  "field-invalid.should-be-string": "Поле должно быть строкой",
+  "field-invalid.should-be-number": "Поле должно быть числом",
+  "field-invalid.should-be-enum": "Неверный тип",
+  "field-invalid.should-be-email": "Неверный email",
+  "field-invalid.quantity-should-be-positive": "Количество должно быть больше нуля",
+
+  "not-authorized.request": "Не авторизированный пользователь.",
+  "not-exists.user": "Пользователь не существует.",
+  "errors.not-exists.review": "Такого отзыва не существуeт",
+  "not-exists.product": "Продукт не существует.",
+  "already-exists.user": "Пользователь уже существует",
+  "invalid-creds": "Пользователь не найден.",
+  "invalid-password": "Неверный пароль",
+
+  "errors.reset-password.forbidden.wrong-user": "Вы можете сбросить только ваш собственный пароль",
+
+  "not-enough.product": "Не достаточно продуктов на складе",
+  "not-such-item.cart": "Такого продукта нет в корзине",
+  "not_allowed_delete.reviews": "Невозможно удалить чужой коментарий",
+
+  "invalid-tokens": "Не валидные токены",
+  "not_allowed_action.permission": "У Вас нет прав для этого действия"
 }
