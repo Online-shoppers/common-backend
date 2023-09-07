@@ -19,6 +19,7 @@ const cartServiceMock = {
   deleteProductFromCart: jest.fn(),
   clearCart: jest.fn(),
 };
+
 describe('CartController', () => {
   let controller: CartController;
 
