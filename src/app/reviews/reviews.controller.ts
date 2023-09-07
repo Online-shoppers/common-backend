@@ -4,9 +4,11 @@ import {
   Delete,
   Get,
   Param,
+  ParseBoolPipe,
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -32,7 +34,11 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Get(':productId')
-  async getProductReviews(@Param('productId', ParseUUIDPipe) id: string) {
+  async getProductReviews(
+    @Param('productId', ParseUUIDPipe) id: string,
+    @Query('includeArchived', new ParseBoolPipe({ optional: true }))
+    includeArchived = false,
+  ) {
     const reviews = await this.reviewsService.getProductReviews(id);
     return ReviewDto.fromEntities(reviews);
   }
