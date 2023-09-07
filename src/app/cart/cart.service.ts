@@ -132,13 +132,14 @@ export class CartService {
     const em = this.cartRepo.getEntityManager();
 
     const [cart, cartProduct] = await Promise.all([
-      this.cartRepo.findOne({ user: { id: userId } }),
+      this.cartRepo.findOne(
+        { user: { id: userId } },
+        { populate: ['products'] },
+      ),
       this.cartProductsRepo.findOne({
         id: cartProductId,
       }),
     ]);
-
-    await cart.products.init();
 
     if (!cartProduct) {
       throw new BadRequestException(
@@ -223,6 +224,7 @@ export class CartService {
       { user: { id: userId } },
       { populate: true },
     );
+
     const em = this.cartRepo.getEntityManager();
 
     await cart.products.init();
