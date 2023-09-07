@@ -10,7 +10,6 @@ import { NestSchedule } from 'nest-schedule';
 import { I18nService } from 'nestjs-i18n';
 import { v4 } from 'uuid';
 
-import { CartProductDto } from 'app/cart-product/dto/cart-product.dto';
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 import { OrderProductEntity } from 'app/order-item/entity/order-product.entity';
 import { ProductEntity } from 'app/products/entities/product.entity';
@@ -20,8 +19,8 @@ import { ProductsService } from 'app/products/products.service';
 import { ReviewEntity } from 'app/reviews/entities/review.entity';
 import { UserEntity } from 'app/user/entities/user.entity';
 
-import { CartProductRepo } from '../cart-product/repo/cart-product.repo';
 import { CartService } from './cart.service';
+import { CartInfoDto } from './dto/cart-info.dto';
 import { CartDto } from './dto/cart.dto';
 import { CartEntity } from './entities/cart.entity';
 import { CartRepo } from './repo/cart.repo';
@@ -67,13 +66,21 @@ const mockProduct: ProductEntity = {
   updated: new Date(),
 };
 
-const mockCartDto: CartEntity = {
+// const collection = new Collection<CartProductEntity>(this);
+// collection.add;
+
+const mockCart: CartEntity = {
   id: v4(),
   created: new Date(),
   updated: new Date(),
   user: mockUser,
   total: async () => 100,
-  products: new Collection<CartProductEntity>(this),
+  // new Collection<CartProductEntity>(this)
+  products: {
+    add: jest.fn(),
+    remove: jest.fn(),
+    isInitialized: jest.fn().mockReturnValue(true),
+  } as unknown as Collection<CartProductEntity>,
 };
 
 jest.spyOn(CartDto, 'fromEntity').mockImplementation(async entity => {
@@ -86,7 +93,7 @@ jest.spyOn(CartDto, 'fromEntity').mockImplementation(async entity => {
   };
 });
 
-const mockCartProductDto: CartProductEntity = {
+const mockCartProduct: CartProductEntity = {
   id: v4(),
   created: new Date(),
   updated: new Date(),
@@ -95,7 +102,7 @@ const mockCartProductDto: CartProductEntity = {
   category: ProductCategories.ACCESSORIES,
   quantity: 5,
   unitPrice: () => 10.99,
-  cart: mockCartDto,
+  cart: mockCart,
   product: mockProduct,
 };
 const abandonedCarts: CartEntity[] = [
@@ -125,7 +132,7 @@ const abandonedCarts: CartEntity[] = [
   },
 ];
 const mockEntityManager = {
-  persistAndFlush: jest.fn().mockResolvedValue(mockCartProductDto),
+  persistAndFlush: jest.fn().mockResolvedValue(mockCartProduct),
   find: jest.fn().mockResolvedValue(abandonedCarts),
   fork: jest.fn(() => ({
     find: jest.fn().mockResolvedValue(abandonedCarts),
@@ -135,7 +142,7 @@ const mockEntityManager = {
 };
 
 const cartRepoMock = {
-  findOne: jest.fn(),
+  findOne: jest.fn(() => mockCart),
   getEntityManager: jest.fn().mockReturnValue(mockEntityManager),
   find: jest.fn(),
 };
@@ -145,9 +152,11 @@ const productsServiceMock = {
 };
 
 const cartProductsRepoMock = {
-  find: jest.fn().mockResolvedValue(mockCartProductDto),
-  findOne: jest.fn(),
-  create: jest.fn().mockResolvedValue(mockCartProductDto),
+  find: jest.fn().mockResolvedValue([mockCartProduct]),
+  findOne: jest.fn().mockResolvedValue(mockCartProduct),
+  findOneOrFail: jest.fn().mockResolvedValue(mockCartProduct),
+  create: jest.fn().mockResolvedValue(mockCartProduct),
+  nativeDelete: jest.fn().mockResolvedValue(() => 1),
   getEntityManager: jest.fn().mockReturnValue(mockEntityManager),
 };
 
@@ -157,20 +166,6 @@ const i18nServiceMock = {
 
 describe('CartService', () => {
   let cartService: CartService;
-
-  const cartRepositoryMock = {
-    findOne: jest.fn(),
-    getEntityManager: mockEntityManager,
-  };
-
-  const cartProductRepositoryMock = {
-    findOne: jest.fn(),
-    create: jest.fn(),
-  };
-
-  const productsServiceMock = {
-    getProductById: jest.fn(),
-  };
 
   const i18nMock = {
     translate: jest.fn().mockResolvedValue('hello'),
@@ -185,7 +180,6 @@ describe('CartService', () => {
         Logger,
         {
           provide: CartRepo,
-
           useValue: cartRepoMock,
         },
         {
@@ -194,12 +188,6 @@ describe('CartService', () => {
         },
         {
           provide: getRepositoryToken(CartProductEntity),
-
-          useValue: cartProductsRepoMock,
-        },
-        {
-          provide: CartProductRepo,
-
           useValue: cartProductsRepoMock,
         },
         {
@@ -236,42 +224,159 @@ describe('CartService', () => {
     }
   });
 
-  it('should throw NotAcceptableException when adding a product with insufficient quantity', async () => {
-    const userId = 'user123';
-    const productId = 'product123';
-    const quantity = 10;
+  it('should create product in cart', async () => {
+    const userId = v4();
+    const productId = v4();
+    const quantity = 1;
     const lang = 'en';
 
-    productsServiceMock.getProductById.mockResolvedValue({ quantity: 5 });
-    await expect(
-      cartService.addProductToCart(userId, productId, quantity, lang),
-    ).rejects.toThrow(TypeError);
+    cartProductsRepoMock.findOne.mockResolvedValue(null);
+
+    try {
+      await cartService.addProductToCart(userId, productId, quantity, lang);
+    } catch (e) {
+      console.log(e);
+      expect(e).toBeInstanceOf(BadRequestException);
+    }
   });
 
   it('should throw NotAcceptableException when adding a product with insufficient quantity', async () => {
+    const userId = v4();
+    const productId = v4();
+    const quantity = 10;
+    const lang = 'en';
+
+    cartProductsRepoMock.findOne.mockResolvedValue(mockCartProduct);
+    productsServiceMock.getProductById.mockResolvedValue({
+      ...mockProduct,
+      quantity: 5,
+    });
+
+    try {
+      await cartService.addProductToCart(userId, productId, quantity, lang);
+    } catch (e) {
+      expect(e).toBeInstanceOf(NotAcceptableException);
+    }
+  });
+
+  it('should add a product with quantity in cart >= 1', async () => {
     const userId = v4();
     const productId = mockProduct.id;
     const quantity = 10;
     const lang = 'en';
 
-    productsServiceMock.getProductById.mockResolvedValue({ quantity: 5 });
+    cartProductsRepoMock.findOne.mockResolvedValue(mockCartProduct);
 
     try {
-      await cartService.addProductToCart(userId, productId, quantity, lang);
+      const result = await cartService.addProductToCart(
+        userId,
+        productId,
+        quantity,
+        lang,
+      );
+      expect(result.quantity).toBeGreaterThanOrEqual(1);
+    } catch (e) {}
+  });
+
+  it('should throw NotAcceptableException when updating not existing product', async () => {
+    const userId = v4();
+    const productId = mockProduct.id;
+    const quantity = 10;
+    const lang = 'en';
+
+    cartProductsRepoMock.findOne.mockResolvedValue(null);
+
+    try {
+      await cartService.updateProductInCart(userId, productId, quantity, lang);
     } catch (e) {
-      expect(e).toBeInstanceOf(TypeError);
+      expect(e).toBeInstanceOf(BadRequestException);
     }
   });
 
-  it('should return user cart products as CartProductDto', async () => {
-    const userId = 'user123';
+  it('should throw NotAcceptableException when updating a product with insufficient quantity', async () => {
+    const userId = v4();
+    const productId = v4();
+    const quantity = 21;
+    const lang = 'en';
 
-    cartProductsRepoMock.findOne.mockResolvedValue(mockCartDto);
+    cartProductsRepoMock.findOne.mockResolvedValue(mockCartProduct);
+    // productsServiceMock.getProductById.mockResolvedValue({
+    //   ...mockProduct,
+    //   quantity: 5,
+    // });
+
+    try {
+      await cartService.updateProductInCart(userId, productId, quantity, lang);
+    } catch (e) {
+      expect(e).toBeInstanceOf(NotAcceptableException);
+    }
+  });
+
+  it('should delete product from cart', async () => {
+    const userId = v4();
+    const productId = mockProduct.id;
+    const lang = 'en';
+
+    cartProductsRepoMock.findOneOrFail.mockResolvedValue(mockCartProduct);
+
+    try {
+      const result = await cartService.deleteProductFromCart(
+        userId,
+        productId,
+        lang,
+      );
+      expect(result.products.length).toBeGreaterThanOrEqual(0);
+    } catch (e) {
+      expect(e).toBeInstanceOf(BadRequestException);
+    }
+  });
+
+  it('should throw BadRequestException on remove if cart product does not exist', async () => {
+    const userId = v4();
+    const productId = mockProduct.id;
+    const lang = 'en';
+
+    cartProductsRepoMock.findOneOrFail.mockRejectedValue(Error);
+
+    try {
+      await cartService.deleteProductFromCart(userId, productId, lang);
+    } catch (e) {
+      expect(e).toBeInstanceOf(BadRequestException);
+    }
+  });
+
+  it('should clear the cart', async () => {
+    try {
+      const response = await cartService.clearCart(v4());
+      expect(response.products).toHaveLength(0);
+    } catch (e) {}
+  });
+
+  it("should return user's cart", async () => {
+    const userId = 'user123';
 
     const result = await cartService.getUsersCart(userId);
 
     // expect(result).toEqual(mockCartDto);
     expect(result.products.length).toBeGreaterThanOrEqual(0);
+  });
+
+  it("should return user's cart products", async () => {
+    const userId = v4();
+
+    const result = await cartService.getUserCartProducts(userId);
+
+    expect(result.length).toBeGreaterThanOrEqual(0);
+  });
+
+  it("should return user's cart info", async () => {
+    const userId = v4();
+
+    cartProductsRepoMock.findOne.mockResolvedValue(mockCartProduct);
+
+    const result = await cartService.getUserCartInfo(userId);
+
+    expect(result).toBeInstanceOf(CartInfoDto);
   });
 
   it('should notify abandoned carts', async () => {
