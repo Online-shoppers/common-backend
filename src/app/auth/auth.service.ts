@@ -54,7 +54,7 @@ export class AuthService {
     );
     if (!passwordMatches)
       throw new ForbiddenException(
-        this.i18nService.translate(ErrorCodes.Invalid_Creds, {
+        this.i18nService.translate(ErrorCodes.Invalid_Password, {
           lang,
         }),
       );

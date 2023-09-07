@@ -18,6 +18,8 @@ export enum ErrorCodes {
   NotExists_Product = 'errors.not-exists.product',
   Exists_User = 'errors.already-exists.user',
   Invalid_Creds = 'errors.invalid-creds',
+  Invalid_Password = 'errors.invalid-password',
+  ForbiddenReset_WrongUser = 'errors.reset-password.forbidden.wrong-user',
 
   NotEnough_Product = 'errors.not-enough.product',
   NoSuchItem_Cart = 'errors.not-such-item.cart',

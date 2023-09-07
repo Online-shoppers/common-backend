@@ -14,6 +14,9 @@
   "not-exists.product": "Продукт не существует.",
   "already-exists.user": "Пользователь уже существует",
   "invalid-creds": "Пользователь не найден.",
+  "invalid-password": "Неверный пароль",
+
+  "errors.reset-password.forbidden.wrong-user": "Вы можете сбросить только ваш собственный пароль",
 
   "not-enough.product": "Не достаточно продуктов на складе",
   "not-such-item.cart": "Такого продукта нет в корзине",
