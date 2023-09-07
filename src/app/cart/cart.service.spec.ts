@@ -27,9 +27,8 @@ import { CartEntity } from './entities/cart.entity';
 import { CartRepo } from './repo/cart.repo';
 
 jest.mock('node-cron', () => {
-  // Создайте мок функцию для schedule, которая возвращает объект с методом callback
   const scheduleMock = jest.fn().mockImplementation((expression, callback) => {
-    callback(); // Вызываем колбэк
+    callback();
   });
 
   return {
