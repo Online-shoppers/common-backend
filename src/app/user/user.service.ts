@@ -86,4 +86,22 @@ export class UserService {
 
     return newUser;
   }
+
+  async updateUserPasswordByEmail(email: string, newPassword: string) {
+    const em = this.repo_user.getEntityManager();
+
+    const user = await this.getUserByEmail(email);
+    user.password = newPassword;
+
+    await em.persistAndFlush(user);
+  }
+
+  async updateUserPassword(userId: string, newPassword: string) {
+    const em = this.repo_user.getEntityManager();
+
+    const user = await this.getUserById(userId);
+    user.password = newPassword;
+
+    await em.persistAndFlush(user);
+  }
 }

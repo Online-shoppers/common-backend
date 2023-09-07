@@ -4,12 +4,12 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { I18nService } from 'nestjs-i18n';
 
+import { ResetPasswordForm } from 'app/reset-password/dto/reset-password.form';
 import { UserService } from 'app/user/user.service';
 
 import { ErrorCodes } from '../../shared/enums/error-codes.enum';
 import { RefreshTokenRepo } from '../refresh-token/repo/refresh-token.repo';
 import { UserEntity } from '../user/entities/user.entity';
-import { UserRepo } from '../user/repos/user.repo';
 import { UserSessionDto } from './dto/user-session.dto';
 import { Tokens } from './type/token.type';
 
@@ -94,6 +94,24 @@ export class SecurityService {
     try {
       const payload = this.jwtService.verify(token, { secret });
       return new Date().getTime() < payload.exp * 1000;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async generateResetToken(payload: ResetPasswordForm) {
+    const token = await this.jwtService.signAsync(payload, {
+      secret: this.config.get<string>('app.RESET_SECRET'),
+    });
+
+    return token;
+  }
+
+  async validateResetToken(token: string) {
+    const secret = this.config.get<string>('app.RESET_SECRET');
+    try {
+      this.jwtService.verify(token, { secret });
+      return true;
     } catch (err) {
       return false;
     }

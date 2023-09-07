@@ -5,6 +5,7 @@ export default () => ({
     port: parseInt(process.env.PORT, 10) || 3000,
     AT_SECRET: process.env.AT_SECRET,
     RT_SECRET: process.env.RT_SECRET,
+    RESET_SECRET: process.env.RESET_SECRET,
     AT_SECONDS_EXP: parseInt(process.env.AT_SECONDS_EXP, 10),
     RT_SECONDS_EXP: parseInt(process.env.RT_SECONDS_EXP, 10),
   },
