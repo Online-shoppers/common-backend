@@ -29,7 +29,7 @@ export class AuthController {
     const errors = await UserSignUpForm.validate(dto);
     if (errors) {
       throw new BadRequestException({
-        message: i18n.t(ErrorCodes.InvalidForm),
+        message: i18n.translate(ErrorCodes.InvalidForm, { lang: i18n.lang }),
         errors,
       });
     }
