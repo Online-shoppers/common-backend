@@ -6,7 +6,7 @@ export enum ErrorCodes {
   FieldShouldBeNumber = 'errors.field-invalid.should-be-number',
   FieldShouldBeEnum = 'errors.field-invalid.should-be-enum',
   FieldShouldBeEmail = 'errors.field-invalid.should-be-email',
-  FieldQuantityShouldBePositive = 'field-invalid.quantity-should-be-positive',
+  FieldQuantityShouldBePositive = 'errors.field-invalid.quantity-should-be-positive',
 
   NotAuthorizedRequest = 'errors.not-authorized.request',
 
