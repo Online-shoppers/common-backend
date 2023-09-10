@@ -23,16 +23,20 @@ export class ReviewsService {
     private readonly i18nService: I18nService,
   ) {}
 
-  async getProductReviews(productId: string) {
+  async getProductReviews(productId: string, includeArchived = false) {
+    const archived = includeArchived ? { $in: [true, false] } : false;
     return this.reviewsRepo.find(
-      { product: { id: productId } },
+      { product: { id: productId }, archived },
       { populate: ['user'] },
     );
   }
 
   async getProductReviewById(id: string, lang: string) {
     try {
-      const review = await this.reviewsRepo.findOneOrFail({ id });
+      const review = await this.reviewsRepo.findOneOrFail(
+        { id },
+        { populate: ['user'] },
+      );
       return review;
     } catch (err) {
       throw new BadRequestException(

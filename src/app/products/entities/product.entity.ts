@@ -1,11 +1,4 @@
-import {
-  Collection,
-  Entity,
-  Enum,
-  OneToMany,
-  OneToOne,
-  Property,
-} from '@mikro-orm/core';
+import { Collection, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
 
 import { CartProductEntity } from 'app/cart-product/entities/cart-product.entity';
 import { ReviewEntity } from 'app/reviews/entities/review.entity';
@@ -48,12 +41,15 @@ export class ProductEntity extends UUIDEntity {
       return 0;
     }
 
+    const reviews_amount = await this.reviewsAmount();
+
     const points = this.reviews
       .getItems()
+      .filter(review => !review.archived)
       .map(review => review.rating)
       .reduce((acc, rating) => acc + rating, 0);
 
-    return Math.round((points * 10) / this.reviews.length) / 10;
+    return Math.round((points * 10) / reviews_amount) / 10;
   }
 
   @Property({ persist: false })
@@ -62,7 +58,9 @@ export class ProductEntity extends UUIDEntity {
       await this.reviews.init();
     }
 
-    const amount = this.reviews.getItems().length;
+    const amount = this.reviews
+      .getItems()
+      .filter(review => !review.archived).length;
 
     return amount;
   }
